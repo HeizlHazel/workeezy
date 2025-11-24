@@ -454,3 +454,71 @@ ADD CONSTRAINT fk_receipt_paymentid
 	REFERENCES tb_payments(payment_id);
 
 commit;
+---------------------------------------------------------------------------------------------------------
+CREATE TABLE tb_search_program (
+   searchPG_id BIGINT NOT NULL AUTO_INCREMENT,
+   search_id BIGINT NOT NULL,
+   program_id BIGINT NOT NULL,
+   searchPoint	INT	NULL	COMMENT '0~100',
+
+   PRIMARY KEY(searchPG_id),
+
+   CONSTRAINT fk_sp_search
+     FOREIGN KEY (search_id) REFERENCES tb_search(search_id),
+
+   CONSTRAINT fk_sp_program
+     FOREIGN KEY (program_id) REFERENCES tb_program(program_id)
+);
+
+
+CREATE TABLE tb_program (
+   `program_id`	BIGINT	NOT NULL,
+	`program_title`	VARCHAR(100)	NOT NULL,
+	`program_info`	TEXT	NOT NULL,
+	`program_people`	INT	NULL,
+	`program_price`	INT	NULL,
+	`stay_id`	BIGINT	NULL,
+	`office_id`	BIGINT	NULL,
+	`attraction_id1`	BIGINT	NULL	COMMENT '첫번째추천',
+	`attraction_id2`	BIGINT	NULL	COMMENT '두번째추천',
+	`attraction_id3`	BIGINT	NULL	COMMENT '세번째추천',
+
+    PRIMARY KEY (program_id),
+
+    -- fk: program references place (SET NULL)
+    CONSTRAINT fk_program_stay
+        FOREIGN KEY (stay_id)
+        REFERENCES tb_place(place_id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_program_office
+        FOREIGN KEY (office_id)
+        REFERENCES tb_place(place_id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_program_attraction1
+        FOREIGN KEY (attraction_id1)
+        REFERENCES tb_place(place_id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_program_attraction2
+        FOREIGN KEY (attraction_id2)
+        REFERENCES tb_place(place_id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_program_attraction3
+        FOREIGN KEY (attraction_id3)
+        REFERENCES tb_place(place_id)
+        ON DELETE SET NULL,
+
+);
+
+CREATE TABLE tb_search (
+    search_id      BIGINT NOT NULL AUTO_INCREMENT COMMENT '검색어ID',
+    user_id        BIGINT NOT NULL COMMENT '유저ID',
+    search_time    TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '검색일시',
+    search_phrase  VARCHAR(100) NULL COMMENT '검색어',
+
+    PRIMARY KEY (search_id),
+
+);
