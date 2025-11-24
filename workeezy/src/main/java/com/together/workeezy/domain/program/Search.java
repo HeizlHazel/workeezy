@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,24 +18,20 @@ import java.time.Instant;
 public class Search {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "search_id", nullable = false)
+    @Column(name = "search_id")
     private Long id;
 
     @NotNull
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "searchPG_id", nullable = false)
-    private SearchProgram searchPG;
-
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "search_time")
     private Instant searchTime;
 
-    @Size(max = 100)
     @Column(name = "search_phrase", length = 100)
     private String searchPhrase;
+
+    @OneToMany(mappedBy = "search")
+    private List<SearchProgram> searchPrograms = new ArrayList<>();
 
 }

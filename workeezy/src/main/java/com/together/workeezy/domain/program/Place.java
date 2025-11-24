@@ -24,9 +24,10 @@ public class Place {
     @JoinColumn(name = "program_id", nullable = false)
     private Program program;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "place_type")
-    private String placeType;
+    private PlaceType placeType;
+
 
     @Size(max = 100)
     @NotNull

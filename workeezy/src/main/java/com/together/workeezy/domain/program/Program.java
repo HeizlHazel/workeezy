@@ -8,6 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -34,10 +37,8 @@ public class Program {
     @Column(name = "program_price")
     private Integer programPrice;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "searchPG_id", nullable = false)
-    private SearchProgram searchPG;
+    @OneToMany(mappedBy = "program")
+    private List<SearchProgram> searchPrograms = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
