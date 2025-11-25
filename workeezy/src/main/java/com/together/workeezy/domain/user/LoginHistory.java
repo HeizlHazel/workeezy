@@ -1,6 +1,5 @@
-package com.together.workeezy.domain.login;
+package com.together.workeezy.domain.user;
 
-import com.together.workeezy.domain.common.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,10 +19,8 @@ public class LoginHistory {
     @Column(name = "history_id", nullable = false)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Size(max = 45)
     @NotNull

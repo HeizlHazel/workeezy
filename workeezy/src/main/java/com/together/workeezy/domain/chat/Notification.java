@@ -1,4 +1,4 @@
-package com.together.workeezy.domain.common;
+package com.together.workeezy.domain.chat;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

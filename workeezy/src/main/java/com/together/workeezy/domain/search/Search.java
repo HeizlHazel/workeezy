@@ -1,4 +1,4 @@
-package com.together.workeezy.domain.program;
+package com.together.workeezy.domain.search;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

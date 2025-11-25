@@ -1,5 +1,6 @@
-package com.together.workeezy.domain.program;
+package com.together.workeezy.domain.search;
 
+import com.together.workeezy.domain.program.Program;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

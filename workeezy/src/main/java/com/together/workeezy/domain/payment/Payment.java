@@ -1,6 +1,5 @@
 package com.together.workeezy.domain.payment;
 
-import com.together.workeezy.domain.common.Refund;
 import com.together.workeezy.domain.reservation.ReceiptPdf;
 import com.together.workeezy.domain.reservation.Reservation;
 import jakarta.persistence.*;
@@ -25,7 +24,7 @@ public class Payment {
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
@@ -58,14 +57,5 @@ public class Payment {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    @OneToMany(mappedBy = "payment")
-    private Set<PaymentLog> PaymentLogs = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "payment")
-    private Set<ReceiptPdf> ReceiptPdfs = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "payment")
-    private Set<Refund> Refunds = new LinkedHashSet<>();
 
 }

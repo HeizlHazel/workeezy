@@ -1,5 +1,6 @@
-package com.together.workeezy.domain.common;
+package com.together.workeezy.domain.chat;
 
+import com.together.workeezy.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

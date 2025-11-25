@@ -1,6 +1,5 @@
-package com.together.workeezy.domain.common;
+package com.together.workeezy.domain.payment;
 
-import com.together.workeezy.domain.payment.Payment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,7 +20,7 @@ public class Refund {
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 
