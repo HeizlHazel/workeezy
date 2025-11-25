@@ -1,5 +1,6 @@
 package com.together.workeezy.domain.reservation;
 
+import com.together.workeezy.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
