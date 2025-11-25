@@ -14,16 +14,17 @@ import java.util.Set;
 @Table(name = "tb_search_program")
 public class SearchProgram {
     @Id
-    @Column(name = "searchPG_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "searchPoint")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "search_id", nullable = false)
+    private Search search;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
+
     private Integer searchPoint;
-
-    @OneToMany(mappedBy = "searchPG")
-    private Set<Program> Programs = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "searchPG")
-    private Set<Search> Searches = new LinkedHashSet<>();
 
 }
