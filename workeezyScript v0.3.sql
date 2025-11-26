@@ -1,38 +1,34 @@
--- CREATE DATABASE test
--- CHARACTER SET utf8mb4
--- COLLATE utf8mb4_general_ci;
--- 
--- use test;
+use workeezy;
 
--- SET FOREIGN_KEY_CHECKS = 0;
--- 
--- -- 의존성 있는 테이블 먼저
--- DROP TABLE IF EXISTS tb_chat_message;
--- DROP TABLE IF EXISTS tb_inquiry;
--- DROP TABLE IF EXISTS tb_review;
--- DROP TABLE IF EXISTS tb_payment_logs;
--- DROP TABLE IF EXISTS tb_refund;
--- DROP TABLE IF EXISTS tb_receipt_pdf;
--- DROP TABLE IF EXISTS tb_reservation_pdf;
--- DROP TABLE IF EXISTS tb_reservation_modify;
--- DROP TABLE IF EXISTS tb_payments;
--- DROP TABLE IF EXISTS tb_search;
--- DROP TABLE IF EXISTS tb_room;
--- DROP TABLE IF EXISTS tb_notification;
--- DROP TABLE IF EXISTS tb_chat_session;
--- DROP TABLE IF EXISTS tb_user_social_login;
--- DROP TABLE IF EXISTS tb_login_history;
--- DROP TABLE IF EXISTS tb_refresh_tokens;
--- DROP TABLE IF EXISTS tb_reservation;
--- DROP TABLE IF EXISTS tb_place;
--- DROP TABLE IF EXISTS tb_program;
--- DROP TABLE IF EXISTS tb_search_program;
--- 
--- -- 참조되지 않은 테이블 마지막에 드롭
--- DROP TABLE IF EXISTS tb_faq;
--- DROP TABLE IF EXISTS tb_users;
--- 
--- SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 의존성 있는 테이블 먼저
+DROP TABLE IF EXISTS tb_chat_message;
+DROP TABLE IF EXISTS tb_inquiry;
+DROP TABLE IF EXISTS tb_review;
+DROP TABLE IF EXISTS tb_payment_logs;
+DROP TABLE IF EXISTS tb_refund;
+DROP TABLE IF EXISTS tb_receipt_pdf;
+DROP TABLE IF EXISTS tb_reservation_pdf;
+DROP TABLE IF EXISTS tb_reservation_modify;
+DROP TABLE IF EXISTS tb_payments;
+DROP TABLE IF EXISTS tb_search;
+DROP TABLE IF EXISTS tb_room;
+DROP TABLE IF EXISTS tb_notification;
+DROP TABLE IF EXISTS tb_chat_session;
+DROP TABLE IF EXISTS tb_social_login;
+DROP TABLE IF EXISTS tb_login_history;
+DROP TABLE IF EXISTS tb_refresh_tokens;
+DROP TABLE IF EXISTS tb_reservation;
+DROP TABLE IF EXISTS tb_place;
+DROP TABLE IF EXISTS tb_program;
+DROP TABLE IF EXISTS tb_search_program;
+
+-- 참조되지 않은 테이블 마지막에 드롭
+DROP TABLE IF EXISTS tb_faq;
+DROP TABLE IF EXISTS tb_users;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 
 
@@ -84,7 +80,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
 # 소셜 로그인 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_user_social_login (
+CREATE TABLE IF NOT EXISTS tb_social_login (
     social_id        BIGINT NOT NULL AUTO_INCREMENT                COMMENT '소셜 로그인 고유 식별자',
     user_id          BIGINT NOT NULL                               COMMENT '사용자 FK',
     provider         ENUM('kakao', 'naver') NULL                   COMMENT '소셜 연동 플랫폼',
@@ -312,7 +308,7 @@ ADD CONSTRAINT fk_token_userid
 		FOREIGN KEY (user_id)
 		REFERENCES tb_users(user_id);
 		
-ALTER TABLE tb_user_social_login
+ALTER TABLE tb_social_login
 ADD CONSTRAINT fk_login_userid
 		FOREIGN KEY (user_id)
 		REFERENCES tb_users(user_id);	
@@ -454,7 +450,7 @@ INSERT INTO tb_users (email, user_pwd, user_name, phone, birth, company, user_ro
 ('choi@company.com', '$2a$10$efghijklmnopqrstuvwxyz1234567890abcd', '최지은', '010-5678-9012', '1995-02-18', '카카오', 'user');
 
 # 로그인 관련 샘플 데이터
-INSERT INTO tb_user_social_login (user_id, provider, provider_user_id, email) VALUES
+INSERT INTO tb_social_login (user_id, provider, provider_user_id, email) VALUES
 (1, 'kakao', '1234567890', 'hong@kakao.com'),
 (2, 'naver', '9876543210', 'kim@naver.com'),
 (3, 'kakao', '1122334455', 'lee@kakao.com'),
