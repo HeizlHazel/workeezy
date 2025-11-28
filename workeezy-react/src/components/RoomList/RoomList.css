@@ -1,0 +1,17 @@
+.pd-room-item {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.pd-room-img {
+    width: 160px;
+    border-radius: 6px;
+}
+
+.pd-room-name {
+    font-size: 18px;
+    font-weight: 500;
+}
