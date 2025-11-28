@@ -1,0 +1,28 @@
+.frame-1,
+.frame-1 * {
+  box-sizing: border-box;
+}
+.frame-1 {
+  height: 242px;
+  position: relative;
+}
+.frame-1 .workeezy {
+  color: #000000;
+  text-align: left;
+  font-family: "AritaDotumKr-Medium", sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.frame-1 ._123-87-26531-1578-9846-email-workeezy-3333-gmail-com-workeezy-corp {
+  color: #000000;
+  text-align: left;
+  font-family: "AritaDotumKr-Medium", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  position: absolute;
+  left: 348px;
+  top: 2px;
+}
