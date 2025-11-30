@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -66,10 +67,10 @@ public class User {
 
     @OneToMany
     @JoinColumn(name = "user_id")
-    private List<Reservation> reservations;
+    private List<Reservation> reservations = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "user_id")
-    private List<ReservationModify> reservationModifys;
+    private List<ReservationModify> reservationModifys = new ArrayList<>();
 
 }
