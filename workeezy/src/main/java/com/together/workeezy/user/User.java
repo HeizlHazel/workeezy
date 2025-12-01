@@ -35,7 +35,7 @@ public class User {
     @Size(max = 255)
     @NotNull
     @Column(name = "user_pwd", nullable = false)
-    private String userPwd;
+    private String password;
 
     @Size(max = 100)
     @NotNull
@@ -63,7 +63,7 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private UserRole userRole; // USER, ADMIN
+    private UserRole role; // USER, ADMIN
 
     @OneToMany
     @JoinColumn(name = "user_id")
