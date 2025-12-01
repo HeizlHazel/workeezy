@@ -25,7 +25,7 @@ export default function SearchPage() {
             <SearchBar value={search} onChange={setSearch} />
             <CategoryFilter active={region} onSelect={setRegion} />
 
-            <div className="review-grid">
+            <div className="search-grid">
                 {mock.map((r, i) => (
                     <SearchCard key={i} {...r} />
                 ))}

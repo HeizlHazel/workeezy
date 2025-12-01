@@ -26,7 +26,7 @@ export default function ProgramReserveBar() {
             <div className="pd-reserve-item">
                 <label>체크인</label>
                 <div className="pd-input-wrap">
-                    <span className="icon">📅</span>
+                    <span className="icon"><i className="fa-regular fa-calendar"></i></span>
 
                     <DatePicker
                         selected={checkIn}
@@ -43,9 +43,9 @@ export default function ProgramReserveBar() {
             <div className="pd-reserve-item">
                 <label>체크아웃</label>
                 <div className="pd-input-wrap">
-                    <span className="icon">📅</span>
+                    <span className="icon"><i className="fa-regular fa-calendar"></i></span>
 
-                    <DatePicker
+                <DatePicker
                         selected={checkOut}
                         onChange={(date) => setCheckOut(date)}
                         showTimeSelect

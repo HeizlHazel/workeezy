@@ -7,6 +7,8 @@ import ProgramTabs from "../components/ProgramTabs/ProgramTabs.jsx";
 import ProgramInfo from "../components/ProgramInfo/ProgramInfo.jsx";
 import HotelInfo from "../components/HotelInfo/HotelInfo.jsx";
 import RoomList from "../components/RoomList/RoomList.jsx";
+import OfficeList from "../components/OfficeList/OfficeList.jsx";
+import ActivityInfo from "../components/ActivityInfo/ActivityInfo.jsx";
 
 
 export default function ProgramDetailPage() {
@@ -25,6 +27,8 @@ export default function ProgramDetailPage() {
             <ProgramInfo/>
             <HotelInfo/>
             <RoomList/>
+            <OfficeList/>
+            <ActivityInfo/>
             <FloatingButtons/>
         </PageLayout>
     );
