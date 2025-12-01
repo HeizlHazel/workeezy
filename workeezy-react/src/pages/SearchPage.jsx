@@ -4,7 +4,6 @@ import CategoryFilter from "../components/Search/CategoryFilter.jsx";
 import Pagination from "../components/Common/Pagination.jsx";
 import { useState } from "react";
 import FloatingButtons from "../components/Common/FloatingButtons.jsx";
-import ReviewCard from "../components/ProgramDetails/ReviewCard.jsx";
 import SearchCard from "../components/Search/SearchCard.jsx";
 
 export default function SearchPage() {

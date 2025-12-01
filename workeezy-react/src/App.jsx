@@ -1,6 +1,3 @@
-import ReviewPage from "./pages/ReviewPage";
-import SearchPage from "./pages/SearchPage.jsx";
-import ProgramDetailPage from "./pages/ProgramDetailPage";
 import LoginPage from "./pages/LoginPage.jsx";
 import { useEffect } from "react";
 import axios from "axios";
