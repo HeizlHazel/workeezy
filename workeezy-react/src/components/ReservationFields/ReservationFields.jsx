@@ -1,6 +1,17 @@
 import "./ReservationFields.css";
 
-export default function ReservationFields() {
+export default function ReservationFields({
+  userName,
+  company,
+  phone,
+  email,
+  startDate,
+  endDate,
+  office,
+  roomType,
+  peopleCount,
+  onChange,
+}) {
   return (
     <>
       {/* 신청자명 */}
@@ -10,6 +21,8 @@ export default function ReservationFields() {
           <input
             type="text"
             name="userName"
+            value={userName}
+            onChange={onChange}
             placeholder="이름을 입력하세요"
             className="value"
           />
@@ -22,7 +35,9 @@ export default function ReservationFields() {
         <div className="input">
           <input
             type="text"
-            name="userCompany"
+            name="company"
+            value={company}
+            onChange={onChange}
             placeholder="소속을 입력하세요"
             className="value"
           />
@@ -35,7 +50,9 @@ export default function ReservationFields() {
         <div className="input">
           <input
             type="tel"
-            name="userPhone"
+            name="phone"
+            value={phone}
+            onChange={onChange}
             placeholder="010-0000-0000"
             className="value"
           />
@@ -48,7 +65,9 @@ export default function ReservationFields() {
         <div className="input">
           <input
             type="email"
-            name="userMail"
+            name="email"
+            value={email}
+            onChange={onChange}
             placeholder="example@email.com"
             className="value"
           />
@@ -60,10 +79,22 @@ export default function ReservationFields() {
         <div className="div">예약 날짜</div>
         <div className="date">
           <div className="started-at">
-            <input type="date" name="startedAt" className="input-text" />
+            <input
+              type="date"
+              name="startDate"
+              value={startDate}
+              onChange={onChange}
+              className="input-text"
+            />
           </div>
           <div className="ended-at">
-            <input type="date" name="endedAt" className="input-text" />
+            <input
+              type="date"
+              name="endDate"
+              value={endDate}
+              onChange={onChange}
+              className="input-text"
+            />
           </div>
         </div>
       </div>
@@ -75,6 +106,8 @@ export default function ReservationFields() {
           <input
             type="text"
             name="office"
+            value={office}
+            onChange={onChange}
             placeholder="오피스명을 입력하세요"
             className="value"
           />
@@ -88,6 +121,8 @@ export default function ReservationFields() {
           <input
             type="text"
             name="roomType"
+            value={roomType}
+            onChange={onChange}
             placeholder="룸 타입을 입력하세요"
             className="value"
           />
@@ -101,6 +136,8 @@ export default function ReservationFields() {
           <input
             type="number"
             name="peopleCount"
+            value={peopleCount}
+            onChange={onChange}
             min="1"
             placeholder="0"
             className="value"
