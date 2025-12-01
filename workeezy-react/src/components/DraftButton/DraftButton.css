@@ -1,0 +1,23 @@
+.save-draft-button {
+  background: rgba(217, 208, 182, 0.5);
+  border-radius: var(--var-sds-size-radius-200, 8px);
+  display: flex;
+  flex-direction: row;
+  gap: var(--var-sds-size-space-200, 8px);
+  align-items: center;
+  justify-content: center;
+  width: 85px;
+  position: absolute;
+  left: 565px;
+  top: 0px;
+  overflow: hidden;
+}
+
+.button {
+  color: #ffffff;
+  text-align: left;
+  font-family: "AritaDotumKr-SemiBold", sans-serif;
+  font-size: var(--var-sds-typography-body-size-medium, 14px);
+  line-height: 100%;
+  position: relative;
+}
