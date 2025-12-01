@@ -1,5 +1,4 @@
 .save-draft-button {
-  background: rgba(217, 208, 182, 0.5);
   border-radius: var(--var-sds-size-radius-200, 8px);
   display: flex;
   flex-direction: row;
@@ -8,8 +7,9 @@
   justify-content: center;
   width: 85px;
   position: absolute;
-  left: 565px;
+  left: 500px;
   top: 0px;
+  bottom: 750px;
   overflow: hidden;
 }
 
