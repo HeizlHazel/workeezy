@@ -8,7 +8,7 @@ export default function HotelInfo() {
             <br/>
 
             <div className="pd-hotel-card">
-                <img src="/main.jpg" className="pd-hotel-img"/>
+                <img src="/public/c7209850-7773-481f-af51-511736fcf47d.png" className="pd-hotel-img"/>
                 <div className="pd-hotel-info">
                     <div className="pd-hotel-title">토요코 인 부산역</div>
                     <div className="pd-hotel-address">부산 동구 중앙대로 101길 12</div>

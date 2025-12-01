@@ -1,25 +1,76 @@
 .pd-reserve {
     display: flex;
-    gap: 20px;
-    margin-bottom: 40px;
     align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem;
+    border-radius: 18px;
+    color: #fff;
+    border:1px solid #eeeeee;
+}
+
+/* 각 아이템 */
+.pd-reserve-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    color: #000000;
+    min-width: 200px;
 }
 
 .pd-reserve-item label {
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: 0.85rem;
+    opacity: 0.7;
 }
 
-.pd-reserve-item input {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-.pd-reserve-btn {
-    background: #6a8250;
-    color: #fff;
-    padding: 12px 25px;
+/* select 공통 스타일 */
+.pd-reserve-item select {
+    background: #e5e5e5;
     border: none;
-    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-top: -6px;
+}
+
+/* 날짜 + 시간 박스 */
+.pd-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #e5e5e5;
+    padding: 0.6rem 0.7rem;
+    border-radius: 8px;
+}
+
+/* 데이트픽커 내부 input 스타일 */
+.pd-datepicker {
+    border: none;
+    background: none;
+    padding: 0.4rem;
+    font-size: 0.95rem;
+    width: 150px;
     cursor: pointer;
+    margin-top: -6px;
+}
+
+/* 아이콘 */
+.pd-input-wrap .icon {
+    opacity: 0.6;
+    font-size: 1rem;
+}
+
+/* 버튼 */
+.pd-reserve-btn {
+    background-color: #557a46;
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.pd-reserve-btn:hover {
+    background-color: #46663a;
 }
