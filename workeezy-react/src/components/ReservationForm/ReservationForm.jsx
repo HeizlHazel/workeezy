@@ -45,7 +45,7 @@ export default function ReservationForm({ initialData }) {
       if (initialData) {
         // PUT : 기존 예약 수정
         await axios.put(
-          `http://localhost:8080/api/reservations/${initialData.id},`,
+          `http://localhost:8080/api/reservations/${initialData.id}`,
           form
         );
         alert("예약이 성공적으로 수정 되었습니다!");
@@ -61,9 +61,28 @@ export default function ReservationForm({ initialData }) {
   };
 
   // 임시 저장
-  const handleDraftSave = () => {
-    console.log(" 임시저장:" + form);
-    localStorage.setItem("reservationDraft", JSON.stringify(form));
+  const handleDraftSave = async () => {
+    const token = localStorage.getItem("accessToken"); // 로그인 시 저장된 JWT 토큰
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    try {
+      await axios.post(
+        "http://localhost:8080/api/reservations/draft/me",
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT 전달
+          },
+        }
+      );
+      alert("임시저장 완료!");
+    } catch (error) {
+      console.error("임시저장 실패", error);
+      alert("임시저장 중 오류가 발생했습니다.");
+    }
   };
 
   return (
