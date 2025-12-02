@@ -5,10 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -41,11 +39,11 @@ public class Refund {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "refund_status", nullable = false)
-    private RefundStatus refundStatus =  RefundStatus.PENDING;
+    private RefundStatus refundStatus =  RefundStatus.pending;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "requested_by")
-    private RequestedBy requestedBy = RequestedBy.USER;
+    private RequestedBy requestedBy = RequestedBy.user;
 
     @Column(name = "refunded_at")
     private LocalDateTime refundedAt;

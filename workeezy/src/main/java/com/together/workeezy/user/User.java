@@ -7,10 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ public class User {
     @Size(max = 255)
     @NotNull
     @Column(name = "user_pwd", nullable = false)
-    private String userPwd;
+    private String password;
 
     @Size(max = 100)
     @NotNull
@@ -63,7 +61,7 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private UserRole userRole; // USER, ADMIN
+    private UserRole role; // USER, ADMIN
 
     @OneToMany
     @JoinColumn(name = "user_id")

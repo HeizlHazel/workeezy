@@ -1,6 +1,6 @@
 package com.together.workeezy.search;
 
-import com.together.workeezy.program.Program;
+import com.together.workeezy.program.entity.Program;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

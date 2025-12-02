@@ -1,22 +1,18 @@
 package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.Payment;
-import com.together.workeezy.program.Program;
+import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static jakarta.persistence.FetchType.LAZY;
 

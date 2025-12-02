@@ -667,4 +667,11 @@ INSERT INTO tb_payment_logs (payment_id, response_data, event_type, http_status)
 (4, '{"status": "paid", "orderName": "부산 워케이션", "totalAmount": 250000}', 'callback', 200),
 (5, '{"error": "timeout", "message": "결제 시간 초과"}', 'fail', 408);
 
+
 commit;
+
+ALTER TABLE tb_program
+MODIFY COLUMN program_info VARCHAR(1000);
+commit;
+
+

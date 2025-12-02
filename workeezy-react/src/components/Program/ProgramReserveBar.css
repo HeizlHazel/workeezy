@@ -1,57 +1,61 @@
 .pd-reserve {
     display: flex;
     align-items: center;
+    justify-content: space-between;   /* ⭐ 예약버튼을 오른쪽 끝으로 */
     gap: 1.2rem;
     padding: 1.2rem;
     border-radius: 18px;
     color: #fff;
-    border:1px solid #eeeeee;
+    border: 1px solid #eeeeee;
 }
 
-/* 각 아이템 */
+
+
+.pd-input-wrap {
+    height: 48px;           /* ⭐ 셀렉트박스 & 버튼과 동일한 높이 */
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #e5e5e5;
+    padding: 0 0.7rem;      /* 좌우 패딩만 유지 (상하 패딩 제거!) */
+    border-radius: 8px;
+}
+
+
+/* 각 아이템 전체를 위로 올림 */
 .pd-reserve-item {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
     color: #000000;
     min-width: 200px;
+    margin-top: -10px;     /* ⭐ 라벨 + 입력박스 전체를 위로 이동 */
 }
 
-.pd-reserve-item label {
-    font-size: 0.85rem;
-    opacity: 0.7;
-}
-
-/* select 공통 스타일 */
 .pd-reserve-item select {
     background: #e5e5e5;
     border: none;
     padding: 0.8rem 1rem;
     border-radius: 8px;
     font-size: 0.95rem;
-    margin-top: -6px;
-}
 
-/* 날짜 + 시간 박스 */
-.pd-input-wrap {
+    height: 48px;           /* ⭐ 버튼 높이에 맞춤 */
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: #e5e5e5;
-    padding: 0.6rem 0.7rem;
-    border-radius: 8px;
+    align-items: center;    /* 텍스트 수직 중앙 */
 }
 
-/* 데이트픽커 내부 input 스타일 */
+
 .pd-datepicker {
     border: none;
     background: none;
-    padding: 0.4rem;
     font-size: 0.95rem;
-    width: 150px;
     cursor: pointer;
-    margin-top: -6px;
+
+    padding: 0;             /* 불필요한 여백 제거 */
+    margin: 0;
 }
+
+
 
 /* 아이콘 */
 .pd-input-wrap .icon {
@@ -64,11 +68,14 @@
     background-color: #557a46;
     color: white;
     border: none;
-    padding: 0.9rem 2rem;
+    padding: 0.9rem 1.2rem;
     border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    min-width: 120px;
+    min-width: 150px;
+    min-height: 70px;
+
+    margin-left: auto; /* ⭐ 오른쪽 끝으로 붙음 */
 }
 
 .pd-reserve-btn:hover {
