@@ -19,3 +19,8 @@ logging:
   level:
     org.hibernate.SQL: debug  # SQL 로깅
     org.hibernate.type.descriptor.sql.BasicBinder: trace  # 파라미터 값 로깅
+    org.springframework.security: DEBUG
+
+jwt:
+  secret: THIS_IS_A_SUPER_LONG_SECRET_KEY_FOR_JWT_TOKEN_12345678
+  expiration-ms: 3600000 # 1시간

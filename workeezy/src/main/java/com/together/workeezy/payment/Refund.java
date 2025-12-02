@@ -39,11 +39,11 @@ public class Refund {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "refund_status", nullable = false)
-    private RefundStatus refundStatus =  RefundStatus.PENDING;
+    private RefundStatus refundStatus =  RefundStatus.pending;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "requested_by")
-    private RequestedBy requestedBy = RequestedBy.USER;
+    private RequestedBy requestedBy = RequestedBy.user;
 
     @Column(name = "refunded_at")
     private LocalDateTime refundedAt;

@@ -1,0 +1,32 @@
+.footer,
+.footer * {
+  box-sizing: border-box;
+}
+.footer {
+  height: 242px;
+  position: relative;
+}
+.footer .workeezy {
+  color: #000000;
+  text-align: left;
+  font-family: "AritaDotumKr-Medium", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  padding: 50px;
+  margin-top: 100px;
+}
+.footer .info {
+  color: #000000;
+  text-align: left;
+  font-family: "AritaDotumKr-Medium", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  position: absolute;
+  left: 348px;
+  top: 2px;
+  padding: 50px;
+  margin-top: 100px;
+}
