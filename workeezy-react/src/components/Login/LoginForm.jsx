@@ -1,8 +1,8 @@
 import "./LoginForm.css";
-import LoginInputs from "./../LoginInputs/LoginInputs";
-import LoginOptions from "./../LoginOptions/LoginOptions";
-import LoginButton from "./../LoginButton/LoginButton";
-import SocialLoginButtons from "./../SocialLoginButtons/SocialLoginButtons";
+import LoginInputs from "../Login/LoginInputs";
+import LoginOptions from "../Login/LoginOptions";
+import LoginButton from "./LoginButton";
+import SocialLoginButtons from "../Login/SocialLoginButtons";
 
 export default function LoginForm() {
   const handleSubmit = (e) => {
