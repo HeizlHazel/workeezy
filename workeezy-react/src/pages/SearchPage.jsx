@@ -1,11 +1,10 @@
 import PageLayout from "../layout/PageLayout";
-import SearchBar from "../components/SearchBar/SearchBar";
-import CategoryFilter from "../components/CategoryFilter/CategoryFilter";
-import Pagination from "../components/Pagination/Pagination";
+import SearchBar from "../components/Search/SearchBar.jsx";
+import CategoryFilter from "../components/Search/CategoryFilter.jsx";
+import Pagination from "../components/Common/Pagination.jsx";
 import {useEffect, useState} from "react";
-import FloatingButtons from "../components/FloatingButtons/FloatingButtons";
-import ReviewCard from "../components/ReviewCard/ReviewCard.jsx";
-import SearchCard from "../components/SearchCard/SearchCard.jsx";
+import FloatingButtons from "../components/Common/FloatingButtons.jsx";
+import SearchCard from "../components/Search/SearchCard.jsx";
 import axios from "axios";
 
 export default function SearchPage() {
@@ -35,7 +34,6 @@ export default function SearchPage() {
                     key={p.id}
                     title={p.title}
                     photo={p.photo}
-                    desc={ p.desc}
                     price = {p.price}
                     />
                 ))}
