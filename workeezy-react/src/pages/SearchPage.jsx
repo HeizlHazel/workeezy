@@ -16,6 +16,7 @@ export default function SearchPage() {
     useEffect(() => {
         axios.get("http://localhost:8080/api/programs/cards")
             .then(res => {
+                console.log("API 데이터:", res.data);
                 setPrograms(res.data);
             })
             .catch(err => console.log(err));
@@ -33,8 +34,9 @@ export default function SearchPage() {
                 <SearchCard
                     key={p.id}
                     title={p.title}
-                    image={p.photo}
+                    photo={p.photo}
                     desc={ p.desc}
+                    price = {p.price}
                     />
                 ))}
             </div>
