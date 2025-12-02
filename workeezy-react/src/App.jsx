@@ -5,7 +5,8 @@ import ReviewPage from "./pages/ReviewPage";
 import SearchPage from "./pages/SearchPage";
 import NewReservationForm from "./pages/NewReservationForm";
 import ModifyReservationPage from "./pages/ModifyReservationPage.jsx";
-import MenuBar from "./components/Menubar/Menubar";
+import Menubar from "./components/Menubar/Menubar";
+import DraftMenuBar from "./components/DraftMenuBar/DraftMenuBar";
 
 export default function App() {
   return (
@@ -18,8 +19,9 @@ export default function App() {
       <Route path="/search" element={<SearchPage />} />
       <Route path="/newreservation" element={<NewReservationForm />} />
       <Route path="/modifyreservation" element={<ModifyReservationPage />} />
-      {/* <Route path="/menubar" element={<MenuBar />} /> */}
-      <Route path="/menubar" element={<MenuBar isAdmin={true} />} />
+      {/* <Route path="/menubar" element={<Menubar />} /> */}
+      {/* <Route path="/menubar" element={<Menubar isAdmin={true} />} /> */}
+      <Route path="/draftmenubar" element={<DraftMenuBar />} />
     </Routes>
   );
 }

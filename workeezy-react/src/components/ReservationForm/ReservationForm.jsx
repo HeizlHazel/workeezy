@@ -4,6 +4,7 @@ import DraftButton from "../DraftButton/DraftButton";
 import SubmitButton from "../SubmitButton/SubmitButton";
 import "./ReservationForm.css";
 import axios from "axios";
+import Menubar from "./../Menubar/Menubar";
 
 export default function ReservationForm({ initialData }) {
   const [form, setForm] = useState(
@@ -19,6 +20,12 @@ export default function ReservationForm({ initialData }) {
       peopleCount: 0,
     }
   );
+
+  // 메뉴바 열림 / 닫힘 상태 관리
+  const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false);
+
+  // 최곤 저장된 임시저장 식별용(New! 표시용)
+  const [latestDraftId, setLatestDraftId] = useState(null);
 
   // 서버에서 initalData가 들어왔을 때 form에 반영
   useEffect(() => {
@@ -69,7 +76,7 @@ export default function ReservationForm({ initialData }) {
       return;
     }
     try {
-      await axios.post(
+      const res = await axios.post(
         "http://localhost:8080/api/reservations/draft/me",
         form,
         {
@@ -78,6 +85,12 @@ export default function ReservationForm({ initialData }) {
           },
         }
       );
+
+      // ✅ 방금 저장된 draft ID 저장 (New! 표시용)
+      setLatestDraftId(res.data.id || Date.now());
+      // ✅ 메뉴 열기
+      setIsDraftMenuOpen(true);
+
       alert("임시저장 완료!");
     } catch (error) {
       console.error("임시저장 실패", error);
@@ -92,8 +105,18 @@ export default function ReservationForm({ initialData }) {
       <form className="reservation-form" onSubmit={handleSubmit}>
         <ReservationFields {...form} onChange={handleChange} />
         <SubmitButton />
+        {/* 임시저장 버튼 클릭시 임시저장 + 메뉴 열기 */}
         <DraftButton onClick={handleDraftSave} />
       </form>
+
+      {isDraftMenuOpen && (
+        <Menubar
+          isOpen={isDraftMenuOpen}
+          onClose={() => setIsDraftMenuOpen(false)}
+          latestDraftId={latestDraftId}
+        />
+      )}
+      {/* <Menubar /> */}
     </div>
   );
 }
