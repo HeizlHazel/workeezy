@@ -1,0 +1,67 @@
+.searchBar,
+.searchBar * {
+  box-sizing: border-box;
+}
+.searchBar {
+  height: 72px;
+  position: relative;
+}
+.searchBar .group-2 {
+  position: absolute;
+  inset: 0;
+}
+/* .searchBar .rectangle-3 {
+  background: #ffffff;
+  border-radius: 50px;
+  border-style: solid;
+  border-color: #000000;
+  border-width: 1px;
+  width: 657px;
+  height: 72px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+} */
+/* .searchBar .div {
+  color: #000000;
+  text-align: left;
+  font-family: "AnonymousPro-Regular", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  position: absolute;
+  left: 31px;
+  top: 20px;
+} */
+.searchBar .rectangle-4 {
+  background: #ffffff;
+  border-radius: 50px;
+  border-style: solid;
+  border-color: #7b7b7b;
+  border-width: 1px;
+  width: 657px;
+  height: 72px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.searchBar .div2 {
+  color: #615d5d;
+  text-align: left;
+  font-family: "AritaDotumKr-Medium", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  position: absolute;
+  left: 31px;
+  top: 28px;
+  width: 298px;
+}
+.searchBar .image-4 {
+  opacity: 0.8;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 583px;
+  top: 22px;
+  object-fit: cover;
+  aspect-ratio: 1;
+}
