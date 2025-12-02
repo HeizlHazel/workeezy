@@ -7,9 +7,7 @@ import SearchPage from "./pages/SearchPage";
 
 export default function App() {
     return (
-        <BrowserRouter>
             <Routes>
-
                 {/* 기본 URL → 로그인 페이지로 리다이렉트 */}
                 <Route path="/" element={<Navigate to="/login" replace />} />
 
@@ -17,8 +15,6 @@ export default function App() {
                 <Route path="/program" element={<ProgramDetailPage />} />
                 <Route path="/reviews" element={<ReviewPage />} />
                 <Route path="/search" element={<SearchPage/>} />
-
             </Routes>
-        </BrowserRouter>
     );
 }

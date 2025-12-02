@@ -1,7 +1,8 @@
 package com.together.workeezy.program.controller;
 
-import com.together.workeezy.program.dto.ProgramCard;
+import com.together.workeezy.program.dto.ProgramCardDto;
 import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.repository.PlaceRepository;
 import com.together.workeezy.program.repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,9 @@ import java.util.List;
 @RequestMapping("/api/programs")
 @RequiredArgsConstructor
 public class ProgramController {
+
     private final ProgramRepository programRepository;
+    private final PlaceRepository placeRepository;
 
     @GetMapping
     public List<Program> getAll() {
@@ -28,9 +31,20 @@ public class ProgramController {
     }
 
     @GetMapping("/cards")
-    public List<ProgramCard> getCards() {
-        return programRepository.findProgramCards();
+    public List<ProgramCardDto> getCards() {
+
+        List<Program> programs = programRepository.findAll();
+
+        return programs.stream()
+                .map(p -> new ProgramCardDto(
+                        p.getId(),
+                        p.getTitle(),
+                        placeRepository.findPhotosByProgramId(p.getId())
+                                .stream()
+                                .findFirst()
+                                .orElse(null),
+                        p.getProgramPrice()
+                ))
+                .toList();
     }
-
-
 }
