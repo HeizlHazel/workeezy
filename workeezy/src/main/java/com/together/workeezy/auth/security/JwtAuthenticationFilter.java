@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,13 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @Override
     protected void doFilterInternal(
@@ -29,43 +27,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
         System.out.println("📌 JwtFilter 요청 경로: " + request.getRequestURI());
+
         // Authorization 헤더에서 토큰 꺼내기
-        String header = request.getHeader("Authorization");
-        String token = null;
+        String token = resolveToken(request);
 
-        if (header != null && header.startsWith("Bearer ")) {
-            token = header.substring(7);
-        }
-
-        // 토큰 검증 후 SecurityContext 설정
+        // 토큰 유효성 확인
         if (token != null && jwtTokenProvider.validateToken(token)) {
+
+            // 인증 객체 생성
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
 
-            UsernamePasswordAuthenticationToken authToken =
-                    (UsernamePasswordAuthenticationToken) authentication;
-
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            // SecurityContextHolder에 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String path = request.getRequestURI();
-//
-//        // 로그인, 회원가입, 리프레시 토큰 등 인증 없이 가능한 URL
-//        return path.equals("/api/auth/login")
-//                || path.startsWith("/api/auth/refresh");
-//                     검색 관련
-//                || path.startsWith("/api/auth")
-//                || path.startsWith("/api/programs/cards")
-//                || path.startsWith("/api/programs/search")
-//                || path.startsWith("/api/programs"); // 전체 허용이면 이것도 가능
-//    }
+    private String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
 
+        if(bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
 }

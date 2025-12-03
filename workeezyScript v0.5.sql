@@ -1,4 +1,12 @@
-USE workeezy;
+# 사용DB명 꼭 확인하고 스크립트 돌리기
+
+# DBeaver 기준 메뉴바에 N/A 라고 된 부분 사용할 DB 선택 해야함!
+
+# 제출했던 파일은 조장이 가지고 있습니다
+
+# 12/3 업데이트 완
+
+# USE 사용DB명;
 
 -- 1. 외래 키 체크 해제
 SET FOREIGN_KEY_CHECKS = 0;
@@ -9,7 +17,7 @@ SET group_concat_max_len = 100000;
 -- 3. 삭제할 테이블 목록 가져오기
 SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) INTO @tables
 FROM information_schema.tables
-WHERE table_schema = 'workeezy';
+# WHERE table_schema = '사용DB명';
 
 -- 4. 테이블이 존재할 때만 DROP 실행
 SET @drop_query = IF(@tables IS NOT NULL, CONCAT('DROP TABLE IF EXISTS ', @tables), 'SELECT "No tables to drop"');
@@ -70,7 +78,6 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
 ALTER TABLE tb_reservation ADD COLUMN people_count INT NOT NULL DEFAULT 1 COMMENT '예약 인원수';
-
 # 소셜 로그인 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_social_login (
     social_id        BIGINT NOT NULL AUTO_INCREMENT                COMMENT '소셜 로그인 고유 식별자',
@@ -82,17 +89,6 @@ CREATE TABLE IF NOT EXISTS tb_social_login (
     PRIMARY KEY (social_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='소셜 로그인 테이블';
 
-
-# JWT 토큰 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_refresh_tokens (
-    token_id       BIGINT NOT NULL AUTO_INCREMENT 				COMMENT '토큰 고유 식별자',
-    user_id        BIGINT NOT NULL 								COMMENT '사용자 FK',
-    refresh_token  VARCHAR(500) NOT NULL 						COMMENT '토큰 정보',
-    created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '토큰 생성일자',
-    expires_at     TIMESTAMP NOT NULL 							COMMENT '토큰 만료일자',
-    PRIMARY KEY (token_id),
-    UNIQUE KEY uq_token_user (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='JWT 테이블';
 
 # 로그인 로그 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_login_history (
@@ -295,10 +291,6 @@ CREATE TABLE IF NOT EXISTS tb_receipt_pdf (
 
 
 # 로그인, 결제 FK 설정
-ALTER TABLE tb_refresh_tokens
-ADD CONSTRAINT fk_token_userid
-		FOREIGN KEY (user_id)
-		REFERENCES tb_users(user_id);
 		
 ALTER TABLE tb_social_login
 ADD CONSTRAINT fk_login_userid
@@ -448,13 +440,6 @@ INSERT INTO tb_social_login (user_id, provider, provider_user_id, email) VALUES
 (3, 'kakao', '1122334455', 'lee@kakao.com'),
 (4, 'naver', '5544332211', 'park@naver.com'),
 (5, 'kakao', '6677889900', 'choi@kakao.com');
-
-INSERT INTO tb_refresh_tokens (user_id, refresh_token, expires_at) VALUES
-(1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.abcdef123456', '2025-12-25 23:59:59'),
-(2, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyfQ.bcdefg234567', '2025-12-26 23:59:59'),
-(3, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozfQ.cdefgh345678', '2025-12-27 23:59:59'),
-(4, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0fQ.defghi456789', '2025-12-28 23:59:59'),
-(5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1fQ.efghij567890', '2025-12-29 23:59:59');
 
 INSERT INTO tb_login_history (user_id, login_ip, user_agent, login_status, fail_reason) VALUES
 (1, '192.168.0.101', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0', 'success', NULL),
@@ -668,14 +653,17 @@ INSERT INTO tb_payment_logs (payment_id, response_data, event_type, http_status)
 (5, '{"error": "timeout", "message": "결제 시간 초과"}', 'fail', 408);
 
 
-commit;
 
-ALTER TABLE tb_program
-MODIFY COLUMN program_info VARCHAR(1000);
-commit;
+
+# 예약 테이블에 예약인원수 컬럼 추가 - 생성구문 아래 추가해둠
+
+# 프로그램 테이블 프로그램 정보 데이터 타입 변경
+ALTER TABLE tb_program MODIFY COLUMN program_info VARCHAR(1000) not null;
+
+# 장소 테이블 장소 이름 데이터 타입 변경
+ALTER TABLE tb_place MODIFY COLUMN place_name VARCHAR(100) not null;
 
 #장소테이블 지역추가
-
 ALTER TABLE tb_place
 ADD COLUMN place_region VARCHAR(50);
 
@@ -706,3 +694,5 @@ where place_address like '%경상남도%';
 update tb_place
 set place_region = '해외'
 where place_address like '%일본%';
+
+commit;
