@@ -4,7 +4,6 @@ import com.together.workeezy.auth.dto.*;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
 import com.together.workeezy.auth.redis.RedisService;
 import com.together.workeezy.auth.security.CustomUserDetails;
-import com.together.workeezy.auth.service.AuthService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +27,7 @@ public class AuthController {
     public LoginResponse login(@RequestBody LoginRequest request,
                                HttpServletResponse response) {
 
+        System.out.println("🔐 로그인 시도: " + request.getEmail());
         // 이메일/비밀번호 받기
         // AuthenticationManager 로 로그인 실행
         Authentication authentication = authenticationManager.authenticate(
@@ -49,7 +49,7 @@ public class AuthController {
         String refreshToken = jwtProvider.createToken(email, role);
 
         // Redis 저장(TTL = refresh-expiration-ms)
-        redisService.savaRefreshToken(
+        redisService.saveRefreshToken(
                 email,
                 refreshToken,
                 jwtProvider.getRefreshExpiration()
@@ -62,14 +62,15 @@ public class AuthController {
         cookie.setPath("/");
         cookie.setMaxAge((int) (jwtProvider.getRefreshExpiration() / 1000));
         response.addCookie(cookie);
-
+        System.out.println("✅ 인증 성공: " + authentication.getName());
         // 프론트에는 accessToken만 응답
         return new LoginResponse(accessToken);
+
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request) {
-
+        try {
         // 쿠키에서 refreshToken 꺼내기(
         String refreshToken = extractRefreshToken(request);
         if (refreshToken == null) {
@@ -96,6 +97,10 @@ public class AuthController {
         String newAccessToken = jwtProvider.createToken(email, role);
 
         return ResponseEntity.ok(new LoginResponse(newAccessToken));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(401).body("로그인 실패");
+        }
     }
 
     // 쿠키 꺼내는 메서드

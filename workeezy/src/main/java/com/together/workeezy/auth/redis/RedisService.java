@@ -15,7 +15,7 @@ public class RedisService {
     private static final String REFRESH_PREFIX = "refresh:";
 
     // RefreshToken 저장(로그인 시 저장)
-    public void savaRefreshToken(String email, String refreshToken, long ttlMs) {
+    public void saveRefreshToken(String email, String refreshToken, long ttlMs) {
         redisTemplate
                 .opsForValue()
                 .set(
