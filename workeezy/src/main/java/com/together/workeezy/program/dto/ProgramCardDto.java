@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProgramCard {
+public class ProgramCardDto {
     private Long id;       // program id
     private String title;  // program title
     private String photo;  // 대표 이미지 (place_photo1)

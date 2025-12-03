@@ -1,4 +1,4 @@
-package com.together.workeezy.search;
+package com.together.workeezy.search.entity;
 
 import com.together.workeezy.program.entity.Program;
 import jakarta.persistence.*;

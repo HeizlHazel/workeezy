@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -15,6 +17,10 @@ public class Program {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "program_id", nullable = false)
     private Long id;
+
+    @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
+    private List<Place> places;
+
 
     @Size(max = 100)
     @NotNull

@@ -674,4 +674,35 @@ ALTER TABLE tb_program
 MODIFY COLUMN program_info VARCHAR(1000);
 commit;
 
+#장소테이블 지역추가
 
+ALTER TABLE tb_place
+ADD COLUMN place_region VARCHAR(50);
+
+update tb_place
+set place_address = '강원도 강릉시 사무로 88'
+where place_code = 'AT01';
+
+update tb_place
+set place_address = '강원도 강릉시 안목해변 일대'
+where place_code = 'AT02';
+
+update tb_place
+set place_region = '경기'
+where place_address like '%경기%';
+
+update tb_place
+set place_region = '강원'
+where place_address like '%강원%';
+
+update tb_place
+set place_region = '인천'
+where place_address like '%인천%';
+
+update tb_place
+set place_region = '경남'
+where place_address like '%경상남도%';
+
+update tb_place
+set place_region = '해외'
+where place_address like '%일본%';

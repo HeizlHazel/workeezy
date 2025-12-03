@@ -38,6 +38,10 @@ public class Place {
     @Column(name = "place_address", length = 1000)
     private String placeAddress;
 
+    @Size(max = 50)
+    @Column(name = "place_Region",  length = 50)
+    private String placeRegion;
+
     @Size(max = 15)
     @Column(name = "place_phone", length = 15)
     private String placePhone;

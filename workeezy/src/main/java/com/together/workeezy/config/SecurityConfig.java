@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/programs/cards").permitAll()
+                        .requestMatchers("/api/programs/search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login.disable()) // form 로그인 사용 안 함
