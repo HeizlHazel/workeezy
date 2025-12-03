@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./DraftMenuBar.css";
-import axios from "axios";
+import axios from "../../api/axios";
 
 export default function DraftMenuBar({
   isAdmin = false,

@@ -3,7 +3,7 @@ import ReservationFields from "./ReservationFields";
 import DraftButton from "./DraftButton";
 import SubmitButton from "./SubmitButton";
 import "./ReservationForm.css";
-import axios from "axios";
+import axios from "../../api/axios";
 import Menubar from "../Common/Menubar";
 
 export default function ReservationForm({ initialData }) {

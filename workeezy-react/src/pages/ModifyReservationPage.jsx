@@ -1,6 +1,5 @@
 import ReservationForm from "../components/Reservation/ReservationForm";
-import PageLayout from "../layout/PageLayout";
-import axios from "axios";
+import axios from "../api/axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
