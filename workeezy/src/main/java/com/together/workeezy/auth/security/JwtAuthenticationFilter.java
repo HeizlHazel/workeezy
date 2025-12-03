@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
+        System.out.println("📌 JwtFilter 요청 경로: " + request.getRequestURI());
         // Authorization 헤더에서 토큰 꺼내기
         String header = request.getHeader("Authorization");
         String token = null;
@@ -54,15 +54,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // 검색 관련
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-
-        return path.startsWith("/api/auth")
-                || path.startsWith("/api/programs/cards")
-                || path.startsWith("/api/programs/search")
-                || path.startsWith("/api/programs"); // 전체 허용이면 이것도 가능
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String path = request.getRequestURI();
+//
+//        // 로그인, 회원가입, 리프레시 토큰 등 인증 없이 가능한 URL
+//        return path.equals("/api/auth/login")
+//                || path.startsWith("/api/auth/refresh");
+//                     검색 관련
+//                || path.startsWith("/api/auth")
+//                || path.startsWith("/api/programs/cards")
+//                || path.startsWith("/api/programs/search")
+//                || path.startsWith("/api/programs"); // 전체 허용이면 이것도 가능
+//    }
 
 }

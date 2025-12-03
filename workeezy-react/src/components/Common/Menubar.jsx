@@ -21,7 +21,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
         { name: "예약 변경", path: "/modifyreservation" },
       ],
     },
-    { title: "프로그램 찾기", path: "/program" },
+    { title: "프로그램 찾기", path: "/search" },
     { title: "리뷰", path: "/reviews" },
   ];
 
