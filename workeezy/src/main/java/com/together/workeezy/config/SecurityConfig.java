@@ -37,13 +37,12 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {
-                })              // ✔️ CORS 설정 활성화, CorsConfig에서 처리
+                .cors(cors -> cors.configure(http))              // ✔️ CORS 설정 활성화, CorsConfig에서 처리
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // JWT 방식에서는 서버가 세션을 만들지 않음
                 .authorizeHttpRequests(auth -> auth // 로그인만 허용, 나머지는 JWT 필요
-                        .requestMatchers("/", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login.disable()) // form 로그인 사용 안 함

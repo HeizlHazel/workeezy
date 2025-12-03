@@ -66,6 +66,10 @@ public class Reservation {
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
 
+    @NotNull
+    @Column(name = "people_count", nullable = false)
+    private int peopleCount;
+
     @OneToOne(mappedBy = "reservation")
     private Payment Payment;
 

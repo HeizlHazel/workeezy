@@ -13,7 +13,7 @@ export default function LoginForm() {
     e.preventDefault(); // 새로고침 방지
 
     const formData = new FormData(e.target);
-    const email = formData.get("userId");
+    const email = formData.get("email");
     const password = formData.get("password");
 
     console.log("로그인 시도:", { email, password });

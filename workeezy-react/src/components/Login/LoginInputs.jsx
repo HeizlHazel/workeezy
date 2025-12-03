@@ -9,7 +9,7 @@ export default function LoginInputs() {
           <input
             className="value"
             type="text"
-            name="userId"
+            name="email"
             placeholder="아이디를 입력하세요"
             required
           />
