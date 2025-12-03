@@ -2,9 +2,8 @@ package com.together.workeezy.auth.controller;
 
 import com.together.workeezy.auth.dto.*;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.RedisService;
 import com.together.workeezy.auth.security.CustomUserDetails;
-import io.jsonwebtoken.Claims;
+import com.together.workeezy.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +20,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtProvider;
-    private final RedisService redisService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request,
@@ -39,68 +38,47 @@ public class AuthController {
 
         // 성공 시 CustomUserDetails 로 유저 정보 가져오기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
         String email = userDetails.getUsername();
         String role = userDetails.getUser().getRole().name();
+        String name = userDetails.getUser().getUserName();
 
         // Access Token 생성
-        String accessToken = jwtProvider.createToken(email, role);
+        String accessToken = jwtProvider.createAccessToken(email, role);
 
         // Refresh Token 생성
-        String refreshToken = jwtProvider.createToken(email, role);
+        String refreshToken = jwtProvider.createRefreshToken(email, role);
 
-        // Redis 저장(TTL = refresh-expiration-ms)
-        redisService.saveRefreshToken(
-                email,
-                refreshToken,
-                jwtProvider.getRefreshExpiration()
-        );
+        // Redis에 refreshToken 저장 (AuthService)
+        authService.saveRefreshToken(email, refreshToken);
 
         // Refresh Token -> HttpOnly 쿠키로 내려주기
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // 로컬은 false, HTTPS는 true
-        cookie.setPath("/");
+
         cookie.setMaxAge((int) (jwtProvider.getRefreshExpiration() / 1000));
+        cookie.setPath("/");
         response.addCookie(cookie);
         System.out.println("✅ 인증 성공: " + authentication.getName());
-        // 프론트에는 accessToken만 응답
-        return new LoginResponse(accessToken);
+
+        return new LoginResponse(accessToken, name);
 
     }
 
+    // 새 Access Token 재발급
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(HttpServletRequest request) {
-        try {
+    public ResponseEntity<LoginResponse> refresh(HttpServletRequest request) {
+
         // 쿠키에서 refreshToken 꺼내기(
         String refreshToken = extractRefreshToken(request);
         if (refreshToken == null) {
-            return ResponseEntity.status(401).body("Refresh token 없음");
+            return ResponseEntity.status(401).build();
         }
 
-        // JWT 검증
-        if (!jwtProvider.validateToken(refreshToken)) {
-            return ResponseEntity.status(401).body("Refresh token 유효하지 않음");
-        }
+        // 서비스에서 실제 재발급 로직 수행
+        String newAccessToken = authService.reissueAccessToken(refreshToken);
 
-        // JWT 에서 email 꺼내기
-        String email = jwtProvider.getEmailFromToken(refreshToken);
-
-        // Redis에서 저장된 refreshToken 꺼내서 비교
-        String savedToken = redisService.getRefreshToken(email);
-        if (savedToken == null || !savedToken.equals(refreshToken)) {
-            return ResponseEntity.status(401).body("Refresh token 일치하지 않음");
-        }
-
-        // 새로운 AccessToken 발급
-        Claims claims = jwtProvider.getClaims(refreshToken);
-        String role = claims.get("role", String.class);
-        String newAccessToken = jwtProvider.createToken(email, role);
-
-        return ResponseEntity.ok(new LoginResponse(newAccessToken));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(401).body("로그인 실패");
-        }
+        return ResponseEntity.ok(new LoginResponse(newAccessToken, null));
     }
 
     // 쿠키 꺼내는 메서드
@@ -110,7 +88,6 @@ public class AuthController {
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals("refreshToken")) {
                 return cookie.getValue();
-
             }
         }
         return null;

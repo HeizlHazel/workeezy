@@ -25,13 +25,14 @@ public class JwtTokenProvider {
 
     // Access Token 만료 시간 (ms)
     // application.yml의 jwt.expiration-ms 값
-    @Value("${jwt.expiration-ms}")
-    private long expiration;
-
-    private Key key;
+    @Value("${jwt.access-expiration-ms}")
+    private long accessExpiration;
 
     @Value("${jwt.refresh-expiration-ms}")
     private long refreshExpiration;
+
+    private final CustomUserDetailsService userDetailsService;
+    private Key key;
 
     // 사용자 정보를 불러오기 위해 DI
     public JwtTokenProvider(CustomUserDetailsService userDetailsService) {
@@ -45,13 +46,11 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    private final CustomUserDetailsService userDetailsService;
-
     // Access Token 생성
-    public String createToken(String email, String role) {
+    public String createAccessToken(String email, String role) {
 
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expiration);
+        Date expiry = new Date(now.getTime() + accessExpiration);
 
         return Jwts.builder()
                 .setSubject(email) // 토큰 주인(email)
@@ -63,27 +62,18 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token 생성
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String email, String role) {
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshExpiration);
 
         return Jwts.builder()
                 .setSubject(email)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    // 토큰에서 email 추출
-    // 요청한 사용자가 누구인지 체크할 때 사용
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
     }
 
     // Claims 추출
@@ -95,6 +85,12 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
+    // 토큰에서 email 추출
+    // 요청한 사용자가 누구인지 체크할 때 사용
+    public String getEmailFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
+
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
@@ -103,7 +99,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false; // 만료 or 변조
         }
     }
@@ -111,9 +107,7 @@ public class JwtTokenProvider {
     // Authentication 객체 생성 (스프링 시큐리티 인증용)
     // SecurityContextHolder 에 저장될 Authentication
     public Authentication getAuthentication(String token) {
-        Claims claims = getClaims(token);
-        String email = claims.getSubject();
-
+        String email = getEmailFromToken(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
