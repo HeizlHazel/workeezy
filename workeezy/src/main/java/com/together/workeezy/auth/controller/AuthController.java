@@ -2,7 +2,8 @@ package com.together.workeezy.auth.controller;
 
 import com.together.workeezy.auth.dto.*;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.user.CustomUserDetails;
+import com.together.workeezy.auth.security.CustomUserDetails;
+import com.together.workeezy.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtProvider;
+    private final AuthService authService; // 이메일/비밀번호 체크하는 service
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request){
