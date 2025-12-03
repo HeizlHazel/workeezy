@@ -1,25 +1,37 @@
 .header {
-    width: 100%;
-    border-bottom: 1px solid #dedede;
-    background: white;
+  width: 100%;
+  border-bottom: 1px solid #dedede;
+  background: white;
 }
 
 .header-inner {
-    width: 1200px;
-    margin: 0 auto;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  margin: 0 25px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .header-logo {
-    height: 60px;
+  height: 60px;
+  cursor: pointer;
 }
 
-.header-right i {
-    font-size: 22px;
-    margin-left: 20px;
-    color: #333;
-    cursor: pointer;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.user-icon,
+.menu-icon {
+  font-size: 22px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* hover 효과 */
+.user-icon:hover,
+.menu-icon:hover {
+  opacity: 0.7;
 }

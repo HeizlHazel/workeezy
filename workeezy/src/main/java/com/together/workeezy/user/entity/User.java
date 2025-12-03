@@ -1,7 +1,8 @@
-package com.together.workeezy.user;
+package com.together.workeezy.user.entity;
 
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationModify;
+import com.together.workeezy.user.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

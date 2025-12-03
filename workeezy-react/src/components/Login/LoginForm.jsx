@@ -4,7 +4,7 @@ import LoginOptions from "../Login/LoginOptions";
 import LoginButton from "./LoginButton";
 import SocialLoginButtons from "../Login/SocialLoginButtons";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../api/axios";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -19,18 +19,17 @@ export default function LoginForm() {
     console.log("로그인 시도:", { email, password });
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/login", {
-        email,
-        password,
-      });
-
-      console.log("로그인 성공:", res.data.token);
-
-      localStorage.setItem("accessToken", res.data.token);
+      const { data } = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        { email, password },
+        { withCredentials: true } // refreshToken 쿠키 받기 위해 필수
+      );
+      console.log("로그인 성공");
+      localStorage.setItem("accessToken", data.token);
       navigate("/");
     } catch (err) {
       console.error("로그인 실패:", err);
-      alert("로그인 실패");
+      alert("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   };
 

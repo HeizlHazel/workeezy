@@ -1,5 +1,6 @@
-package com.together.workeezy.user;
+package com.together.workeezy.auth.security;
 
+import com.together.workeezy.user.entity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

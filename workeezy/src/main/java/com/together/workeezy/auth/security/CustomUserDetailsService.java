@@ -1,4 +1,4 @@
-package com.together.workeezy.user;
+package com.together.workeezy.auth.security;
 
 import com.together.workeezy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

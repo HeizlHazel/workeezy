@@ -1,6 +1,6 @@
 package com.together.workeezy.config;
 
-import com.together.workeezy.auth.jwt.JwtAuthenticationFilter;
+import com.together.workeezy.auth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +41,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // JWT 방식에서는 서버가 세션을 만들지 않음
                 .authorizeHttpRequests(auth -> auth // 로그인만 허용, 나머지는 JWT 필요
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login.disable()) // form 로그인 사용 안 함

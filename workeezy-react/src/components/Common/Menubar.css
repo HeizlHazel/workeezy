@@ -90,19 +90,16 @@
   color: #bbb;
 }
 
-.menu-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+.close-menu {
   font-size: 22px;
-  background: none;
-  border: none;
+  color: #333;
   cursor: pointer;
-  color: #444;
-  transition: color 0.2s;
+  position: absolute;
+  top: 38px;
+  right: 32px;
 }
 
-.menu-close-btn:hover {
+.close-menu:hover {
   color: #000;
 }
 

@@ -2,7 +2,7 @@ package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.Payment;
 import com.together.workeezy.program.entity.Program;
-import com.together.workeezy.user.User;
+import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

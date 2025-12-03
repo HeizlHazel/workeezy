@@ -1,5 +1,6 @@
-package com.together.workeezy.auth.jwt;
+package com.together.workeezy.auth.security;
 
+import com.together.workeezy.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,4 +53,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    // 검색 관련
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/api/auth")
+                || path.startsWith("/api/programs/cards")
+                || path.startsWith("/api/programs/search")
+                || path.startsWith("/api/programs"); // 전체 허용이면 이것도 가능
+    }
+
 }

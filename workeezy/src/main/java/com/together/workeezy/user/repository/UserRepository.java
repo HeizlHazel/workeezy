@@ -1,6 +1,6 @@
 package com.together.workeezy.user.repository;
 
-import com.together.workeezy.user.User;
+import com.together.workeezy.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

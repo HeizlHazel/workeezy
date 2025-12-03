@@ -1,0 +1,6 @@
+.login-form {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding-top: 120px; /* 🔥 여백 핵심 */
+}

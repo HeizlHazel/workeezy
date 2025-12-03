@@ -2,12 +2,12 @@ import "./SocialLoginButtons.css";
 
 export default function SocialLoginButtons() {
   return (
-    <div class="social-login-button">
-      <button className="naver-button" type="button">
-        <img class="naver-icon" src="/naverIcon.png" />
+    <div className="social-login-container">
+      <button className="social-btn" type="button">
+        <img className="social-icon" src="/kakaoIcon.png" alt="kakao" />
       </button>
-      <button className="kakao-button" type="button">
-        <img class="kakao-icon" src="/kakaoIcon.png" />
+      <button className="social-btn" type="button">
+        <img className="social-icon" src="/naverIcon.png" alt="naver" />
       </button>
     </div>
   );

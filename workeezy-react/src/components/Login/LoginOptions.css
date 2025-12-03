@@ -1,97 +1,48 @@
-.login-options,
-.login-options * {
-  box-sizing: border-box;
-}
-
-/* ✅ 전체 컨테이너 */
 .login-options {
-  align-self: stretch;
-  flex-shrink: 0;
-  display: grid;
-  gap: 24px;
-  position: relative;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(1, minmax(0, 1fr));
+  width: 420px;
+  margin: 10px auto 20px;
+  display: flex;
+  justify-content: center;
+  gap: 45px; /* 좌우 간격 */
 }
 
-/* ✅ 첫 번째 체크박스 */
-.checkbox-field {
-  display: flex;
-  flex-direction: row;
-  gap: var(--var-sds-size-space-300, 12px);
-  align-items: center;
-  justify-content: flex-start;
-  min-width: 120px;
-  position: relative;
-  grid-column: 1 / span 1;
-  grid-row: 1 / span 1;
-}
-
-/* ✅ 두 번째 체크박스 */
-.checkbox-field2 {
-  display: flex;
-  flex-direction: row;
-  gap: var(--var-sds-size-space-300, 12px);
-  align-items: center;
-  justify-content: flex-start;
-  min-width: 120px;
-  position: relative;
-  grid-column: 2 / span 1;
-  grid-row: 1 / span 1;
-}
-
-/* ✅ label이 감싸는 체크박스 전체 */
-.checkbox {
+.option {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
 }
 
-/* ✅ 실제 체크박스 input */
+/* 체크박스 */
 .check-input {
-  appearance: none; /* 브라우저 기본 체크박스 제거 */
-  -webkit-appearance: none;
-  width: 25px;
-  height: 25px;
-  border: 1px solid #bfbfbf;
-  border-radius: 15px;
-  background-color: #ffffff;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #bfbfbf;
+  border-radius: 50%;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s ease;
 }
 
-/* ✅ 체크됐을 때 색상 변경 */
+/* 체크됨 */
 .check-input:checked {
-  background-color: #c7c6c6;
-  border-color: #ffffff;
+  background-color: #b3b3b3;
+  border-color: #b3b3b3;
 }
 
-/* ✅ 체크 마크 생성 */
 .check-input:checked::after {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 3px;
+  left: 6px;
+  top: 2px;
   width: 6px;
   height: 12px;
-  border: solid #ffffff;
+  border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-/* ✅ hover 효과 */
-.check-input:hover {
-  opacity: 0.8;
-}
-
-/* ✅ 텍스트 스타일 */
-.check-label {
-  color: var(--var-sds-color-text-default-default, #1e1e1e);
-  font-family: var(--body-base-font-family, "Inter-Regular", sans-serif);
-  font-size: var(--body-base-font-size, 16px);
-  line-height: var(--body-base-line-height, 140%);
-  font-weight: var(--body-base-font-weight, 400);
-  user-select: none;
+.option span {
+  font-size: 15px;
+  color: #333;
 }

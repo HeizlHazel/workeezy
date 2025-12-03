@@ -1,6 +1,6 @@
 package com.together.workeezy.chat;
 
-import com.together.workeezy.user.User;
+import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

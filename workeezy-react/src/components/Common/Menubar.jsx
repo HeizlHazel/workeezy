@@ -6,11 +6,11 @@ export default function MenuBar({ isAdmin = false, onClose }) {
   const [openItems, setOpenItems] = useState([]); // 펼침 관리
 
   const userMenu = [
-    { title: "Home", path: "/home" },
+    { title: "Home", path: "/" },
     {
       title: "마이페이지",
       sub: [
-        { name: "개인 정보 조회", path: "/mypage/profile" },
+        { name: "개인 정보 조회", path: "/profile" },
         { name: "찜 목록", path: "/mypage/likes" },
       ],
     },
@@ -18,15 +18,15 @@ export default function MenuBar({ isAdmin = false, onClose }) {
       title: "나의 예약",
       sub: [
         { name: "예약 조회", path: "/reservation/list" },
-        { name: "예약 변경", path: "/reservation/modify" },
+        { name: "예약 변경", path: "/modifyreservation" },
       ],
     },
     { title: "프로그램 찾기", path: "/program" },
-    { title: "리뷰", path: "/review" },
+    { title: "리뷰", path: "/reviews" },
   ];
 
   const adminMenu = [
-    { title: "Home", path: "/home" },
+    { title: "Home", path: "/" },
     {
       title: "예약 관리",
       sub: [
@@ -35,7 +35,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
       ],
     },
     { title: "프로그램 찾기", path: "/program" },
-    { title: "리뷰", path: "/review" },
+    { title: "리뷰", path: "/reviews" },
     { title: "Admin", isFooter: true, path: "/admin" },
   ];
 
@@ -59,9 +59,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
 
   return (
     <div className="menu-bar">
-      <button className="menu-close-btn" onClick={onClose}>
-        ✕
-      </button>
+      <i className="fa-solid fa-xmark close-menu" onClick={onClose}></i>
 
       {menu.map((item, idx) => (
         <div key={idx} className="menu-item">
