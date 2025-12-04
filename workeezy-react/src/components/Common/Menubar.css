@@ -198,6 +198,7 @@ a:active {
 /* hover 효과 - 메뉴와 동일하게 */
 .logout-title:hover {
     color: #7c7c7c;
+    cursor: pointer;
 }
 
 /* 상단 토스트 전체 */
