@@ -118,5 +118,11 @@ public class JwtTokenProvider {
         return refreshExpiration;
     }
 
+    // 토큰에서 userId 추출
+    public Long getUserIdFromToken(String token){
+        String subject = getClaims(token).getSubject();
+        return Long.parseLong(subject);
+    }
+
 }
 
