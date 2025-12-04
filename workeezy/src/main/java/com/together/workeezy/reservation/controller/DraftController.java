@@ -31,12 +31,12 @@ public class DraftController {
 
     // 임시저장 목록 조회 (GET /api/reservations/draft/me)
     @GetMapping("/me")
-    public ResponseEntity<List<Object>> getDrafts(
+    public ResponseEntity<List<Map<String, Object>>> getDrafts(
             @RequestHeader("Authorization") String token
     ) {
         // 토큰의 userId로 사용자가 누구인지
         Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
-        List<Object> drafts = draftRedisService.getUserDrafts(userId);
+        List<Map<String, Object>> drafts = draftRedisService.getUserDrafts(userId);
         return ResponseEntity.ok(drafts);
     }
 
@@ -45,8 +45,7 @@ public class DraftController {
             @PathVariable String key,
             @RequestHeader("Authorization") String token
     ){
-        // 토큰에서 사용자 이메일 확인 (보안용)
-//        String email = jwtTokenProvider.getEmailFromToken(token.substring(7));
+        // 토큰 이메일 검증은 나중에 보안강화시 추가
         draftRedisService.deleteDraft(key);
         return ResponseEntity.ok(Map.of("message", "임시저장 삭제 완료"));
     }
