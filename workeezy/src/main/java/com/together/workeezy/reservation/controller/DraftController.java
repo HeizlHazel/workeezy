@@ -16,7 +16,7 @@ import java.util.Map;
 public class DraftController {
 
     private final DraftRedisService draftRedisService;
-    private final JwtTokenProvider jwtTokenProvider; // 토큰에서 이메일 추출용
+    private final JwtTokenProvider jwtTokenProvider; // 토큰에서 아이디 추출용
 
     // 임시저장 생성
     @PostMapping("/me")
@@ -24,8 +24,8 @@ public class DraftController {
             @RequestBody Map<String, Object> draftData,
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token.substring(7)); // Bearer 제거
-        draftRedisService.saveDraft(email, draftData);
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7)); // Bearer 제거
+        draftRedisService.saveDraft(userId, draftData);
         return ResponseEntity.ok(Map.of("message", "임시저장 완료"));
     }
 
@@ -34,9 +34,9 @@ public class DraftController {
     public ResponseEntity<List<Object>> getDrafts(
             @RequestHeader("Authorization") String token
     ) {
-        // 토큰의 이메일로 사용자가 누구인지..
-        String email = jwtTokenProvider.getEmailFromToken(token.substring(7));
-        List<Object> drafts = draftRedisService.getUserDrafts(email);
+        // 토큰의 userId로 사용자가 누구인지
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        List<Object> drafts = draftRedisService.getUserDrafts(userId);
         return ResponseEntity.ok(drafts);
     }
 
