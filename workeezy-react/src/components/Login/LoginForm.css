@@ -4,3 +4,53 @@
   margin: 0 auto;
   padding-top: 120px; /* 🔥 여백 핵심 */
 }
+
+/* 토스트 공통 영역 */
+.login-toast {
+    position: fixed;
+    top: 20px;              /* 화면 위쪽 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    animation: toastSlideDown 0.35s ease forwards;
+}
+
+/* 토스트 박스 */
+.login-toast-content {
+    background: #fff;
+    padding: 14px 22px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 230px;
+    justify-content: center;
+}
+
+/* 아이콘 색상 */
+.login-toast.success .toast-icon {
+    color: #28a745; /* 초록 체크 */
+}
+
+.login-toast.error .toast-icon {
+    color: #dc3545; /* 빨간 경고 */
+}
+
+.toast-icon {
+    font-size: 18px;
+}
+
+/* 토스트 애니메이션 */
+@keyframes toastSlideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
