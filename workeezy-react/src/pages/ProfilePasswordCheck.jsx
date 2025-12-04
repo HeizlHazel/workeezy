@@ -1,18 +1,21 @@
 import PageLayout from "../layout/PageLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "../api/axios";
+import api from "../api/axios";
 
 export default function ProfilePasswordCheck() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleCheck = async (e) => {
+    console.log("로컬스토리지 토큰:", localStorage.getItem("accessToken"));
+
+
+    const handleCheck = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/auth/check-password",
+      const res = await api.post(
+        "/api/auth/check-password",
         {
           password,
         }
