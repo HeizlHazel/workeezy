@@ -9,6 +9,7 @@ import DraftMenuBar from "./DraftMenuBar";
 export default function ReservationForm({ initialData }) {
   const [form, setForm] = useState(
     initialData || {
+      programTitle: "",
       userName: "",
       company: "",
       phone: "",
@@ -75,10 +76,15 @@ export default function ReservationForm({ initialData }) {
       alert("로그인이 필요합니다.");
       return;
     }
+    // 워케이션 명을 제목으로 지정
+    const draftData = {
+      ...form,
+      title: form.programTitle,
+    };
     try {
       const res = await axios.post(
         "http://localhost:8080/api/reservations/draft/me",
-        form,
+        draftData,
         {
           headers: {
             Authorization: `Bearer ${token}`, // JWT 전달
