@@ -1,18 +1,18 @@
 import { Routes, Route } from "react-router-dom";
 
-import PrivateRoute from "./route/PrivateRoute";
-import ProfileGuard from "./route/ProfileGuard";
+import PrivateRoute from "./shared/route/PrivateRoute";
+import ProfileGuard from "./shared/route/ProfileGuard";
 
-import LoginPage from "./pages/LoginPage";
-import Home from "./pages/Home";
-import MyPage from "./pages/MyPage";
-import ProfilePasswordCheck from "./pages/ProfilePasswordCheck";
+import LoginPage from "./features/auth/pages/LoginPage.jsx";
+import Home from "./features/home/pages/Home";
+import MyPage from "./features/profile/pages/MyPage.jsx";
+import ProfilePasswordCheck from "./features/profile/pages/ProfilePasswordCheck.jsx";
 
-import ProgramDetailPage from "./pages/ProgramDetailPage";
-import ReviewPage from "./pages/ReviewPage";
-import SearchPage from "./pages/SearchPage";
-import NewReservationPage from "./pages/NewReservationPage";
-import ModifyReservationPage from "./pages/ModifyReservationPage";
+import ProgramDetailPage from "./features/program/pages/ProgramDetailPage.jsx";
+import ReviewPage from "./features/review/pages/ReviewPage.jsx";
+import SearchPage from "./features/search/pages/SearchPage.jsx";
+import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
+import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 
 
 export default function App() {

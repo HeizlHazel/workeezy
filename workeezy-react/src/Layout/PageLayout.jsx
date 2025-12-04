@@ -1,9 +1,9 @@
 import "./PageLayout.css";
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
+import Header from "../shared/common/Header";
+import Footer from "../shared/common/Footer";
 import { useState } from "react";
-import MenuBar from "../components/Common/Menubar";
-import FloatingButtons from "../components/Common/FloatingButtons";
+import MenuBar from "../shared/common/Menubar";
+import FloatingButtons from "../shared/common/FloatingButtons";
 
 export default function PageLayout({ children, wide = false }) {
     const [open, setOpen] = useState(false);
