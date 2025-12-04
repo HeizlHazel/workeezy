@@ -47,7 +47,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
         {
             title: "마이페이지",
             sub: [
-                { name: "개인 정보 조회", path: "/profile" },
+                { name: "개인 정보 조회", path: "/profile-check" },
                 { name: "찜 목록", path: "/mypage/likes" },
             ],
         },
