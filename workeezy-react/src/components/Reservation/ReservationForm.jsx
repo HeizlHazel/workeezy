@@ -16,7 +16,7 @@ export default function ReservationForm({ initialData }) {
       email: "",
       startDate: "",
       endDate: "",
-      officeName: "",
+      place: "",
       roomType: "",
       peopleCount: 0,
     }
