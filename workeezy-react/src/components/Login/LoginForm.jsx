@@ -4,7 +4,7 @@ import LoginOptions from "../Login/LoginOptions";
 import LoginButton from "./LoginButton";
 import SocialLoginButtons from "../Login/SocialLoginButtons";
 import {useNavigate} from "react-router-dom";
-import axios from "../../api/axios";
+import api from "../../api/axios";
 import {useState} from "react";
 
 export default function LoginForm() {
@@ -19,7 +19,7 @@ export default function LoginForm() {
         const password = formData.get("password");
 
         try {
-            const {data} = await axios.post(
+            const {data} = await api.post(
                 "http://localhost:8080/api/auth/login",
                 {email, password},
                 {withCredentials: true}
@@ -61,6 +61,7 @@ export default function LoginForm() {
     return (
         <>
             <form className="login-form" onSubmit={handleSubmit}>
+                <h2 className="login-title">로그인</h2>
                 <LoginInputs/>
                 <LoginOptions/>
                 <LoginButton/>
