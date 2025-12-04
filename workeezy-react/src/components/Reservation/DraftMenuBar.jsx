@@ -19,7 +19,7 @@ export default function DraftMenuBar({
       sub: draftList.map((draft) => ({
         name: (
           <>
-            {draft.title || "제목 없음"}
+            {draft.data.title || "제목 없음"}
             {draft.id === latestDraftId && (
               <span className="new-tag"> New!</span> // ✅ New! 표시
             )}
@@ -37,7 +37,7 @@ export default function DraftMenuBar({
       sub: draftList.map((draft) => ({
         name: (
           <>
-            {draft.title || "제목 없음"}
+            {draft.data.title || "제목 없음"}
             {draft.id === latestDraftId && (
               <span className="new-tag"> New!</span>
             )}
