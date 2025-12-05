@@ -4,11 +4,11 @@ import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.program.entity.RoomType;
 import com.together.workeezy.program.repository.ProgramRepository;
-import com.together.workeezy.program.repository.RoomRepository;
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationStatus;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.repository.ReservationRepository;
+import com.together.workeezy.search.repository.RoomRepository;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +25,16 @@ public class ReservationService {
 
 
     // 예약 신청
-    public Reservation createNewReservation(ReservationCreateDto dto, Long programId, String email) {
+    public Reservation createNewReservation(ReservationCreateDto dto, String email) {
 
         // 1️⃣ 사용자 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 유저가 존재하지 않습니다."));
-
-        // 2️⃣ 프로그램 조회
-        Program program = programRepository.findById(dto.getProgramId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 프로그램이 존재하지 않습니다."));
+//
+//        // 2️⃣ 프로그램 조회
+//        Program program = programRepository.findById(dto.getProgramId())
+//                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 프로그램이 존재하지 않습니다."));
+        Program program = null; // TODO: 프론트에서 programId 연동 후 다시 복구
 
         // 3️⃣ 룸 조회 (roomType Enum 문자열 변환)
         RoomType roomType;
@@ -55,7 +56,7 @@ public class ReservationService {
         reservation.setPeopleCount(dto.getPeopleCount());
         reservation.setStatus(ReservationStatus.waiting);
 
-        return reservation;
+        return reservationRepository.save(reservation);
 
     }
 }
