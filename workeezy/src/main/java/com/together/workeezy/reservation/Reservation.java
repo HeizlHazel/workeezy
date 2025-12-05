@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +49,11 @@ public class Reservation {
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
