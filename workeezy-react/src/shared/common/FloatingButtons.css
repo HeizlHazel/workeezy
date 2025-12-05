@@ -5,6 +5,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
+    justify-content: center;
 }
 
 .floating-btns button {
@@ -22,3 +24,10 @@
     cursor: pointer;
 }
 
+.chatButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    font-weight: bolder;
+}
