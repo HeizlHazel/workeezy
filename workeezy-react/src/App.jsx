@@ -13,6 +13,7 @@ import ReviewPage from "./features/review/pages/ReviewPage.jsx";
 import SearchPage from "./features/search/pages/SearchPage.jsx";
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
 import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
+import LikesPage from "./features/profile/pages/LikesPage.jsx";
 
 
 export default function App() {
@@ -20,8 +21,7 @@ export default function App() {
         <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/login" element={<LoginPage/>}/>
-
-            {/* 비밀번호 재확인 단계 */}
+            {/* 비밀번호 재확인 */}
             <Route
                 path="/profile-check"
                 element={
@@ -30,7 +30,6 @@ export default function App() {
                     </PrivateRoute>
                 }
             />
-
             {/* 마이페이지 */}
             <Route
                 path="/profile"
@@ -42,11 +41,17 @@ export default function App() {
                     </PrivateRoute>
                 }
             />
+            <Route path="/likes" element={<LikesPage/>}/>
 
-            {/* 기타 페이지 */}
+
+            {/* 검색, 리뷰 */}
+            <Route path="/program" element={<ProgramDetailPage/>}/>
             <Route path="/programs/:id" element={<ProgramDetailPage/>}/>
+
             <Route path="/reviews" element={<ReviewPage/>}/>
             <Route path="/search" element={<SearchPage/>}/>
+
+            {/* 예약 */}
             <Route path="/newreservation" element={<NewReservationPage/>}/>
             <Route path="/modifyreservation" element={<ModifyReservationPage/>}/>
         </Routes>

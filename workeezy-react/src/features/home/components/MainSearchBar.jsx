@@ -2,12 +2,12 @@ import "./MainSearchBar.css";
 
 export default function MainSearchBar() {
     return (
-        <div className="searchBar">
+        <div className="main-searchBar">
             <input
-                className="search"
+                className="main-search"
                 placeholder="가고 싶은 곳을 검색해 보세요."
             />
-            <i className="fa-solid fa-magnifying-glass search-icon"></i>
+            <i className="fa-solid fa-magnifying-glass main-search-icon"></i>
         </div>
 
     );

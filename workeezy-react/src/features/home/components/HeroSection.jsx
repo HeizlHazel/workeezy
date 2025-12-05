@@ -7,11 +7,8 @@ export default function HeroSection() {
             <div className="hero-content">
                 <h1 className="hero-title">Workeezy와 함께 워케이션 찾기</h1>
                 <p className="hero-subtitle">여행과 업무를 동시에, 새로운 경험을 시작하세요.</p>
-
-                <div className="hero-search">
-                    <MainSearchBar />
-                </div>
             </div>
+            <MainSearchBar/>
         </section>
     );
 }

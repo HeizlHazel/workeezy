@@ -8,6 +8,7 @@ import SearchCard from "../components/SearchCard.jsx";
 import publicApi from "../../../api/publicApi.js";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
 export default function SearchPage() {
     const [search, setSearch] = useState("");
@@ -123,7 +124,7 @@ export default function SearchPage() {
 
     return (
         <PageLayout>
-            <h2>Search</h2>
+            <SectionHeader icon="fas fa-search" title="Search" />
 
             {/* 검색창 */}
             <SearchBar

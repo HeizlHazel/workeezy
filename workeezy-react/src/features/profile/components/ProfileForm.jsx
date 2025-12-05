@@ -1,6 +1,7 @@
 import "./ProfileForm.css";
 import { useEffect, useState } from "react";
-import api from "../../../api/axios.js"; // axios 인스턴스
+import api from "../../../api/axios.js";
+import SectionHeader from "../../../shared/common/SectionHeader.jsx"; // axios 인스턴스
 
 export default function ProfileForm() {
     const [user, setUser] = useState({
@@ -38,7 +39,7 @@ export default function ProfileForm() {
 
     return (
         <div className="profile-page">
-            <h2 className="page-title">개인 정보 조회</h2>
+            <SectionHeader icon="far fa-user" title="개인 정보 조회" />
 
             {/* ----- 개인정보 수정 섹션 ----- */}
             <div className="section">
