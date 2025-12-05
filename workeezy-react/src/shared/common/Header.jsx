@@ -17,7 +17,7 @@ export default function Header({onOpenMenu}) {
             <div className="header-inner">
 
                 <Link to="/">
-                    <img src="/logo.png" className="header-logo"/>
+                    <img src="/workeezy_logo.png" className="header-logo"/>
                 </Link>
 
                 <div className="header-right">
