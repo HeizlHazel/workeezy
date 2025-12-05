@@ -5,6 +5,7 @@ import ReviewCard from "../../program/components/details/ReviewCard.jsx";
 import Pagination from "../../../shared/common/Pagination.jsx";
 import { useState } from "react";
 import FloatingButtons from "../../../shared/common/FloatingButtons.jsx";
+import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
 export default function ReviewPage() {
   const [search, setSearch] = useState("");
@@ -51,8 +52,8 @@ export default function ReviewPage() {
 
   return (
     <PageLayout normal>
-      <h2>Review</h2>
-      <SearchBar value={search} onChange={setSearch} />
+        <SectionHeader icon="far fa-comment" title="Review" />
+        <SearchBar value={search} onChange={setSearch} />
       <CategoryFilter active={region} onSelect={setRegion} />
 
       <div className="review-grid">
