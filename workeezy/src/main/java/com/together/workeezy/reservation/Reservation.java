@@ -2,6 +2,7 @@ package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.Payment;
 import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,10 @@ public class Reservation {
     @ManyToOne(fetch = LAZY, optional = false)
     @JoinColumn(name = "program_id", nullable = false)
     private Program program;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @NotNull
     @Column(name = "reservation_no", nullable = false, length = 20)
