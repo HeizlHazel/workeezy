@@ -1,6 +1,7 @@
 package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.Payment;
+import com.together.workeezy.program.entity.Place;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.user.entity.User;
@@ -56,7 +57,7 @@ public class Reservation {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ReservationStatus status = ReservationStatus.WAITING;
+    private ReservationStatus status = ReservationStatus.waiting;
 
     @NotNull
     @CreationTimestamp

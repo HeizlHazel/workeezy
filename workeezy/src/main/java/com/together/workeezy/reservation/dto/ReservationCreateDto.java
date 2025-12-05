@@ -12,11 +12,14 @@ public class ReservationCreateDto {
     private String company;
     private String phone;
     private String email;
+
     private LocalDateTime startDate;
     private LocalDateTime  endDate;
-    private String officeName;
-    private String roomType;
     private int peopleCount;
 
+    private String placeName;
+    private String roomType;
+
+    private Long programId;
     private String programTitle;
 }
