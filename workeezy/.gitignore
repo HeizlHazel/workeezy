@@ -37,3 +37,24 @@ out/
 .vscode/
 
 .env
+
+# Node
+workeezy-chatbot/node_modules/
+workeezy-react/node_modules/
+
+# IDE
+**/.idea/
+
+# build
+workeezy-react/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+
+# env
+*.env
+
