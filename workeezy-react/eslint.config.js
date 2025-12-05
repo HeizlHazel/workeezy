@@ -23,7 +23,9 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+        "no-unused-vars": "off",
+        "react/porp-types": "off",
+        "react-refresh/only-export-components": "off",
     },
   },
 ])

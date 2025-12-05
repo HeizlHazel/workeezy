@@ -2,6 +2,7 @@ package com.together.workeezy.auth.controller;
 
 import com.together.workeezy.auth.dto.*;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.redis.RedisService;
 import com.together.workeezy.auth.security.CustomUserDetails;
 import com.together.workeezy.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -11,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,6 +25,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtProvider;
     private final AuthService authService;
+    private final RedisService redisService;
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request,
@@ -61,7 +66,7 @@ public class AuthController {
         response.addCookie(cookie);
         System.out.println("✅ 인증 성공: " + authentication.getName());
 
-        return new LoginResponse(accessToken, name);
+        return new LoginResponse(accessToken, name, role);
 
     }
 
@@ -75,10 +80,55 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
 
+        String email = jwtProvider.getEmailFromToken(refreshToken);
+        String role = jwtProvider.getRoleFromToken(refreshToken);
+
         // 서비스에서 실제 재발급 로직 수행
         String newAccessToken = authService.reissueAccessToken(refreshToken);
 
-        return ResponseEntity.ok(new LoginResponse(newAccessToken, null));
+        return ResponseEntity.ok(new LoginResponse(newAccessToken, null, role));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        // 쿠키에서 refreshtoken 꺼내기
+        String refreshToken = extractRefreshToken(request);
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(400).body("Refresh token 없음");
+        }
+
+        // 쿠키에서도 삭제(MaxAge = 0)
+        deleteRefreshCookie(response);
+
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    // 마이페이지 접근 시 비밀번호 검증
+    @PostMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                           @RequestBody Map<String, String> request) {
+
+        String rawPassword = request.get("password");
+
+        if (rawPassword == null || rawPassword.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "password required"
+            ));
+        }
+
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(Map.of(
+                    "success", false,
+                    "message", "unauthorized: token missing or invalid"
+            ));
+        }
+
+        boolean result = authService.checkPassword(userDetails.getUser(), rawPassword);
+
+        return ResponseEntity.ok(Map.of("success", result));
     }
 
     // 쿠키 꺼내는 메서드
@@ -91,5 +141,14 @@ public class AuthController {
             }
         }
         return null;
+    }
+
+    // 쿠키 삭제 메서드
+    private void deleteRefreshCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0); // 즉시 삭제
+        response.addCookie(cookie);
     }
 }

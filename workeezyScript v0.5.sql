@@ -695,4 +695,238 @@ update tb_place
 set place_region = '해외'
 where place_address like '%일본%';
 
+#룸타입 추가
+ALTER TABLE tb_room
+ADD COLUMN room_type ENUM('economy', 'standard', 'superior') NULL;
+
+#tb_place 샘플데이터 업데이트구문
+
+UPDATE tb_place SET
+    program_id = 1,
+    place_type = 'stay',
+    place_name = '토요코인 부산역',
+    place_code = 'ST01',
+    place_address = '부산 동구 중앙대로196번길 12 토요코인부산역',
+    place_phone = '033-111-2222',
+    place_equipment = '수영장,조식,바다전망',
+    place_photo1 = 'public/부산동구/부산동구1.png',
+    place_photo2 = 'public/부산동구/부산동구2.png',
+    place_photo3 = 'public/부산동구/부산동구3.png',
+    attraction_url = NULL,
+    place_region = '부산'
+WHERE place_id = 1;
+
+UPDATE tb_place SET
+    program_id = 2,
+    place_type = 'stay',
+    place_name = '가평 산속 힐링펜션',
+    place_code = 'ST02',
+    place_address = '경기도 가평군 힐링로 55',
+    place_phone = '031-222-3333',
+    place_equipment = '바비큐장,스파,주차장',
+    place_photo1 = 'public/가평/가평1.png',
+    place_photo2 = 'public/가평/가평2.png',
+    place_photo3 = 'public/가평/가평3.png',
+    attraction_url = NULL,
+    place_region = '경기'
+WHERE place_id = 2;
+
+UPDATE tb_place SET
+    program_id = 1,
+    place_type = 'office',
+    place_name = '부산 워케이션 오피스',
+    place_code = 'OF01',
+    place_address = '강원도 강릉시 사무로 88',
+    place_phone = '033-444-5555',
+    place_equipment = '회의실,화이트보드,TV모니터',
+    place_photo1 = 'public/부산동구/부산동구웤1.png',
+    place_photo2 = 'public/부산동구/부산동구웤2.png',
+    place_photo3 = 'public/부산동구/부산동구웤3.png.jpg',
+    attraction_url = NULL,
+    place_region = '부산'
+WHERE place_id = 3;
+
+UPDATE tb_place SET
+    program_id = 1,
+    place_type = 'attraction',
+    place_name = '경포대 해수욕장',
+    place_code = 'AT01',
+    place_address = '강원도 강릉시 사무로 88',
+    place_phone = NULL,
+    place_equipment = NULL,
+    place_photo1 = 'attraction1_1.jpg',
+    place_photo2 = 'attraction1_2.jpg',
+    place_photo3 = 'attraction1_3.jpg',
+    attraction_url = 'https://visitgangneung.kr',
+    place_region = '강원'
+WHERE place_id = 4;
+
+UPDATE tb_place SET
+    program_id = 1,
+    place_type = 'attraction',
+    place_name = '안목 커피거리',
+    place_code = 'AT02',
+    place_address = '강원도 강릉시 안목해변 일대',
+    place_phone = NULL,
+    place_equipment = NULL,
+    place_photo1 = 'attraction2_1.jpg',
+    place_photo2 = 'attraction2_2.jpg',
+    place_photo3 = 'attraction2_3.jpg',
+    attraction_url = 'https://coffee-gangneung.kr',
+    place_region = '강원'
+WHERE place_id = 5;
+
+UPDATE tb_place SET
+    program_id = 3,
+    place_type = 'stay',
+    place_name = '강원 속초 워케이션 호텔',
+    place_code = 'ST06',
+    place_address = '강원도 속초시 조양로 45',
+    place_phone = '033-552-7890',
+    place_equipment = '바다전망,조식,와이파이,헬스장',
+    place_photo1 = 'public/강원속초/강원속초1.png',
+    place_photo2 = 'public/강원속초/강원속초2.png',
+    place_photo3 = 'public/강원속초/강원속초3.png',
+    attraction_url = NULL,
+    place_region = '강원'
+WHERE place_id = 6;
+
+UPDATE place SET
+    program_id = 4,
+    place_type = 'stay',
+    place_name = '남해 지족 오션뷰 리조트',
+    place_code = 'ST07',
+    place_address = '경상남도 남해군 지족면 지족리 101-3',
+    place_phone = '055-862-1234',
+    place_equipment = '바다전망,조식,와이파이,주차장',
+    place_photo1 = 'public/남해지족/남해지족1.png',
+    place_photo2 = 'public/남해지족/남해지족2.png',
+    place_photo3 = 'public/남해지족/남해지족3.png',
+    attraction_url = NULL,
+    place_region = '경남'
+WHERE place_id = 7;
+
+UPDATE tb_place SET
+    program_id = 5,
+    place_type = 'stay',
+    place_name = '인천 포내 워케이션 호텔',
+    place_code = 'ST08',
+    place_address = '인천 강화군 길상면 포내리 230-8',
+    place_phone = '032-441-9876',
+    place_equipment = '와이파이,업무책상,미팅룸,조식',
+    place_photo1 = 'public/인천포내/인천포내1.png',
+    place_photo2 = 'public/인천포내/인천포내2.png',
+    place_photo3 = 'public/인천포내/인천포내3.png',
+    attraction_url = NULL,
+    place_region = '인천'
+WHERE place_id = 8;
+
+UPDATE tb_place SET
+    program_id = 6,
+    place_type = 'stay',
+    place_name = '오키나와 나하 비치 호텔',
+    place_code = 'ST09',
+    place_address = '일본 오키나와현 나하시 3-12-7',
+    place_phone = '+81-98-123-4567',
+    place_equipment = '바다전망,수영장,레스토랑,와이파이',
+    place_photo1 = 'public/오키나와나하/나하1.png',
+    place_photo2 = 'public/오키나와나하/나하2.png',
+    place_photo3 = 'public/오키나와나하/나하3.png',
+    attraction_url = 'https://www.okinawastory.jp',
+    place_region = '해외'
+WHERE place_id = 9;
+#tb_program 샘플데이터 구문
+UPDATE tb_program SET
+    program_title = '부산 동구 워케이션',
+    program_info = '해변 리조트 + 워크센터 + 관광 포함',
+    program_people = 10,
+    program_price = 300000,
+    stay_id = 1,
+    office_id = 3,
+    attraction_id1 = 4,
+    attraction_id2 = 5,
+    attraction_id3 = NULL
+WHERE program_id = 1;
+
+UPDATE tb_program SET
+    program_title = '가평 힐링 워케이션',
+    program_info = '산속 펜션과 자연 관광',
+    program_people = 8,
+    program_price = 250000,
+    stay_id = 2,
+    office_id = 3,
+    attraction_id1 = 4,
+    attraction_id2 = NULL,
+    attraction_id3 = NULL
+WHERE program_id = 2;
+
+UPDATE tb_program SET
+    program_title = '강원 속초 워케이션',
+    program_info = '숙소와 오피스를 함께 제공하는 기본 패키지',
+    program_people = 5,
+    program_price = 200000,
+    stay_id = 6,
+    office_id = 3,
+    attraction_id1 = NULL,
+    attraction_id2 = NULL,
+    attraction_id3 = NULL
+WHERE program_id = 3;
+
+UPDATE tb_program SET
+    program_title = '남해 지족 워케이션',
+    program_info = '커피거리 중심의 자유 워케이션',
+    program_people = 6,
+    program_price = 180000,
+    stay_id = 7,
+    office_id = NULL,
+    attraction_id1 = NULL,
+    attraction_id2 = NULL,
+    attraction_id3 = NULL
+WHERE program_id = 4;
+
+UPDATE tb_program SET
+    program_title = '인천 포내 워케이션',
+    program_info = '휴식 중심의 워케이션',
+    program_people = 4,
+    program_price = 150000,
+    stay_id = 8,
+    office_id = 3,
+    attraction_id1 = NULL,
+    attraction_id2 = NULL,
+    attraction_id3 = NULL
+WHERE program_id = 5;
+
+UPDATE tb_program SET
+    program_title = '오키나와 워케이션',
+    program_info = '일본 여행과 워케이션을 함께 제공',
+    program_people = 4,
+    program_price = 220000,
+    stay_id = 9,
+    office_id = NULL,
+    attraction_id1 = NULL,
+    attraction_id2 = NULL,
+    attraction_id3 = NULL
+WHERE program_id = 6;
+#tb_room 룸타입 수정
+UPDATE tb_room SET
+    room_type = 'economy'
+WHERE room_id = 1;
+
+UPDATE tb_room SET
+    room_type = 'standard'
+WHERE room_id = 2;
+
+UPDATE tb_room SET
+    room_type = 'standard'
+WHERE room_id = 3;
+
+UPDATE tb_room SET
+    room_type = 'superior'
+WHERE room_id = 4;
+
+UPDATE tb_room SET
+    room_type = 'economy'
+WHERE room_id = 5;
+
+
 commit;

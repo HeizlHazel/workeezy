@@ -24,16 +24,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    // 🔥 토큰 검증 제외할 URL (화이트리스트)
+    // 토큰 검증 제외할 URL (화이트리스트)
     private static final List<String> WHITELIST = List.of(
             "/api/auth/login",
             "/api/auth/refresh",
-            "/api/search",
-            "/api/search/",       // 🔥 추가
-            "/api/search/**",     // 🔥 가장 중요
-            "/api/programs/cards"
+            "/api/programs/**",
+            "/api/search/**"
     );
-
 
     @Override
     protected void doFilterInternal(
@@ -45,25 +42,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         System.out.println("📌 JwtFilter 요청 경로: " + requestURI);
 
-        // 🔥 1) 화이트리스트 URL은 JWT 검증 스킵
+        // OPTIONS 요청은 항상 허용 (CORS Preflight)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 화이트리스트 URL은 JWT 인증 스킵
         for (String pattern : WHITELIST) {
             if (pathMatcher.match(pattern, requestURI)) {
+                System.out.println("➡️ 인증 스킵 (화이트리스트): " + pattern);
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
-        // 🔥 2) 화이트리스트 아니면 토큰 검증
         String token = resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // Authentication 생성
+            Authentication auth = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            System.out.println("🔥 JWT 인증 성공: " + auth.getName());
+        } else {
+            System.out.println("❌ JWT 인증 실패 또는 없음");
         }
+        System.out.println("인증 성공 여부 = " +
+                SecurityContextHolder.getContext().getAuthentication());
 
         filterChain.doFilter(request, response);
     }
 
+
+    // Authorization 헤더에서 Bearer 토큰 추출
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
 
@@ -71,5 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return header.substring(7);
         }
         return null;
+
     }
+
 }
