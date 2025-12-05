@@ -70,7 +70,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
                 { name: "예약 승인", path: "/admin/approval" },
             ],
         },
-        { title: "프로그램 찾기", path: "/program" },
+        { title: "프로그램 찾기", path: "/search" },
         { title: "리뷰", path: "/reviews" },
         { title: "Admin", isFooter: true, path: "/admin" },
     ];
