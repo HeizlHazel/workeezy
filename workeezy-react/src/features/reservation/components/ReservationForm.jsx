@@ -9,6 +9,7 @@ import DraftMenuBar from "./DraftMenuBar";
 export default function ReservationForm({ initialData }) {
   const [form, setForm] = useState(
     initialData || {
+      // programId: null,
       programTitle: "",
       userName: "",
       company: "",
@@ -16,7 +17,7 @@ export default function ReservationForm({ initialData }) {
       email: "",
       startDate: "",
       endDate: "",
-      place: "",
+      placeName: "",
       roomType: "",
       peopleCount: 0,
     }
@@ -45,9 +46,13 @@ export default function ReservationForm({ initialData }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  console.log("📤 전송할 form 데이터:", form);
+
   // 입력 폼 데이터
   const handleSubmit = async (e) => {
     e.preventDefault(); // 브라우저 새로고침 막기
+
+    const token = localStorage.getItem("accessToken");
 
     try {
       if (initialData) {
@@ -59,7 +64,12 @@ export default function ReservationForm({ initialData }) {
         alert("예약이 성공적으로 수정 되었습니다!");
       } else {
         // POST : 신규 예약
-        await axios.post("http://localhost:8080/api/reservations", form);
+        await axios.post("http://localhost:8080/api/reservations", form, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
         alert("예약이 성공적으로 등록되었습니다!");
       }
     } catch (error) {
