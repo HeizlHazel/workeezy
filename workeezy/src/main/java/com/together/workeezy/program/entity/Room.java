@@ -34,5 +34,9 @@ public class Room {
     @Column(name = "room_service", length = 1000)
     private String roomService;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "room_type")
+    private RoomType roomType;
+
 
 }
