@@ -44,7 +44,7 @@ export default function App() {
             />
 
             {/* 기타 페이지 */}
-            <Route path="/program" element={<ProgramDetailPage/>}/>
+            <Route path="/programs/:id" element={<ProgramDetailPage/>}/>
             <Route path="/reviews" element={<ReviewPage/>}/>
             <Route path="/search" element={<SearchPage/>}/>
             <Route path="/newreservation" element={<NewReservationPage/>}/>

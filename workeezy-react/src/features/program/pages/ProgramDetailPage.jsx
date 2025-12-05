@@ -1,9 +1,4 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-import PageLayout from "../../../layout/PageLayout.jsx";
 import FloatingButtons from "../../../shared/common/FloatingButtons.jsx";
-
 import ProgramTitle from "../components/ProgramTitle.jsx";
 import ProgramImages from "../components/ProgramImages.jsx";
 import ProgramReserveBar from "../components/ProgramReserveBar.jsx";
@@ -12,9 +7,12 @@ import ProgramInfo from "../components/ProgramInfo.jsx";
 import RoomList from "../components/details/RoomList.jsx";
 import OfficeList from "../components/details/OfficeList.jsx";
 import ActivityInfo from "../components/details/ActivityInfo.jsx";
-import HotelInfo from "../components/details/HotelInfo.jsx";
 
-import api from "../../../api/publicApi.js"; // axios 설정한 파일
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../../../api/axios.js";
+import PageLayout from "../../../Layout/PageLayout.jsx";
+import HotelInfo from "../components/details/HotelInfo.jsx";
 
 export default function ProgramDetailPage() {
     const { id } = useParams();

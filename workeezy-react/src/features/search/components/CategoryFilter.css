@@ -1,20 +1,56 @@
-.category-wrapper {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
+.category-container {
     margin-bottom: 30px;
+    width: 100%;
 }
 
-.category-btn {
-    padding: 6px 16px;
-    font-size: 14px;
-    border-radius: 18px;
+.category-row {
+    display: flex;
+    justify-content: center; /* ⭐ 중앙 정렬 */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;          /* 전체 및 카테고리 간 간격 균형 */
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ⭐ 전체 버튼 디자인 보정: 덩그러짐 제거 */
+.all-btn {
+    padding: 7px 18px;       /* 높이 줄임 */
+    border-radius: 16px;     /* 모양을 다른 버튼과 통일 */
     border: 1px solid #dcdcdc;
     background: white;
+    color: #444;
+    font-size: 14px;
+    font-weight: 500;        /* 약하게 강조 */
+    transition: 0.2s;
+}
+
+.all-btn.active {
+    background: #6a8250;
+    border-color: #6a8250;
+    color: white;
+}
+
+/* ⭐ 1차/2차 버튼 묶음 */
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+/* ⭐ 나머지 버튼들 */
+.category-btn {
+    padding: 7px 18px;
+    border-radius: 16px;
+    border: 1px solid #dcdcdc;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    transition: 0.2s;
 }
 
 .category-btn.active {
     background: #6a8250;
-    border-color: #6a8250;
     color: white;
+    border-color: #6a8250;
 }

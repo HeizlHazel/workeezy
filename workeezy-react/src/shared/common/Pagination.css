@@ -4,11 +4,15 @@
     gap: 12px;
     margin: 40px 0;
     font-size: 14px;
+    align-items: center;
+    user-select: none;
 }
 
+/* 공통 버튼 스타일 */
 .page,
-.disabled,
-.next {
+.prev,
+.next,
+.dots {
     padding: 6px 14px;
     border-radius: 6px;
     background: #f6f6f6;
@@ -16,7 +20,29 @@
     color: #555;
 }
 
+/* hover */
+.page:hover,
+.prev:hover,
+.next:hover {
+    background: #e6e6e6;
+}
+
+/* 현재 페이지 */
 .active {
     background: #6a8250;
     color: white;
+    font-weight: bold;
+}
+
+/* 비활성 (Prev/Next) */
+.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ... 표시는 클릭 불가 */
+.dots {
+    cursor: default;
+    background: none;
+    padding: 6px 4px;
 }
