@@ -93,9 +93,14 @@ public class JwtTokenProvider {
         return getClaims(token).getSubject();
     }
 
-    // 토큰에서 userId 추출
-    public Long getUserIdFromToken(String token) {
-        return getClaims(token).get("userId", Long.class);
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role").toString();
     }
 
     // 토큰 검증
@@ -124,6 +129,9 @@ public class JwtTokenProvider {
     public long getRefreshExpiration() {
         return refreshExpiration;
     }
+
+    public Long getUserIdFromToken(String token) { return getClaims(token).get("userId", Long.class);
+
 
 
 }

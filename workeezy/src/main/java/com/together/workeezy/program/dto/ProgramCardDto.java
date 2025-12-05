@@ -10,6 +10,7 @@ public class ProgramCardDto {
     private String title;  // program title
     private String photo;  // 대표 이미지 (place_photo1)
     private Integer price; // program_price
+    private String region;
 
 
 }

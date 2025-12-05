@@ -1,30 +1,40 @@
 import "./PageLayout.css";
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
+import Header from "../shared/common/Header";
+import Footer from "../shared/common/Footer";
 import { useState } from "react";
-import MenuBar from "../components/Common/Menubar";
+import MenuBar from "../shared/common/Menubar";
+import FloatingButtons from "../shared/common/FloatingButtons";
 
-export default function PageLayout({ children }) {
-  const [open, setOpen] = useState(false);
+export default function PageLayout({ children, wide = false }) {
+    const [open, setOpen] = useState(false);
 
-  return (
-    <div className="layout">
-      {/* Header에 setOpen 넘겨주기 */}
-      <Header onOpenMenu={() => setOpen(true)} />
+    return (
+        <div className="layout">
 
-      {/* 오버레이 + 메뉴바 */}
-      {open && (
-        <>
-          {/* 오버레이 (배경 클릭 시 닫힘!) */}
-          <div className="menu-overlay" onClick={() => setOpen(false)} />
+            {/* Header */}
+            <Header onOpenMenu={() => setOpen(true)} />
 
-          <MenuBar onClose={() => setOpen(false)} />
-        </>
-      )}
+            {/* 메뉴 오픈 */}
+            {open && (
+                <>
+                    <div className="menu-overlay" onClick={() => setOpen(false)} />
+                    <MenuBar
+                        onClose={() => setOpen(false)}
+                        isAdmin={localStorage.getItem("role") === "ADMIN"}
+                    />
+                </>
+            )}
 
-      <main className="content">{children}</main>
+            {/* ★ 폭을 통제하는 핵심 래퍼 */}
+            <main className="content-wrapper">
+                <div className={wide ? "content-wide" : "content-normal"}>
+                    {children}
+                </div>
+            </main>
 
-      <Footer />
-    </div>
-  );
+            {/* Floating & Footer */}
+            <FloatingButtons />
+            <Footer />
+        </div>
+    );
 }

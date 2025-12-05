@@ -8,18 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/search")
 public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/search")
+    @GetMapping
     public SearchResultDto search(
             @RequestParam String keyword,
-            @RequestParam Long userId
+            @RequestParam(required = false) List<String> regions,
+            @RequestParam(required = false) Long userId
     ) {
-        return searchService.search(keyword, userId);
+        return searchService.search(keyword, regions, userId);
     }
+
+
 }
+

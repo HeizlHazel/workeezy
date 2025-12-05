@@ -34,4 +34,5 @@ public class Room {
     @Column(name = "room_service", length = 1000)
     private String roomService;
 
+
 }

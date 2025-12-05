@@ -1,0 +1,33 @@
+.searchBar {
+    position: relative;
+    width: 660px;
+    height: 72px;
+    margin: 0 auto;
+}
+
+.search {
+    width: 100%;
+    height: 72px;
+    border-radius: 50px; /* ← 둥근 보더 */
+    border: 1.5px solid #7b7b7b; /* ← 테두리를 더 진하게 */
+    background: #ffffffdd; /* ← 반투명 흰색 (배경 위에서 확실히 보임) */
+    backdrop-filter: blur(4px); /* ← 살짝 스윽 흐려지는 느낌 */
+    padding: 0 60px 0 32px;
+    font-size: 16px;
+    color: #333;
+}
+
+.search-icon {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #666;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.search:focus {
+    outline: none
+}

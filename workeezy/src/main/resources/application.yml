@@ -27,6 +27,6 @@ logging:
     org.springframework.security: DEBUG
 
 jwt:
-  secret: THIS_IS_A_SUPER_LONG_SECRET_KEY_FOR_JWT_TOKEN_12345678
+  secret: VEhJU19JU19BX1NVUEVSX0xPTkdfU0VDUkVUX0tFWV9GT1JfSldUX1RPS0VOXzEyMzQ1Njc4
   access-expiration-ms: 1800000      # 30분
   refresh-expiration-ms: 604800000   # 7일

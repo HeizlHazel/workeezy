@@ -1,0 +1,29 @@
+@font-face {
+    font-family: 'ArittaDodum';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Arita-dotum-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: "ArittaDodum", sans-serif;
+}
+
+/* Font Awesome 아이콘 폰트 덮어쓰이지 않도록 보호 */
+/*[class^="fa-"],*/
+/*[class*=" fa-"] {*/
+/*    font-family: "Font Awesome 6 Free" !important;*/
+/*}*/
+
+/* 어떤 grid든 부모 폭 안에만 존재 */
+.search-grid,
+.review-grid,
+.program-grid,
+.cards-grid,
+.items-grid {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
