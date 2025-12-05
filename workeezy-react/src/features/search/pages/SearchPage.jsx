@@ -1,4 +1,4 @@
-import PageLayout from "../../../layout/PageLayout.jsx";
+import PageLayout from "../../../Layout/PageLayout.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import CategoryFilter from "../components/CategoryFilter.jsx";
 import Pagination from "../../../shared/common/Pagination.jsx";
@@ -12,11 +12,17 @@ import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
 export default function SearchPage() {
     const [search, setSearch] = useState("");
-    const [regions, setRegions] = useState([]);        // ⭐ 다중 카테고리 선택
-    const [allPrograms, setAllPrograms] = useState([]); // ⭐ 전체 데이터
-    const [recommended, setRecommended] = useState([]); // 추천 데이터
+    const [regions, setRegions] = useState(["전체"]);   // ⭐ 기본값: 전체 선택
+    const [allPrograms, setAllPrograms] = useState([]);
+    const [recommended, setRecommended] = useState([]);
 
-    // 로그인한 사용자 ID
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 6; // ⭐ 한 페이지 6개
+    const [bigRegion, setBigRegion] = useState("전체");
+    const [smallRegions, setSmallRegions] = useState([]);
+
+
+    // 로그인 사용자
     let userId = null;
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -24,9 +30,7 @@ export default function SearchPage() {
         userId = decoded.userId;
     }
 
-    // -----------------------------------
-    // ⭐ 초기 로드시 전체 프로그램 불러오기
-    // -----------------------------------
+    // 프로그램 전체 로드
     useEffect(() => {
         publicApi
             .get("/api/programs/cards")
@@ -34,9 +38,7 @@ export default function SearchPage() {
             .catch((err) => console.log(err));
     }, []);
 
-    // -----------------------------------
-    // ⭐ 검색 수행 시 → 서버 검색 + 추천 업데이트
-    // -----------------------------------
+    // ⭐ 검색 요청 처리
     const handleSearch = () => {
         if (!search.trim()) return;
 
@@ -45,39 +47,80 @@ export default function SearchPage() {
                 params: {
                     keyword: search,
                     userId: userId,
-                    regions: regions, // 🔥 백엔드 DTO가 List<String> 받도록 되어있음
+                    regions: regions.includes("전체") ? [] : regions,
                 },
             })
             .then((res) => {
-                setAllPrograms(res.data.cards);     // 검색된 프로그램 리스트로 변경
+                setAllPrograms(res.data.cards);
                 setRecommended(res.data.recommended);
+                setCurrentPage(1);
             })
             .catch((err) => console.log(err));
     };
 
-    // -----------------------------------
-    // ⭐ 카테고리 필터 변경 시 → UI에서만 필터링 (서버 호출 X)
-    // -----------------------------------
+    // ⭐ 지역 카테고리 토글
     const toggleRegion = (region) => {
-        setRegions((prev) =>
-            prev.includes(region)
-                ? prev.filter((r) => r !== region)
-                : [...prev, region]
-        );
+        // 전체 선택 시 → 전체만 남기기
+        if (region === "전체") {
+            setRegions(["전체"]);
+            setCurrentPage(1);
+            return;
+        }
+
+        // 지역 선택 시 → 전체 제거 후 개별 지역 토글
+        setRegions((prev) => {
+            const cleaned = prev.filter((r) => r !== "전체");
+
+            // 이미 선택됨 → 제거
+            if (cleaned.includes(region)) {
+                return cleaned.filter((r) => r !== region);
+            }
+
+            // 추가
+            return [...cleaned, region];
+        });
+
+        setCurrentPage(1);
     };
 
-    // -----------------------------------
-    // ⭐ 최종 필터링된 프로그램 목록 계산 (렌더링 시 자동 계산)
-    // -----------------------------------
-    const filteredPrograms = allPrograms.filter((p) => {
-        // 지역 필터 활성화 시
-        if (regions.length > 0 && !regions.includes(p.region)) return false;
 
-        // 검색어가 존재할 때
-        if (search.trim() && !p.title.includes(search)) return false;
+    // ⭐ 최종 필터링
+    const filteredPrograms = allPrograms.filter((p) => {
+
+        // 전체 선택 시 필터 적용 X
+        if (bigRegion === "전체") return true;
+
+        // 1차 영역 필터
+        const regionMap = {
+            수도권: ["서울", "경기", "인천"],
+            영남권: ["부산", "대구", "울산", "경남", "경북"],
+            호남권: ["광주", "전남", "전북"],
+            충청권: ["대전", "충북", "충남"],
+            강원권: ["강원"],
+            제주: ["제주"],
+            해외: ["해외"],
+        };
+
+        const validSmall = regionMap[bigRegion] || [];
+
+        // 작은 지역이 선택되었을 때
+        if (smallRegions.length > 0 && !smallRegions.includes(p.region)) {
+            return false;
+        }
+
+        // 작은 지역이 선택되지 않은 경우 → 1차 그룹만 검사
+        if (smallRegions.length === 0 && !validSmall.includes(p.region)) {
+            return false;
+        }
 
         return true;
     });
+
+
+    // ⭐ 페이지네이션 계산
+    const totalPages = Math.ceil(filteredPrograms.length / pageSize);
+    const start = (currentPage - 1) * pageSize;
+    const paginatedPrograms = filteredPrograms.slice(start, start + pageSize);
 
     return (
         <PageLayout>
@@ -91,7 +134,14 @@ export default function SearchPage() {
             />
 
             {/* 카테고리 필터 */}
-            <CategoryFilter activeList={regions} onToggle={toggleRegion} />
+            <CategoryFilter
+                bigRegion={bigRegion}
+                setBigRegion={setBigRegion}
+                smallRegions={smallRegions}
+                setSmallRegions={setSmallRegions}
+            />
+
+
 
             {/* 추천 프로그램 */}
             {recommended.length > 0 && (
@@ -111,10 +161,9 @@ export default function SearchPage() {
                 </>
             )}
 
-            {/* 검색/카테고리 반영된 결과 */}
-            <h3>검색 결과</h3>
+            {/* ⭐ 페이지당 6개만 출력 */}
             <div className="search-grid">
-                {filteredPrograms.map((p) => (
+                {paginatedPrograms.map((p) => (
                     <SearchCard
                         key={p.id}
                         id={p.id}
@@ -126,7 +175,15 @@ export default function SearchPage() {
                 ))}
             </div>
 
-            <Pagination />
+            {/* ⭐ 페이지네이션 */}
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
+            )}
+
             <FloatingButtons />
         </PageLayout>
     );

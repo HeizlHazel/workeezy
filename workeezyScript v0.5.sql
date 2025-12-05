@@ -928,5 +928,63 @@ UPDATE tb_room SET
     room_type = 'economy'
 WHERE room_id = 5;
 
+#프로그램, 장소 샘플데이터 추가
 
+INSERT INTO tb_program
+(program_id, program_title, program_info, program_people, program_price,
+ stay_id, office_id, attraction_id1, attraction_id2, attraction_id3)
+VALUES
+(7, '서울 강남 워케이션', '비즈니스 호텔 + 워크센터 + 카페거리',
+ 8, 260000, 10, 11, 12, NULL, NULL),
+
+(8, '제주 바다 워케이션', '리조트 + 워크센터 + 관광 패키지',
+ 6, 280000, 13, 14, 15, NULL, NULL),
+
+(9, '속초 힐링 워케이션', '오션뷰 휴식 + 워케이션 오피스',
+ 4, 190000, 6, 3, NULL, NULL, NULL),
+
+(10, '부산 해운대 워케이션', '해운대 숙소 + 카페형 오피스',
+ 4, 210000, 1, 3, 4, NULL, NULL),
+
+(11, '경주 역사 워케이션', '한옥 숙소 + 유적지 관광',
+ 5, 200000, 2, 3, 4, 5, NULL),
+
+(12, '여수 오션 워케이션', '오션뷰 호텔 + 액티비티',
+ 6, 230000, 7, NULL, NULL, NULL, NULL);
+
+
+INSERT INTO tb_place
+(place_id, program_id, place_type, place_name, place_code, place_address,
+ place_phone, place_equipment, place_photo1, place_photo2, place_photo3,
+ attraction_url, place_region)
+VALUES
+(10, 7, 'stay', '서울 강남 비즈니스 호텔', 'ST10',
+ '서울 강남구 테헤란로 311', '02-123-4567', '조식, 와이파이, 업무책상',
+ 'public/강남/강남1.png', 'public/강남/강남2.png', 'public/강남/강남3.png',
+ NULL, '서울'),
+
+(11, 7, 'office', '강남 워크센터', 'OF02',
+ '서울 강남구 봉은사로 423', '02-223-8899', '회의실, 빔프로젝터, 라운지',
+ 'public/강남오피스/오피1.png', 'public/강남오피스/오피2.png', 'public/강남오피스/오피3.png',
+ NULL, '서울'),
+
+(12, 7, 'attraction', '청담 카페거리', 'AT10',
+ '서울 강남구 청담동 일대', NULL, NULL,
+ 'attraction10_1.jpg', 'attraction10_2.jpg', 'attraction10_3.jpg',
+ 'https://seoulcafe.kr', '서울'),
+
+(13, 8, 'stay', '제주 바다 전망 리조트', 'ST11',
+ '제주 서귀포시 중문관광로 120', '064-777-8888', '바다전망, 수영장, 스파',
+ 'public/제주/제주1.png', 'public/제주/제주2.png', 'public/제주/제주3.png',
+ NULL, '제주'),
+
+(14, 8, 'office', '제주 워케이션 센터', 'OF03',
+ '제주 제주시 첨단로 33', '064-123-9090', '회의실, 프린터, 휴게실',
+ 'public/제주오피스/오피1.png', 'public/제주오피스/오피2.png', 'public/제주오피스/오피3.png',
+ NULL, '제주'),
+
+(15, 8, 'attraction', '용머리 해안', 'AT11',
+ '제주 서귀포시 안덕면', NULL, NULL,
+ 'attraction11_1.jpg', 'attraction11_2.jpg', 'attraction11_3.jpg',
+ 'https://visitjeju.net', '제주');
 commit;

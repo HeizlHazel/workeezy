@@ -43,8 +43,11 @@ export default function App() {
             />
             <Route path="/likes" element={<LikesPage/>}/>
 
+
             {/* 검색, 리뷰 */}
             <Route path="/program" element={<ProgramDetailPage/>}/>
+            <Route path="/programs/:id" element={<ProgramDetailPage/>}/>
+
             <Route path="/reviews" element={<ReviewPage/>}/>
             <Route path="/search" element={<SearchPage/>}/>
 
