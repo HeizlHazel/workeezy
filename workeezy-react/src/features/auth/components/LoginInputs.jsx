@@ -1,6 +1,6 @@
 import "./LoginInputs.css";
 
-export default function LoginInputs() {
+export default function LoginInputs({email, setEmail, password, setPassword}) {
   return (
     <div className="login-inputs">
       <div className="form-row">
@@ -11,6 +11,8 @@ export default function LoginInputs() {
           placeholder="아이디를 입력하세요"
           className="line-input"
           required
+          value={email}
+          onChange={e => setEmail(e.target.value)}
         />
       </div>
 
@@ -22,6 +24,8 @@ export default function LoginInputs() {
           placeholder="비밀번호를 입력하세요"
           className="line-input"
           required
+          value={password}
+          onChange={e => setPassword(e.target.value)}
         />
       </div>
     </div>
