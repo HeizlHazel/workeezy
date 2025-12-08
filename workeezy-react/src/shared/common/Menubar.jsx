@@ -1,8 +1,8 @@
 import "./Menubar.css";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {logoutApi} from "../../api/authApi.js"
 
-export default function MenuBar({ isAdmin = false, onClose }) {
+export default function MenuBar({isAdmin = false, onClose}) {
     const [userName, setUserName] = useState(null);
     const [showLogoutToast, setShowLogoutToast] = useState(false);
     const [showLoginRequired, setShowLoginRequired] = useState(false);
@@ -49,32 +49,32 @@ export default function MenuBar({ isAdmin = false, onClose }) {
         {
             title: "마이페이지",
             sub: [
-                { name: "개인 정보 조회", path: "/profile-check" },
-                { name: "찜 목록", path: "/likes" },
+                {name: "개인 정보 조회", path: "/profile-check"},
+                {name: "찜 목록", path: "/likes"},
             ],
         },
         {
             title: "나의 예약",
             sub: [
-                { name: "예약 조회", path: "/reservation/list" },
-                { name: "예약 변경", path: "/modifyreservation" },
+                {name: "예약 조회", path: "/reservation/list"},
+                {name: "예약 변경", path: "/modifyreservation"},
             ],
         },
-        { title: "프로그램 찾기", path: "/search" },
-        { title: "리뷰", path: "/reviews" },
+        {title: "프로그램 찾기", path: "/search"},
+        {title: "리뷰", path: "/reviews"},
     ];
 
     const adminMenu = [
         {
             title: "예약 관리",
             sub: [
-                { name: "예약 조회", path: "/admin/reservations" },
-                { name: "예약 승인", path: "/admin/approval" },
+                {name: "예약 조회", path: "/admin/reservations"},
+                {name: "예약 승인", path: "/admin/approval"},
             ],
         },
-        { title: "프로그램 찾기", path: "/search" },
-        { title: "리뷰", path: "/reviews" },
-        { title: "Admin", isFooter: true, path: "/admin" },
+        {title: "프로그램 찾기", path: "/search"},
+        {title: "리뷰", path: "/reviews"},
+        {title: "Admin", isFooter: true, path: "/admin"},
     ];
 
     const isAdminUser =
@@ -119,7 +119,7 @@ export default function MenuBar({ isAdmin = false, onClose }) {
                 )}
             </div>
 
-            <hr className="menu-divider" />
+            <hr className="menu-divider"/>
 
             {/* 메뉴 반복 렌더링 */}
             {menu.map((item, idx) => (
