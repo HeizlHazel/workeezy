@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./AdminReservationList.css";
 import Pagination from "./../../../shared/common/Pagination";
 import PaymentStatusButton from "../../../shared/common/PaymentStatusButton";
+import ReservationStatusButton from "../../../shared/common/ReservationStatusButton";
 
 export default function AdminReservationList() {
   const [reservations, setReservations] = useState([]);
@@ -111,7 +112,9 @@ export default function AdminReservationList() {
               <td>{r.reservationNo}</td>
               <td>{r.programTitle}</td>
               <td>{r.userName}</td>
-              <td>{r.status}</td>
+              <td>
+                <ReservationStatusButton status={r.status} />
+              </td>
               <td>
                 <PaymentStatusButton status={r.paymentStatus} />
               </td>
