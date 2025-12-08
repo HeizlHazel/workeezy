@@ -63,7 +63,7 @@ public class AuthController {
         // Refresh Token -> HttpOnly 쿠키로 내려주기
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-
+        cookie.setDomain("localhost");
         cookie.setMaxAge((int) (jwtProvider.getRefreshExpiration() / 1000));
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -166,6 +166,7 @@ public class AuthController {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setDomain("localhost");
         cookie.setMaxAge(0); // 즉시 삭제
         response.addCookie(cookie);
     }
