@@ -15,18 +15,17 @@ export default function DraftMenuBar({
   // 임시저장 리스트 메뉴
   const userMenu = [
     {
-      title: "임시저장 목록",
+      title: "임시저장 리스트",
       sub: draftList.map((draft) => ({
-        id: draft.id,
+        key: draft.key,
         name: (
           <>
             {draft.data.title || "제목 없음"}
-            {draft.id === latestDraftId && (
+            {draft.key === latestDraftId && (
               <span className="new-tag"> New!</span>
             )}
           </>
         ),
-        path: "#",
       })),
     },
   ];
@@ -53,6 +52,29 @@ export default function DraftMenuBar({
     );
   };
 
+  const handleDelete = async (draftKey) => {
+    if (!window.confirm("이 임시저장을 삭제하시겠습니까?")) return;
+
+    const token = localStorage.getItem("accessToken");
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/reservations/draft/${encodeURIComponent(
+          draftKey
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setDraftList((prev) =>
+        prev.filter((d) => d.key !== decodeURIComponent(draftKey))
+      );
+      alert("삭제 완료!");
+    } catch (err) {
+      console.error("임시저장 삭제 실패:", err);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className={`menu-bar ${isOpen ? "open" : "close"}`}>
       <button className="menu-close-btn" onClick={onClose}>
@@ -68,16 +90,26 @@ export default function DraftMenuBar({
           {/* 서브 목록에서 id 기준으로 토글 */}
           {item.sub && (
             <div className="submenu">
-              {item.sub.map((sub, subIdx) => (
+              {item.sub.map((sub) => (
                 <div
-                  key={sub.id} //
+                  key={sub.key}
                   className="submenu-item"
-                  onClick={() => toggleItem(sub.id)}
+                  onClick={() => toggleItem(sub.key)}
                 >
                   {sub.name}
+                  {/* 삭제 버튼 */}
+                  <button
+                    className="delete-btn"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 부모 onClick 방지
+                      handleDelete(sub.key);
+                    }}
+                  >
+                    X
+                  </button>
 
-                  {openItems.includes(sub.id) && (
-                    <span className="open-indicator">▼</span>
+                  {openItems.includes(sub.key) && (
+                    <span className="open-indicator"> ▼</span>
                   )}
                 </div>
               ))}

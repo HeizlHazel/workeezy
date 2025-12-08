@@ -1,16 +1,18 @@
 .submit-button {
   display: flex;
   flex-direction: row;
-  gap: var(--var-sds-size-space-400, 16px);
+  gap: 16px;
   align-items: center;
   justify-content: center;
   align-self: stretch;
   flex-shrink: 0;
   position: relative;
+  cursor: pointer;
 }
 
+/* 버튼 본체 */
 .button2 {
-  background: #35593d;
+  background-color: #35593d; /* ✅ 진초록 배경 */
   border: none;
   border-radius: 8px;
   padding: 12px;
@@ -19,22 +21,33 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   width: 85px;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+/* 텍스트 */
 .div2 {
-  color: var(--var-sds-color-text-brand-on-brand, #f5f5f5);
-  text-align: left;
-  font-family: var(
-    --single-line-body-base-font-family,
-    "Inter-Regular",
-    sans-serif
-  );
-  font-size: var(--single-line-body-base-font-size, 14px);
-  line-height: var(--single-line-body-base-line-height, 100%);
-  font-weight: var(--single-line-body-base-font-weight, 400);
+  color: #f8f5e9; /* ✅ 아이보리 글씨 */
+  text-align: center;
+  font-family: "AritaDotumKr-SemiBold", sans-serif;
+  font-size: 14px;
+  line-height: 100%;
+  font-weight: 600;
   position: relative;
+  letter-spacing: 0.3px;
+}
+
+/* hover 효과 */
+.button2:hover {
+  background-color: #2e4f36; /* 조금 어두운 진초록 */
+  transform: translateY(-1px);
+}
+
+/* 클릭 시 눌림 효과 */
+.button2:active {
+  background-color: #27472f;
+  transform: translateY(0);
 }

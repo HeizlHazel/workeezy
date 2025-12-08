@@ -3,6 +3,7 @@ package com.together.workeezy.reservation.controller;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
 import com.together.workeezy.reservation.service.DraftRedisService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,12 +48,16 @@ public class DraftController {
             @PathVariable String key,
             @RequestHeader("Authorization") String token
     ){
-        // 토큰 이메일 검증은 나중에 보안강화시 추가
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        if(!key.startsWith("draft:"+userId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error","본인 데이터만 삭제할 수 있습니다."));
+        }
+
         draftRedisService.deleteDraft(key);
         return ResponseEntity.ok(Map.of("message", "임시저장 삭제 완료"));
     }
 
-// CORS 허용도 되어 있고, Authorization 헤더 기반 인증 구조도 완벽.
 
 
 }
