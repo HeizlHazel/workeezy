@@ -1,7 +1,14 @@
 import "./HotelInfo.css";
 
-export default function HotelInfo({ info }) {
-    if (!info) return null;
+export default function HotelInfo({ hotel }) {
+    if (!hotel) return null;
+    const getImage = (url) => {
+        if (!url) return "";
+        return url.startsWith("public/")
+            ? "/" + url.replace("public/", "")
+            : url;
+    };
+
 
     return (
         <section className="pd-section">
@@ -10,12 +17,12 @@ export default function HotelInfo({ info }) {
             <br />
 
             <div className="pd-hotel-card">
-                <img src={info.photo1} className="pd-hotel-img" />
+                <img src={getImage(hotel.photo1)} className="pd-hotel-img" />
                 <div className="pd-hotel-info">
-                    <div className="pd-hotel-title">{info.name}</div>
-                    <div className="pd-hotel-address">{info.address}</div>
+                    <div className="pd-hotel-title">{hotel.name}</div>
+                    <div className="pd-hotel-address">{hotel.address}</div>
                     <div className="pd-hotel-desc">
-                        {info.equipment}
+                        {hotel.equipment}
                     </div>
                 </div>
             </div>

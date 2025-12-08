@@ -117,7 +117,8 @@ public class ProgramService {
                             r.getId(),
                             r.getRoomNo(),
                             r.getRoomPeople(),
-                            r.getRoomService()
+                            r.getRoomService(),
+                            r.getRoomType()
                     )).toList();
 
             PlaceDto dto = new PlaceDto(

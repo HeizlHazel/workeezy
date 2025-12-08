@@ -81,3 +81,23 @@
 .pd-reserve-btn:hover {
     background-color: #46663a;
 }
+/* DatePicker input 감싸는 wrapper */
+.date-wrap {
+    position: relative;
+}
+
+/* 아이콘을 input 안쪽 왼쪽에 고정 */
+.calendar-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    color: #777;
+    pointer-events: none; /* 🔥 아이콘 클릭해도 DatePicker input이 클릭됨 */
+}
+
+/* 입력창에 아이콘 공간 확보 */
+.pd-datepicker {
+    padding-left: 32px !important; /* 🔥 아이콘만큼 공간 띄우기 */
+}

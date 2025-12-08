@@ -17,6 +17,11 @@ import LikesPage from "./features/profile/pages/LikesPage.jsx";
 
 
 export default function App() {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+        window.Kakao.init("b915b18542b9776646e5434c83e959c9");
+        console.log("Kakao SDK initialized!");
+    }
+
     return (
         <Routes>
             <Route path="/" element={<Home/>}/>

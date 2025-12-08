@@ -40,7 +40,12 @@ export default function ProgramDetailPage() {
             />
 
             {/* 3) 예약바 */}
-            <ProgramReserveBar />
+            <ProgramReserveBar
+                rooms={program.hotel?.rooms ?? []}
+                offices={program.offices ?? []}
+                programId={program.id}
+            />
+
 
             {/* 4) 탭 */}
             <ProgramTabs />
@@ -52,12 +57,17 @@ export default function ProgramDetailPage() {
             <HotelInfo hotel={program.hotel} />
 
             {/* 7) 방 리스트 — 숙소의 rooms */}
-            <RoomList rooms={program.hotel?.rooms ?? []} />
+            <RoomList
+                rooms={program.hotel?.rooms ?? []}
+                photos={program.hotel ?? {}}
+            />
+
 
             {/* 8) 오피스 목록 */}
             <OfficeList offices={program.offices} />
 
-            {/* 9) 액티비티 목록 */}
+
+                {/* 9) 액티비티 목록 */}
             <ActivityInfo attractions={program.attractions} />
 
             {/* 10) Floating 버튼 */}

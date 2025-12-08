@@ -1,5 +1,6 @@
 package com.together.workeezy.program.dto;
 
+import com.together.workeezy.program.entity.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,4 +11,5 @@ public class RoomDto {
     private Integer roomNo;
     private Integer roomPeople;
     private String roomService;
+    private RoomType roomType;
 }
