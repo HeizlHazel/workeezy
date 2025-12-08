@@ -128,5 +128,18 @@ public class JwtTokenProvider {
         return refreshExpiration;
     }
 
+    // Access/Refresh 토큰 남은 만료시간(ms) 계산
+    public long getRemainingExpiration(String token) {
+        try {
+            Claims claims = getClaims(token);
+            Date expiration = claims.getExpiration();
+            long now = System.currentTimeMillis();
+
+            long diff = expiration.getTime() - now;
+            return Math.max(diff, 0); // 음수 방지
+        } catch (Exception e) {
+            return 0; // 만료된 토큰이면 0 리턴
+        }
+    }
 }
 

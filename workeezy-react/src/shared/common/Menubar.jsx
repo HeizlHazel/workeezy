@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
 import "./Menubar.css";
+import React, { useState, useEffect } from "react";
+import {logoutApi} from "../../api/authApi.js"
 
 export default function MenuBar({ isAdmin = false, onClose }) {
     const [userName, setUserName] = useState(null);
@@ -15,7 +16,8 @@ export default function MenuBar({ isAdmin = false, onClose }) {
     }, []);
 
     // 로그아웃
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await logoutApi();
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userName");
         localStorage.removeItem("role");

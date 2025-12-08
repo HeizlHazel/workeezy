@@ -50,7 +50,7 @@ public class SecurityConfig {
                         // Auth 공개 API
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
-                        .requestMatchers("/api/auth/logout").permitAll()
+                        .requestMatchers("/api/auth/logout").authenticated()
 
                         // 비밀번호 재확인, 마이페이지용 보호
                         .requestMatchers("/api/auth/check-password").authenticated()
