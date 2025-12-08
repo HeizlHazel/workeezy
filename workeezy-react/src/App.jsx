@@ -14,6 +14,9 @@ import SearchPage from "./features/search/pages/SearchPage.jsx";
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
 import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 import LikesPage from "./features/profile/pages/LikesPage.jsx";
+import Forbidden from "./shared/error/Forbidden.jsx";
+import ServerError from "./shared/error/ServerError.jsx";
+import NotFound from "./shared/error/NotFound.jsx";
 
 
 export default function App() {
@@ -54,6 +57,13 @@ export default function App() {
             {/* 예약 */}
             <Route path="/newreservation" element={<NewReservationPage/>}/>
             <Route path="/modifyreservation" element={<ModifyReservationPage/>}/>
+
+            {/* 에러 페이지 */}
+            <Route path="/403" element={<Forbidden />} />
+            <Route path="/500" element={<ServerError />} />
+
+            {/* 404 자동 이동 */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }
