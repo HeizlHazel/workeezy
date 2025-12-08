@@ -5,6 +5,7 @@ import SubmitButton from "./SubmitButton.jsx";
 import "./ReservationForm.css";
 import axios from "../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar";
+import MenuBar from "./../../../shared/common/Menubar";
 
 export default function ReservationForm({ initialData }) {
   // -------------------------------------------------------------------

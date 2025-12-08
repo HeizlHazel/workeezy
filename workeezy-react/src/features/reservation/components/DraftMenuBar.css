@@ -1,4 +1,4 @@
-.menu-bar {
+.draft-menu-bar {
   position: fixed;
   top: 0;
   right: 0;
@@ -8,42 +8,38 @@
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
   padding: 80px 20px 20px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 900;
   transform: translateX(100%);
   transition: transform 0.4s ease;
 }
 
-.menu-bar.open {
+.draft-menu-bar.open {
   transform: translateX(0);
   transition: 0.3s;
 }
 
-.menu-bar.close {
+.draft-menu-bar.close {
   transform: translateX(100%);
   transition: 0.3s;
 }
 
-.menu-item {
+/* ========================= 메뉴 항목 ========================= */
+.draft-menu-item {
   margin-bottom: 20px;
 }
 
-.menu-title {
-  font-size: 20px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-  padding: 8px 4px;
-  border-radius: 6px;
+.draft-menu-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 4px;
 }
 
-.menu-item.active .menu-title {
-  background: #f0f0f0;
-}
-
-/* ✅ 아래로 펼쳐지는 소메뉴 */
-.submenu {
+/* ========================= 서브메뉴 ========================= */
+.draft-submenu {
   margin-top: 8px;
-  padding-left: 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -61,29 +57,57 @@
   }
 }
 
-.submenu-item {
+.draft-submenu-item {
+  position: relative;
   font-size: 15px;
-  color: #222;
-  margin-bottom: 2px;
-  padding: 4px 2px;
-  transition: background 0.2s;
-  border-radius: 4px;
+  color: #333;
+  padding: 8px 10px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.submenu-item:hover {
-  background: #f7f7f7;
+/* hover 시 배경 / X 아이콘 표시 */
+.draft-submenu-item:hover {
+  background: #f9f9f9;
 }
 
-.menu-footer {
+.draft-submenu-item:hover .draft-delete-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 선택된 항목 */
+.draft-submenu-item.selected {
+  background: #f0f0f0;
+  font-weight: 500;
+}
+
+/* ========================= 삭제 버튼 (가운데 정렬) ========================= */
+.draft-delete-btn {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  font-size: 13px;
-  color: #bbb;
+  top: 53%; /* 🔹 세로 중앙 기준 */
+  right: 8px;
+  transform: translateY(-50%); /* 🔹 중앙으로 정렬 */
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-.menu-close-btn {
+/* hover 시 빨간색 + 확대 */
+.draft-delete-btn:hover {
+  color: #ff4d4f;
+  transform: translateY(-50%) scale(1.15); /* 중앙 유지하면서 확대 */
+}
+
+/* ========================= 닫기 버튼 ========================= */
+.draft-menu-close-btn {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -95,36 +119,24 @@
   transition: color 0.2s;
 }
 
-.menu-close-btn:hover {
+.draft-menu-close-btn:hover {
   color: #000;
 }
 
-/* ✅ 모든 링크 기본 스타일 제거 */
+/* ========================= New! 태그 ========================= */
+.draft-new-tag {
+  margin-left: 6px;
+  color: #ff4d4f;
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+/* ========================= 링크 초기화 ========================= */
 a,
 a:link,
 a:visited,
 a:hover,
 a:active {
-  text-decoration: none; /* 밑줄 제거 */
-  color: inherit; /* 부모 색상 상속 (기본 파란색 제거) */
-}
-
-/* ✅ 메뉴 전용 링크도 안전하게 커버 */
-.menu-title,
-.submenu-item {
-  color: #222; /* 원하는 텍스트 색 */
-}
-
-.menu-title:hover,
-.submenu-item:hover {
-  color: #000; /* 호버 시 살짝 진하게 */
-  background: #f7f7f7;
-}
-
-/* ✅ 추가: New! 태그 스타일 */
-.new-tag {
-  margin-left: 6px;
-  color: #ff4d4f;
-  font-weight: 600;
-  font-size: 0.85em;
+  text-decoration: none;
+  color: inherit;
 }

@@ -4,15 +4,15 @@ import axios from "../../../api/axios.js";
 
 export default function DraftMenuBar({
   isAdmin = false,
-  isOpen = false, // 기본 false 테스트시 ture로
+  isOpen = false,
   onClose,
   latestDraftId,
 }) {
-  const [openItems, setOpenItems] = useState([]); // 펼침 관리
-  const [draftList, setDraftList] = useState([]); // Redis 임시저장 리스트
-  const [loading, setLoading] = useState(false); // 수정: 로딩 상태
+  const [openItems, setOpenItems] = useState([]);
+  const [draftList, setDraftList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // 임시저장 리스트 메뉴
+  // 임시저장 리스트 메뉴 구성
   const userMenu = [
     {
       title: "임시저장 리스트",
@@ -22,7 +22,7 @@ export default function DraftMenuBar({
           <>
             {draft.data.title || "제목 없음"}
             {draft.key === latestDraftId && (
-              <span className="new-tag"> New!</span>
+              <span className="draft-new-tag"> New!</span>
             )}
           </>
         ),
@@ -46,12 +46,14 @@ export default function DraftMenuBar({
       .finally(() => setLoading(false));
   }, [isOpen]);
 
+  // 항목 클릭 토글
   const toggleItem = (id) => {
     setOpenItems((prev) =>
       prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
     );
   };
 
+  // 임시저장 삭제
   const handleDelete = async (draftKey) => {
     if (!window.confirm("이 임시저장을 삭제하시겠습니까?")) return;
 
@@ -76,41 +78,37 @@ export default function DraftMenuBar({
   };
 
   return (
-    <div className={`menu-bar ${isOpen ? "open" : "close"}`}>
-      <button className="menu-close-btn" onClick={onClose}>
+    <div className={`draft-menu-bar ${isOpen ? "open" : "close"}`}>
+      <button className="draft-menu-close-btn" onClick={onClose}>
         ✕
       </button>
 
       {loading && <p>불러오는 중...</p>}
 
       {userMenu.map((item, idx) => (
-        <div key={idx} className="menu-item">
-          <div className="menu-title">{item.title}</div>
+        <div key={idx} className="draft-menu-item">
+          <div className="draft-menu-title">{item.title}</div>
 
-          {/* 서브 목록에서 id 기준으로 토글 */}
           {item.sub && (
-            <div className="submenu">
+            <div className="draft-submenu">
               {item.sub.map((sub) => (
                 <div
                   key={sub.key}
-                  className="submenu-item"
+                  className={`draft-submenu-item ${
+                    openItems.includes(sub.key) ? "selected" : ""
+                  }`}
                   onClick={() => toggleItem(sub.key)}
                 >
                   {sub.name}
-                  {/* 삭제 버튼 */}
                   <button
-                    className="delete-btn"
+                    className="draft-delete-btn"
                     onClick={(e) => {
-                      e.stopPropagation(); // 부모 onClick 방지
+                      e.stopPropagation();
                       handleDelete(sub.key);
                     }}
                   >
-                    X
+                    <i className="fa-solid fa-xmark"></i>
                   </button>
-
-                  {openItems.includes(sub.key) && (
-                    <span className="open-indicator"> ▼</span>
-                  )}
                 </div>
               ))}
             </div>
