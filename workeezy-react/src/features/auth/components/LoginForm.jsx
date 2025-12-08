@@ -30,7 +30,7 @@ export default function LoginForm() {
         e.preventDefault();
 
         try {
-            const {data} = await loginApi(email, password);
+            const {data} = await loginApi(email, password, autoLogin);
 
             console.log("로그인 성공", data);
 

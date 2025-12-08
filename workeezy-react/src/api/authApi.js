@@ -1,8 +1,8 @@
 import api from "./axios.js";
 
 // 로그인 API
-export const loginApi = async (email, password) => {
-    return api.post("/api/auth/login", {email, password});
+export const loginApi = async (email, password, autoLogin) => {
+    return api.post("/api/auth/login", {email, password, autoLogin});
 };
 
 // 로그아웃 API1

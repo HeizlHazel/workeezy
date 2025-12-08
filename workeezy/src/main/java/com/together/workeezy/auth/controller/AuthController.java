@@ -49,23 +49,34 @@ public class AuthController {
         String email = userDetails.getUsername();
         String role = userDetails.getUser().getRole().name();
         String name = userDetails.getUser().getUserName();
-        Long userId =userDetails.getUser().getId();
+        Long userId = userDetails.getUser().getId();
 
         // Access Token 생성
         String accessToken = jwtProvider.createAccessToken(email, role, userId);
-
         // Refresh Token 생성
-        String refreshToken = jwtProvider.createRefreshToken(email, role,userId);
+        String refreshToken = jwtProvider.createRefreshToken(email, role, userId);
 
         // Redis에 refreshToken 저장 (AuthService)
         authService.saveRefreshToken(email, refreshToken);
 
+        // autoLogin 값 꺼내기
+        boolean autoLogin = request.isAutoLogin();
+
         // Refresh Token -> HttpOnly 쿠키로 내려주기
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setDomain("localhost");
-        cookie.setMaxAge((int) (jwtProvider.getRefreshExpiration() / 1000));
         cookie.setPath("/");
+        cookie.setDomain("localhost");
+
+        if (autoLogin) {
+            // 자동 로그인 on -> refreshToken 유효기간 전체 사용
+            int maxAgeSec = (int) (jwtProvider.getRefreshExpiration() / 1000);
+            cookie.setMaxAge(maxAgeSec);
+        } else {
+            // 자동 로그인 off -> 세션 쿠키
+            cookie.setMaxAge(-1);
+        }
+
         response.addCookie(cookie);
         System.out.println("✅ 인증 성공: " + authentication.getName());
 
@@ -101,7 +112,7 @@ public class AuthController {
         String accessToken = resolveAccessToken(request);
         System.out.println("로그아웃 accessToken = " + accessToken);
 
-        if(accessToken != null && jwtProvider.validateToken(accessToken)) {
+        if (accessToken != null && jwtProvider.validateToken(accessToken)) {
 
             long ttl = jwtProvider.getRemainingExpiration(accessToken);
 
