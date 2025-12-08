@@ -34,34 +34,44 @@ api.interceptors.response.use(
 
     async (err) => {
         const originalRequest = err.config;
+        const status = err.response?.status;
 
-        // 토큰 만료(401) + 무한루프 방지 처리
-        if (err.response?.status === 401 && !originalRequest._retry) {
+        // accessToken 만료(401) → refresh 시도
+        if (status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshRes = await refreshAxios.post("/api/auth/refresh");
-
-                // 백엔드 응답: { token: "새토큰", username: "hong@.." }
                 const newAccessToken = refreshRes.data.token;
 
-                // 새 accessToken 저장
                 localStorage.setItem("accessToken", newAccessToken);
 
-                // 재요청 시 Authorization 헤더 교체
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-                // 실패한 요청 재전송
-                return api(originalRequest);
-
+                return api(originalRequest); // 실패한 요청 재시도
             } catch (e) {
-                console.error("🔥 토큰 재발급 실패 → 자동 로그아웃");
+                console.error("🔥 refresh 실패 → 자동 로그아웃");
 
                 localStorage.removeItem("accessToken");
                 window.location.href = "/login";
 
                 return Promise.reject(e);
             }
+        }
+
+        // refresh 실패가 아닌 401 → 로그인 이동
+        if (status === 401) {
+            window.location.href = "/login";
+        }
+
+        // 접근 권한 없음(403) → 에러 페이지 이동
+        if (status === 403) {
+            window.location.href = "/403";
+        }
+
+        // 서버 문제(500) → 에러 페이지 이동
+        if (status === 500) {
+            window.location.href = "/500";
         }
 
         return Promise.reject(err);
