@@ -14,46 +14,47 @@ import SearchPage from "./features/search/pages/SearchPage.jsx";
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
 import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 import LikesPage from "./features/profile/pages/LikesPage.jsx";
-
+import AdimnReservationListPage from "./features/reservation/pages/AdminReservationListPage.jsx";
 
 export default function App() {
-    return (
-        <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/login" element={<LoginPage/>}/>
-            {/* 비밀번호 재확인 */}
-            <Route
-                path="/profile-check"
-                element={
-                    <PrivateRoute>
-                        <ProfilePasswordCheck />
-                    </PrivateRoute>
-                }
-            />
-            {/* 마이페이지 */}
-            <Route
-                path="/profile"
-                element={
-                    <PrivateRoute>
-                        <ProfileGuard>
-                            <MyPage />
-                        </ProfileGuard>
-                    </PrivateRoute>
-                }
-            />
-            <Route path="/likes" element={<LikesPage/>}/>
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<LoginPage />} />
+      {/* 비밀번호 재확인 */}
+      <Route
+        path="/profile-check"
+        element={
+          <PrivateRoute>
+            <ProfilePasswordCheck />
+          </PrivateRoute>
+        }
+      />
+      {/* 마이페이지 */}
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <ProfileGuard>
+              <MyPage />
+            </ProfileGuard>
+          </PrivateRoute>
+        }
+      />
+      <Route path="/likes" element={<LikesPage />} />
+      {/* 검색, 리뷰 */}
+      <Route path="/program" element={<ProgramDetailPage />} />
+      <Route path="/programs/:id" element={<ProgramDetailPage />} />
+      <Route path="/reviews" element={<ReviewPage />} />
+      <Route path="/search" element={<SearchPage />} />
+      {/* 예약 */}
+      <Route path="/newreservation" element={<NewReservationPage />} />
+      <Route path="/modifyreservation" element={<ModifyReservationPage />} />
 
-
-            {/* 검색, 리뷰 */}
-            <Route path="/program" element={<ProgramDetailPage/>}/>
-            <Route path="/programs/:id" element={<ProgramDetailPage/>}/>
-
-            <Route path="/reviews" element={<ReviewPage/>}/>
-            <Route path="/search" element={<SearchPage/>}/>
-
-            {/* 예약 */}
-            <Route path="/newreservation" element={<NewReservationPage/>}/>
-            <Route path="/modifyreservation" element={<ModifyReservationPage/>}/>
-        </Routes>
-    );
+      <Route
+        path="/adminreservationlist"
+        element={<AdimnReservationListPage />}
+      />
+    </Routes>
+  );
 }
