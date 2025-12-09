@@ -31,11 +31,6 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Size(max = 100)
-    @NotNull
-    @Column(name = "review_title", nullable = false, length = 100)
-    private String title;
-
     @Lob
     @Column(name = "review_content")
     private String content;

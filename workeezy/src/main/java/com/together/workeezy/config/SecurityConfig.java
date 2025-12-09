@@ -61,7 +61,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/programs/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
                         .requestMatchers("/api/search/**").permitAll()
-                        .requestMatchers("/api/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()   // ⭐ 추가
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
+
+
 
 
                         .requestMatchers("/api/reservations/**").authenticated()

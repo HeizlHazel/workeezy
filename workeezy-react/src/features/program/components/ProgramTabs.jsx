@@ -27,7 +27,7 @@ export default function ProgramTabs() {
             <button onClick={() => scrollToSection("hotel-info")}>숙소 정보</button>
             <button onClick={() => scrollToSection("office-info")}>오피스</button>
             <button onClick={() => scrollToSection("activity-info")}>액티비티</button>
-            <button onClick={() => scrollToSection("review-info")}>참여후기</button>
+            <button onClick={() => scrollToSection("review-input")}>후기작성</button>
         </div>
     );
 }

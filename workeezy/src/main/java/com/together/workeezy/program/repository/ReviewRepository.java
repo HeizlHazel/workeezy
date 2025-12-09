@@ -4,27 +4,12 @@ import com.together.workeezy.program.dto.ReviewDto;
 import com.together.workeezy.program.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("""
-                SELECT new com.together.workeezy.program.dto.ReviewDto(
-                    r.id,
-                    p.id,
-                    p.title,
-                    r.content,
-                    r.reviewPoint,
-                    ''
-                )
-                FROM Review r
-                JOIN r.program p
-                ORDER BY r.reviewDate DESC
-            """)
-    List<ReviewDto> findAllReviewCards();
-
+    // 전체 리뷰 카드 조회
     @Query("""
             SELECT new com.together.workeezy.program.dto.ReviewDto(
                 r.id,
@@ -32,7 +17,26 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
                 p.title,
                 r.content,
                 r.reviewPoint,
-                ''
+                null,
+                null
+            )
+            FROM Review r
+            JOIN r.program p
+            ORDER BY r.reviewDate DESC
+            """)
+    List<ReviewDto> findAllReviewCards();
+
+
+    // 특정 프로그램 리뷰 조회
+    @Query("""
+            SELECT new com.together.workeezy.program.dto.ReviewDto(
+                r.id,
+                p.id,
+                p.title,
+                r.content,
+                r.reviewPoint,
+                null,
+                null
             )
             FROM Review r
             JOIN r.program p
@@ -40,6 +44,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             ORDER BY r.reviewDate DESC
             """)
     List<ReviewDto> findReviewCardsByProgramId(Long programId);
-
-
 }
