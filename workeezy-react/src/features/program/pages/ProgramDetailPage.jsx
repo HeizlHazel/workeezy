@@ -40,13 +40,11 @@ export default function ProgramDetailPage() {
             />
 
             {/* 3) 예약바 */}
-            <div className="pd-reserve-wrapper">
             <ProgramReserveBar
                 rooms={program.hotel?.rooms ?? []}
                 offices={program.offices ?? []}
                 programId={program.id}
             />
-            </div>
 
 
             {/* 4) 탭 */}

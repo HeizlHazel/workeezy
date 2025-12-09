@@ -4,14 +4,22 @@ export default function ProgramTabs() {
 
     const scrollToSection = (id) => {
         const section = document.getElementById(id);
+        const headerHeight = 80;     // 기존 헤더 높이
+        const extraOffset = 40;      // margin/padding 보정값 (직접 조절 가능!)
 
         if (section) {
-            section.scrollIntoView({
-                behavior: "smooth",   // 부드럽게 스크롤
-                block: "start"
+            const elementPosition = section.getBoundingClientRect().top;
+            const offsetPosition =
+                elementPosition + window.pageYOffset - (headerHeight + extraOffset);
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
             });
         }
     };
+
+
 
     return (
         <div className="pd-tabs">

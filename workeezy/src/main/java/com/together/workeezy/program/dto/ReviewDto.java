@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class ReviewDto {
-    private Long id;
-    private String title;
-    private String content;
-    private Integer reviewPoint;
-    private LocalDateTime reviewDate;
-    private String userName;
+    private Long reviewId;
+    private Long programId;        // 상세 이동용
+    private String programName;    // 프로그램명
+    private String reviewText;     // 리뷰 내용
+    private Integer rating;        // 별점
+    private String image;
 }
 

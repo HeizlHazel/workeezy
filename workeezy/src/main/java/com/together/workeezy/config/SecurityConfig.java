@@ -61,6 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/programs/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
                         .requestMatchers("/api/search/**").permitAll()
+                        .requestMatchers("/api/reviews/**").permitAll()
 
 
                         .requestMatchers("/api/reservations/**").authenticated()

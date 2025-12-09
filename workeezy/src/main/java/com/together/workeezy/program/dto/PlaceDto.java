@@ -22,5 +22,6 @@ public class PlaceDto {
     private String equipment;
     private PlaceType type;
 
+    private String region;
     private List<RoomDto> rooms;  // 숙소인 경우에만 사용
 }

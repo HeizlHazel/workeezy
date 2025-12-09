@@ -12,17 +12,17 @@ import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
 export default function SearchPage() {
     const [search, setSearch] = useState("");
-    const [regions, setRegions] = useState(["전체"]);   // ⭐ 기본값: 전체 선택
     const [allPrograms, setAllPrograms] = useState([]);
     const [recommended, setRecommended] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 6; // ⭐ 한 페이지 6개
+    const pageSize = 6;
+
+    // ⭐ 지역 필터 상태
     const [bigRegion, setBigRegion] = useState("전체");
     const [smallRegions, setSmallRegions] = useState([]);
 
-
-    // 로그인 사용자
+    // ⭐ 로그인 사용자
     let userId = null;
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -30,15 +30,15 @@ export default function SearchPage() {
         userId = decoded.userId;
     }
 
-    // 프로그램 전체 로드
+    // ⭐ 페이지 최초 로드
     useEffect(() => {
         publicApi
             .get("/api/programs/cards")
             .then((res) => setAllPrograms(res.data))
-            .catch((err) => console.log(err));
+            .catch((err) => console.log("프로그램 로드 실패:", err));
     }, []);
 
-    // ⭐ 검색 요청 처리
+    // ⭐ 검색 API 호출
     const handleSearch = () => {
         if (!search.trim()) return;
 
@@ -47,7 +47,7 @@ export default function SearchPage() {
                 params: {
                     keyword: search,
                     userId: userId,
-                    regions: regions.includes("전체") ? [] : regions,
+                    regions: [], // 여긴 DB 검색 시 지역 필터 넣고 싶으면 넣으면 됨
                 },
             })
             .then((res) => {
@@ -55,67 +55,50 @@ export default function SearchPage() {
                 setRecommended(res.data.recommended);
                 setCurrentPage(1);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.log("검색 실패:", err));
     };
 
-    // ⭐ 지역 카테고리 토글
-    const toggleRegion = (region) => {
-        // 전체 선택 시 → 전체만 남기기
-        if (region === "전체") {
-            setRegions(["전체"]);
-            setCurrentPage(1);
-            return;
-        }
-
-        // 지역 선택 시 → 전체 제거 후 개별 지역 토글
-        setRegions((prev) => {
-            const cleaned = prev.filter((r) => r !== "전체");
-
-            // 이미 선택됨 → 제거
-            if (cleaned.includes(region)) {
-                return cleaned.filter((r) => r !== region);
-            }
-
-            // 추가
-            return [...cleaned, region];
-        });
-
-        setCurrentPage(1);
-    };
-
-
-    // ⭐ 최종 필터링
+    // ---------------------------------------------------------
+    // ⭐ 최종 필터링 (검색어 + 지역필터 모두 반영)
+    // ---------------------------------------------------------
     const filteredPrograms = allPrograms.filter((p) => {
+        const keyword = search.trim().toLowerCase();
 
-        // 전체 선택 시 필터 적용 X
-        if (bigRegion === "전체") return true;
+        // 🔍 1) 검색어 필터
+        if (keyword) {
+            const match =
+                (p.title && p.title.toLowerCase().includes(keyword)) ||
+                (p.region && p.region.toLowerCase().includes(keyword)) ||
+                (p.address && p.address.toLowerCase().includes(keyword)) ||
+                (p.info && p.info.toLowerCase().includes(keyword));
 
-        // 1차 영역 필터
-        const regionMap = {
-            수도권: ["서울", "경기", "인천"],
-            영남권: ["부산", "대구", "울산", "경남", "경북"],
-            호남권: ["광주", "전남", "전북"],
-            충청권: ["대전", "충북", "충남"],
-            강원권: ["강원"],
-            제주: ["제주"],
-            해외: ["해외"],
-        };
-
-        const validSmall = regionMap[bigRegion] || [];
-
-        // 작은 지역이 선택되었을 때
-        if (smallRegions.length > 0 && !smallRegions.includes(p.region)) {
-            return false;
+            if (!match) return false;
         }
 
-        // 작은 지역이 선택되지 않은 경우 → 1차 그룹만 검사
-        if (smallRegions.length === 0 && !validSmall.includes(p.region)) {
-            return false;
+        // 🌎 2) 지역 필터
+        if (bigRegion !== "전체") {
+            const regionMap = {
+                수도권: ["서울", "경기", "인천"],
+                영남권: ["부산", "대구", "울산", "경남", "경북"],
+                호남권: ["광주", "전남", "전북"],
+                충청권: ["대전", "충북", "충남"],
+                강원권: ["강원"],
+                제주: ["제주"],
+                해외: ["해외"],
+            };
+
+            const validSmall = regionMap[bigRegion] || [];
+
+            if (!p.region || !validSmall.includes(p.region)) return false;
+        }
+
+        // 🔽 3) 작은 지역 선택 시
+        if (smallRegions.length > 0) {
+            if (!smallRegions.includes(p.region)) return false;
         }
 
         return true;
     });
-
 
     // ⭐ 페이지네이션 계산
     const totalPages = Math.ceil(filteredPrograms.length / pageSize);
@@ -126,24 +109,29 @@ export default function SearchPage() {
         <PageLayout>
             <SectionHeader icon="fas fa-search" title="Search" />
 
-            {/* 검색창 */}
+            {/* 🔍 검색창 */}
             <SearchBar
                 value={search}
                 onChange={setSearch}
                 onSearch={handleSearch}
             />
 
-            {/* 카테고리 필터 */}
+            {/* 🗂 지역 카테고리 */}
             <CategoryFilter
                 bigRegion={bigRegion}
-                setBigRegion={setBigRegion}
+                setBigRegion={(r) => {
+                    setBigRegion(r);
+                    setSmallRegions([]); // 1차 지역 바뀌면 2차 초기화
+                    setCurrentPage(1);
+                }}
                 smallRegions={smallRegions}
-                setSmallRegions={setSmallRegions}
+                setSmallRegions={(list) => {
+                    setSmallRegions(list);
+                    setCurrentPage(1);
+                }}
             />
 
-
-
-            {/* 추천 프로그램 */}
+            {/* ⭐ 추천 프로그램 */}
             {recommended.length > 0 && (
                 <>
                     <h3>추천 프로그램</h3>
@@ -161,7 +149,7 @@ export default function SearchPage() {
                 </>
             )}
 
-            {/* ⭐ 페이지당 6개만 출력 */}
+            {/* ⭐ 필터링된 프로그램 목록 */}
             <div className="search-grid">
                 {paginatedPrograms.map((p) => (
                     <SearchCard

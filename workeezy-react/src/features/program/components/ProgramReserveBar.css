@@ -1,112 +1,149 @@
+/* =========================================================
+   📌 기본 예약바 (초기 위치에서는 정상적으로 보임)
+   ========================================================= */
 .pd-reserve {
     display: flex;
     align-items: center;
-    justify-content: space-between;   /* ⭐ 예약버튼을 오른쪽 끝으로 */
+    justify-content: space-between;
+
     gap: 1.2rem;
     padding: 1.2rem;
+
     border-radius: 18px;
-    color: #fff;
-    border: 1px solid #eeeeee;
+    border: 1px solid #eee;
+    background: #fff;
+
+    transition: all 0.35s ease;
+    z-index: 20;
 }
 
 
-
-.pd-input-wrap {
-    height: 48px;           /* ⭐ 셀렉트박스 & 버튼과 동일한 높이 */
-    display: flex;
+/* =========================================================
+   📌 기존 예약바가 화면에서 사라지면 → 하단 고정
+   ========================================================= */
+.pd-reserve.bottom-fixed {
+    position: fixed;
+    bottom: 0;
     align-items: center;
-    gap: 0.4rem;
-    background: #e5e5e5;
-    padding: 0 0.7rem;      /* 좌우 패딩만 유지 (상하 패딩 제거!) */
-    border-radius: 8px;
+    border-radius: 18px;
+    margin: 0;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 -4px 18px rgba(0,0,0,0.18);
+
+    z-index: 9999;
 }
 
-
-/* 각 아이템 전체를 위로 올림 */
+/* 예약 항목 공통 */
 .pd-reserve-item {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    color: #000000;
     min-width: 200px;
-    margin-top: -10px;     /* ⭐ 라벨 + 입력박스 전체를 위로 이동 */
+    margin-top: -10px;
 }
 
+.pd-reserve-item label {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Select */
 .pd-reserve-item select {
+    height: 48px;
+    padding: 0.8rem 1rem;
+
     background: #e5e5e5;
     border: none;
-    padding: 0.8rem 1rem;
     border-radius: 8px;
-    font-size: 0.95rem;
 
-    height: 48px;           /* ⭐ 버튼 높이에 맞춤 */
+    font-size: 0.95rem;
     display: flex;
-    align-items: center;    /* 텍스트 수직 중앙 */
+    align-items: center;
 }
 
+/* DatePicker */
+.pd-input-wrap {
+    position: relative;
+    height: 48px;
+    display: flex;
+    align-items: center;
+
+    background: #e5e5e5;
+    padding: 0 0.7rem;
+    border-radius: 8px;
+    overflow: visible !important;
+}
+
+.calendar-icon {
+    position: absolute;
+    left: 10px;
+    font-size: 1.1rem;
+    color: #777;
+    pointer-events: none;
+}
 
 .pd-datepicker {
-    border: none;
+    width: 100%;
     background: none;
+    border: none;
     font-size: 0.95rem;
+
+    padding-left: 32px !important;
     cursor: pointer;
-
-    padding: 0;             /* 불필요한 여백 제거 */
-    margin: 0;
+    caret-color: transparent !important;
 }
 
-
-
-/* 아이콘 */
-.pd-input-wrap .icon {
-    opacity: 0.6;
-    font-size: 1rem;
+.pd-datepicker:focus {
+    outline: none !important;            /* 포커스 표시 제거 */
+    box-shadow: none !important;
 }
 
-/* 버튼 */
+/* 예약 버튼 */
 .pd-reserve-btn {
     background-color: #557a46;
     color: white;
     border: none;
+
     padding: 0.9rem 1.2rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
     min-width: 150px;
     min-height: 70px;
 
-    margin-left: auto; /* ⭐ 오른쪽 끝으로 붙음 */
+    border-radius: 10px;
+    font-size: 1rem;
+
+    cursor: pointer;
+    margin-left: auto;
 }
 
 .pd-reserve-btn:hover {
     background-color: #46663a;
 }
-/* DatePicker input 감싸는 wrapper */
-.date-wrap {
-    position: relative;
+/* 달력 + 시간 패널 가로 정렬 */
+.react-datepicker {
+    display: flex !important;
+    flex-direction: row !important;   /* 🔥 핵심 */
+    align-items: flex-start !important;
+    overflow: hidden !important;
 }
 
-/* 아이콘을 input 안쪽 왼쪽에 고정 */
-.calendar-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.1rem;
-    color: #777;
-    pointer-events: none; /* 🔥 아이콘 클릭해도 DatePicker input이 클릭됨 */
+/* 달력은 줄어들지 않게 */
+.react-datepicker__month-container {
+    flex-shrink: 0 !important;
 }
 
-/* 입력창에 아이콘 공간 확보 */
-.pd-datepicker {
-    padding-left: 32px !important; /* 🔥 아이콘만큼 공간 띄우기 */
+/* 시간 패널도 옆으로 고정 */
+.react-datepicker__time-container {
+    flex-shrink: 0 !important;   /* 🔥 절대 아래로 떨어지지 않게 */
+    width: 95px !important;
+    overflow: hidden !important;
 }
-/* 예약바를 스크롤 내려도 따라오게 */
-.pd-reserve-wrapper {
-    position: sticky;
-    top: 80px;          /* 헤더 높이에 맞게 조정 - 헤더 없으면 0 또는 16px 정도 */
-    z-index: 50;
-    background: #ffffff;   /* 스크롤 시 뒤 배경이 비치지 않게 */
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+
+/* 시간 리스트만 스크롤 */
+.react-datepicker__time-container .react-datepicker__time {
+    max-height: 230px !important;
+    overflow-y: auto !important;
 }
+
+
