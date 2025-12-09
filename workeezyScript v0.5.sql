@@ -993,4 +993,6 @@ VALUES
  '제주 서귀포시 안덕면', NULL, NULL,
  'attraction11_1.jpg', 'attraction11_2.jpg', 'attraction11_3.jpg',
  'https://visitjeju.net', '제주');
+
+ALTER TABLE tb_review DROP COLUMN review_title;
 commit;
