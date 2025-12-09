@@ -47,28 +47,11 @@ export default function ReservationForm({
   // 1. 초기데이터 반영
   // 2. state가 있으면 신규 예약 폼 초기화 : 기존 값 끼워넣기
   // -------------------------------------------------------------------
-  // useEffect(() => {
-  //   if (initialData) {
-  //     setForm(initialData);
-  //   } else if (state) {
-  //     setForm((prev) => ({
-  //       ...prev,
-  //       programId: programId || prev.programId,
-  //       startDate: checkIn
-  //         ? new Date(checkIn).toISOString().slice(0, 10)
-  //         : prev.startDate,
-  //       endDate: checkOut
-  //         ? new Date(checkOut).toISOString().slice(0, 10)
-  //         : prev.endDate,
-  //       placeName: officeId || prev.placeName,
-  //       roomType: roomId || prev.roomType,
-  //     }));
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [initialData, state]); // state가 바뀌거나, initialData가 들어올 때마다
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setForm((prev) => ({
         ...prev,
         programId: initialData.programId || prev.programId,
@@ -89,16 +72,33 @@ export default function ReservationForm({
   // 사용자 정보 자동 채우기 (localStorage에서 가져오기)
   // -------------------------------------------------------------------
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData) {
-      setForm((prev) => ({
-        ...prev,
-        userName: userData.name || prev.userName,
-        company: userData.company || prev.company,
-        email: userData.email || prev.email,
-        phone: userData.phone || prev.phone,
-      }));
-    }
+    const fetchUser = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const res = await axios.get("http://localhost:8080/api/user/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const userData = res.data;
+        // localStorage에 저장 (다음번 자동 완성용)
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        // form 자동 채우기
+        setForm((prev) => ({
+          ...prev,
+          userName: userData.name || userData.userName || prev.userName,
+          company: userData.company || prev.company,
+          email: userData.email || prev.email,
+          phone: userData.phone || prev.phone,
+        }));
+      } catch (err) {
+        console.error("유저 정보 불러오기 실패:", err);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   // -------------------------------------------------------------------
