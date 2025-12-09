@@ -113,6 +113,7 @@ export default function ReviewPage() {
                         programName={r.programName}
                         reviewText={r.reviewText}
                         programId={r.programId}
+                        region={r.region}
                     />
 
                 ))}

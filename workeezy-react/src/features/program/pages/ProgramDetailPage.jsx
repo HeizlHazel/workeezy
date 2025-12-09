@@ -13,6 +13,7 @@ import {useEffect, useState} from "react";
 import api from "../../../api/axios.js";
 import PageLayout from "../../../Layout/PageLayout.jsx";
 import HotelInfo from "../components/details/HotelInfo.jsx";
+import {ReviewInput} from "../components/ReviewInput.jsx";
 
 export default function ProgramDetailPage() {
     const {id} = useParams();
@@ -74,6 +75,9 @@ export default function ProgramDetailPage() {
             {/* 9) 액티비티 목록 */}
             <section id="activity-info">
                 <ActivityInfo attractions={program.attractions}/>
+            </section>
+            <section id="review-input">
+                <ReviewInput programId={id}/>
             </section>
             {/* 10) Floating 버튼 */}
             <FloatingButtons/>
