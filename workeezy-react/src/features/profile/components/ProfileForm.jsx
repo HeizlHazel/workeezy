@@ -1,7 +1,8 @@
 import "./ProfileForm.css";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import api from "../../../api/axios.js";
 import SectionHeader from "../../../shared/common/SectionHeader.jsx"; // axios 인스턴스
+import {toast} from "../../../shared/alert/workeezyAlert.js";
 
 export default function ProfileForm() {
     const [user, setUser] = useState({
@@ -16,7 +17,7 @@ export default function ProfileForm() {
     useEffect(() => {
         const fetchMyInfo = async () => {
             try {
-                const { data } = await api.get("/api/user/me");
+                const {data} = await api.get("/api/user/me");
                 console.log("내 정보:", data);
 
                 setUser((prev) => ({
@@ -24,7 +25,6 @@ export default function ProfileForm() {
                     email: data.email,
                     name: data.name,
                     role: data.role,
-                    // 백엔드에서 넘겨주면 추가
                     birth: data.birth || "",
                     phone: data.phone || "",
                     company: data.company || "",
@@ -37,9 +37,43 @@ export default function ProfileForm() {
         fetchMyInfo();
     }, []);
 
+    const isValidPhone = (value) => {
+        const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
+        return phoneRegex.test(value);
+    };
+
+    const handleUpdate = async () => {
+        console.log("업데이트 함수 실행됨!");
+        console.log("user.phone:", user.phone);
+        if (!isValidPhone(user.phone)) {
+            await toast.fire({
+                icon: "error",
+                position: "top",
+                title: "연락처 형식 오류",
+                text: "하이픈(-) 포함 13자리 형식으로 입력해주세요.",
+            });
+            return;
+        }
+
+        try {
+            await api.put("/api/user/phone", {phone: user.phone});
+            await toast.fire({
+                icon: "success",
+                title: "연락처가 성공적으로 변경되었습니다!",
+            });
+
+        } catch (err) {
+            console.error("수정 실패: ", err);
+            await toast.fire({
+                icon: "error",
+                title: "수정에 실패했습니다. 다시 시도해주세요.",
+            });
+        }
+    };
+
     return (
         <div className="profile-page">
-            <SectionHeader icon="far fa-user" title="개인 정보 조회" />
+            <SectionHeader icon="far fa-user" title="개인 정보 조회"/>
 
             {/* ----- 개인정보 수정 섹션 ----- */}
             <div className="section">
@@ -47,30 +81,36 @@ export default function ProfileForm() {
 
                 <div className="form-row">
                     <label>아이디</label>
-                    <input type="text" readOnly value={user.email} />
+                    <input className="readonly-profile" type="text" readOnly value={user.email}/>
                 </div>
 
                 <div className="form-row">
                     <label>이름</label>
-                    <input type="text" readOnly value={user.name} />
+                    <input className="readonly-profile" type="text" readOnly value={user.name}/>
                 </div>
 
                 <div className="form-row">
                     <label>생년월일</label>
-                    <input type="text" readOnly value={user.birth} />
+                    <input className="readonly-profile" type="text" readOnly value={user.birth}/>
                 </div>
 
                 <div className="form-row">
                     <label>연락처</label>
-                    <input type="text" value={user.phone} readOnly />
+                    <input type="text"
+                           value={user.phone}
+                           onChange={(e) =>
+                               setUser((prev) => ({...prev, phone: e.target.value}))
+                           }/>
                 </div>
 
                 <div className="form-row">
                     <label>소속 회사</label>
-                    <input type="text" readOnly value={user.company} />
+                    <input className="readonly-profile" type="text" readOnly value={user.company}/>
                 </div>
-
-                <button className="primary-btn">개인 정보 수정</button>
+                <button className="primary-btn"
+                        onClick={handleUpdate}
+                >개인 정보 수정
+                </button>
             </div>
 
             {/* ----- 비밀번호 변경 섹션 ----- */}
@@ -79,12 +119,12 @@ export default function ProfileForm() {
 
                 <div className="form-row">
                     <label>기존 비밀번호</label>
-                    <input type="password" />
+                    <input type="password"/>
                 </div>
 
                 <div className="form-row">
                     <label>새 비밀번호</label>
-                    <input type="password" />
+                    <input type="password"/>
                 </div>
 
                 <p className="hint">
@@ -93,7 +133,7 @@ export default function ProfileForm() {
 
                 <div className="form-row">
                     <label>새 비밀번호 확인</label>
-                    <input type="password" />
+                    <input type="password"/>
                 </div>
 
                 <p className="hint">비밀번호 확인을 위해 한 번 더 입력해주세요.</p>

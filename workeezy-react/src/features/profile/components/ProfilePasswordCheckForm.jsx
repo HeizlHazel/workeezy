@@ -2,6 +2,7 @@ import "./ProfilePasswordCheckForm.css";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import api from "../../../api/axios.js";
+import {toast} from "../../../shared/alert/workeezyAlert.js";
 
 export default function ProfilePasswordCheckForm() {
     const [password, setPassword] = useState("");
@@ -17,11 +18,17 @@ export default function ProfilePasswordCheckForm() {
                 localStorage.setItem("profileVerified", "true");
                 navigate("/profile", {replace: true});
             } else {
-                alert("비밀번호가 일치하지 않습니다.");
+                await toast.fire({
+                    icon: "error",
+                    title: "비밀번호가 일치하지 않습니다.",
+                });
             }
         } catch (err) {
             console.error(err);
-            alert("오류 발생");
+            await toast.fire({
+                icon: "error",
+                title: "오류가 발생했습니다.",
+            });
         }
     };
 

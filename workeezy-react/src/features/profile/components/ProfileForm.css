@@ -101,3 +101,7 @@
 .primary-btn:hover {
   background: #2c4a33;
 }
+
+.readonly-profile {
+    color: #aaaaaa;
+}
