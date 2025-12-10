@@ -50,8 +50,8 @@
 }
 
 .draft-card.selected {
-  background: #f3f7ff;
-  border-color: #c2d4ff;
+  background: #ffffff;
+  border-color: #b4d1ba;
 }
 
 /* ========================= 카드 헤더 ========================= */
@@ -101,7 +101,7 @@
 /* ========================= 불러오기 버튼 ========================= */
 .draft-load-btn {
   margin-top: 8px;
-  background: #407bff;
+  background: #35593d;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -112,7 +112,7 @@
 }
 
 .draft-load-btn:hover {
-  background: #2e5ed6;
+  background: #35593dad;
 }
 
 /* ========================= 삭제 버튼 ========================= */
