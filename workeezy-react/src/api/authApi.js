@@ -11,7 +11,6 @@ export const logoutApi = async () => {
 };
 
 // 비밀번호 확인 API
-
-// 유저 정보 조회
-
-// AccessToken 재발급 요청 — 외부에서 직접 쓰고 싶을 때
+export const checkPasswordApi = (password) => {
+    return api.post("/api/auth/check-password", {password});
+}
