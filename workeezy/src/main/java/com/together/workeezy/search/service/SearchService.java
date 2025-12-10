@@ -31,16 +31,16 @@ public class SearchService {
     @Transactional
     public SearchResultDto search(String keyword, List<String> regions, Long userId) {
 
-        // 0) 사용자 정보 준비
+        // 0) 사용자 정보
         User user = null;
         if (userId != null) {
             user = new User();
             user.setId(userId);
         }
 
-        // 검색 기록 저장
+        // 1) 검색 기록 저장
         Search search = null;
-        if (userId != null) {
+        if (user != null) {
             search = new Search();
             search.setUser(user);
             search.setSearchPhrase(keyword);
@@ -49,19 +49,23 @@ public class SearchService {
 
         Long searchId = (search != null) ? search.getId() : null;
 
-        // 전체 프로그램 조회
-        List<Program> allPrograms = programRepository.findAll();
+        // 2) 키워드 기반 프로그램 검색 (핵심)
+        List<Program> matched = programRepository.searchByKeyword(keyword);
 
-        // 기존 유사도 제거
-        if (searchId != null) {
-            searchProgramRepository.deleteAll(
-                    searchProgramRepository.findBySearchIdOrderBySearchPointDesc(searchId)
-            );
+        // 3) 지역 필터 적용
+        if (regions != null && !regions.isEmpty()) {
+            matched = matched.stream()
+                    .filter(p -> {
+                        List<Place> places = placeRepository.findByProgramId(p.getId());
+                        return places.stream()
+                                .anyMatch(pl -> regions.contains(pl.getPlaceRegion()));
+                    })
+                    .toList();
         }
 
-        // 유사도 계산
-        if (search != null) {
-            for (Program program : allPrograms) {
+        // 4) 유사도 계산 (matched에만 수행)
+        if (searchId != null) {
+            for (Program program : matched) {
                 List<Place> places = placeRepository.findByProgramId(program.getId());
                 int score = calculator.calculate(program, places, keyword);
 
@@ -74,56 +78,38 @@ public class SearchService {
             }
         }
 
-        // 3) 🔍 키워드 기반 기본 검색 결과
-        List<Program> matched = programRepository.searchByKeyword(keyword);
-
-        // 4) 🔥 지역 필터 적용
-        if (regions != null && !regions.isEmpty()) {
-            matched = matched.stream()
-                    .filter(p -> {
-                        List<Place> places = placeRepository.findByProgramId(p.getId());
-                        return places.stream()
-                                .anyMatch(pl -> regions.contains(pl.getPlaceRegion()));
-                    })
+        // 5) 추천 TOP5
+        List<ProgramCardDto> recommendedCards = List.of();
+        if (searchId != null) {
+            recommendedCards = searchProgramRepository
+                    .findBySearchIdOrderBySearchPointDesc(searchId)
+                    .stream()
+                    .filter(sp -> sp.getSearchPoint() > 0)
+                    .map(SearchProgram::getProgram)
+                    .limit(5)
+                    .map(this::convert)
                     .toList();
         }
 
-        // 최종 매칭된 카드 변환
+        // 6) 검색 결과 카드 변환
         List<ProgramCardDto> matchedCards = matched.stream()
-                .map(this::convertProgramToCard)
+                .map(this::convert)
                 .toList();
-
-        // 5) 추천 TOP 5 (지역 필터도 적용됨)
-        List<ProgramCardDto> recommendedCards = List.of();
-        if (searchId != null) {
-            recommendedCards =
-                    searchProgramRepository.findBySearchIdOrderBySearchPointDesc(searchId)
-                            .stream()
-                            .filter(sp -> sp.getSearchPoint() > 0)
-                            .map(SearchProgram::getProgram)
-                            .filter(p -> {
-                                if (regions == null || regions.isEmpty()) return true;
-                                List<Place> places = placeRepository.findByProgramId(p.getId());
-                                return places.stream()
-                                        .anyMatch(pl -> regions.contains(pl.getPlaceRegion()));
-                            })
-                            .limit(5)
-                            .map(this::convertProgramToCard)
-                            .toList();
-        }
 
         return new SearchResultDto(matchedCards, recommendedCards);
     }
 
-    private ProgramCardDto convertProgramToCard(Program p) {
 
-        // stay 타입 장소(region)를 하나 가져오기
+    private ProgramCardDto convert(Program p) {
+
+        // region 가져오기
         String region = p.getPlaces().stream()
                 .filter(pl -> pl.getPlaceType() == PlaceType.stay)
                 .map(Place::getPlaceRegion)
                 .findFirst()
                 .orElse(null);
 
+        // 대표 사진 가져오기
         String photo = placeRepository.findPhotosByProgramId(p.getId())
                 .stream().findFirst().orElse(null);
 
@@ -132,10 +118,7 @@ public class SearchService {
                 p.getTitle(),
                 photo,
                 p.getProgramPrice(),
-                region   // ⭐ region 추가
+                region
         );
     }
-
 }
-
-
