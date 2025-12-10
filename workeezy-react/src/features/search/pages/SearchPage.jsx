@@ -23,7 +23,7 @@ export default function SearchPage() {
     // ---------------------------------------------
     // ⭐ 검색 상태 (초기값 = URL keyword)
     // ---------------------------------------------
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(() => urlKeyword);
 
     const [allPrograms, setAllPrograms] = useState([]);
     const [recommended, setRecommended] = useState([]);
@@ -49,6 +49,10 @@ export default function SearchPage() {
     // ---------------------------------------------------------
     const initialized = useRef(false);
 
+
+    useEffect(() => {
+        setSearch(urlKeyword);
+    }, [urlKeyword]);
 
 
 
