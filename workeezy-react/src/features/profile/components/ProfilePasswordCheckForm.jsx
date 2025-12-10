@@ -1,8 +1,8 @@
 import "./ProfilePasswordCheckForm.css";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import api from "../../../api/axios.js";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
+import {checkPasswordApi} from "../../../api/authApi.js";
 
 export default function ProfilePasswordCheckForm() {
     const [password, setPassword] = useState("");
@@ -12,11 +12,16 @@ export default function ProfilePasswordCheckForm() {
         e.preventDefault();
 
         try {
-            const res = await api.post("/api/auth/check-password", {password: password,});
+            const res = await  checkPasswordApi(password);
 
             if (res.data.success) {
                 localStorage.setItem("profileVerified", "true");
+                await toast.fire({
+                    icon: "success",
+                    title: "비밀번호 확인이 완료되었습니다."
+                });
                 navigate("/profile", {replace: true});
+
             } else {
                 await toast.fire({
                     icon: "error",

@@ -1,10 +1,7 @@
 package com.together.workeezy.auth.jwt;
 
 import com.together.workeezy.auth.security.CustomUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
@@ -108,11 +105,16 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
+                    .setAllowedClockSkewSeconds(30) // 허용 시간차
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            System.out.println("토큰 만료됨");
+            return false;
         } catch (Exception e) {
-            return false; // 만료 or 변조
+            System.out.println("토큰 검증 실패");
+            return false;
         }
     }
 

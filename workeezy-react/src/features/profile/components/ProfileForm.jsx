@@ -1,8 +1,8 @@
 import "./ProfileForm.css";
 import {useEffect, useState} from "react";
-import api from "../../../api/axios.js";
 import SectionHeader from "../../../shared/common/SectionHeader.jsx"; // axios 인스턴스
 import {toast} from "../../../shared/alert/workeezyAlert.js";
+import {getMyInfoApi, updatePasswordApi, updatePhoneApi} from "../../../api/userApi.js";
 
 export default function ProfileForm() {
     const [user, setUser] = useState({
@@ -13,11 +13,14 @@ export default function ProfileForm() {
         company: "",
         role: "",
     });
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [newPasswordCheck, setNewPasswordCheck] = useState("");
 
     useEffect(() => {
         const fetchMyInfo = async () => {
             try {
-                const {data} = await api.get("/api/user/me");
+                const {data} = await getMyInfoApi();
                 console.log("내 정보:", data);
 
                 setUser((prev) => ({
@@ -56,7 +59,7 @@ export default function ProfileForm() {
         }
 
         try {
-            await api.put("/api/user/phone", {phone: user.phone});
+            await updatePhoneApi(user.phone);
             await toast.fire({
                 icon: "success",
                 title: "연락처가 성공적으로 변경되었습니다!",
@@ -70,6 +73,48 @@ export default function ProfileForm() {
             });
         }
     };
+
+    const handleChangePassword = async () => {
+
+        console.log({ currentPassword, newPassword, newPasswordCheck });
+
+        if (!currentPassword || !newPassword || !newPasswordCheck) {
+            await toast.fire({
+                icon: "error",
+                title: "모든 필드를 입력해주세요.",
+            });
+            return;
+        }
+
+        if (newPassword !== newPasswordCheck) {
+            await toast.fire({
+                icon: "error",
+                title: "새 비밀번호가 일치하지 않습니다.",
+            })
+            return;
+        }
+
+        try {
+            await updatePasswordApi(currentPassword, newPassword, newPasswordCheck);
+            await toast.fire({
+                icon: "success",
+                title: "비밀번호 변경 완료! 다시 로그인해주세요.",
+            })
+            window.location.href = "/login";
+
+        } catch (err) {
+            console.error(err);
+
+            const message = err.response?.data || "비밀번호 변경 실패";
+
+            await toast.fire({
+                icon: "error",
+                title: message,
+            })
+        }
+        console.log("token:", localStorage.getItem("accessToken"));
+
+    }
 
     return (
         <div className="profile-page">
@@ -119,12 +164,16 @@ export default function ProfileForm() {
 
                 <div className="form-row">
                     <label>기존 비밀번호</label>
-                    <input type="password"/>
+                    <input type="password"
+                           value={currentPassword}
+                           onChange={(e) => setCurrentPassword(e.target.value)}/>
                 </div>
 
                 <div className="form-row">
                     <label>새 비밀번호</label>
-                    <input type="password"/>
+                    <input type="password"
+                           value={newPassword}
+                           onChange={(e) => setNewPassword(e.target.value)}/>
                 </div>
 
                 <p className="hint">
@@ -133,12 +182,16 @@ export default function ProfileForm() {
 
                 <div className="form-row">
                     <label>새 비밀번호 확인</label>
-                    <input type="password"/>
+                    <input type="password"
+                           value={newPasswordCheck}
+                           onChange={(e) => setNewPasswordCheck(e.target.value)}/>
                 </div>
 
                 <p className="hint">비밀번호 확인을 위해 한 번 더 입력해주세요.</p>
 
-                <button className="primary-btn">비밀번호 변경</button>
+                <button className="primary-btn"
+                        onClick={handleChangePassword}>비밀번호 변경
+                </button>
             </div>
         </div>
     );
