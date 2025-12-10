@@ -96,8 +96,11 @@ export default function SearchPage() {
         }
 
         navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
-        setSearch("");
+        setCurrentPage(1);
     };
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [urlKeyword]);
 
 
 
