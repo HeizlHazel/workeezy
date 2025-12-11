@@ -36,7 +36,7 @@ public class Payment {
 
     @NotNull
     @Column(name = "amount", nullable = false)
-    private Integer amount;
+    private Long amount;
 
     @NotNull
     @Enumerated(EnumType.STRING)

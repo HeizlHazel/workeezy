@@ -1,8 +1,12 @@
 package com.together.workeezy.payment.service;
 
+import com.together.workeezy.payment.CustomException;
 import com.together.workeezy.payment.client.TossPaymentClient;
 import com.together.workeezy.payment.dto.PaymentConfirmRequest;
 import com.together.workeezy.payment.dto.PaymentConfirmResponse;
+import com.together.workeezy.payment.dto.TossConfirmResponseDto;
+import com.together.workeezy.payment.entity.Payment;
+import com.together.workeezy.payment.enums.PaymentStatus;
 import com.together.workeezy.payment.repository.PaymentRepository;
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationStatus;
@@ -46,13 +50,43 @@ public class PaymentService {
 
         // Toss API로 결제 승인 요청
         // tossPaymentClient.confirm(...) 호출
+        TossConfirmResponseDto tossResponse =
+                tossPaymentClient.confirm(
+                        request.getPaymentKey(),
+                        request.getOrderId(),
+                        request.getAmount()
+                );
+
+        // Payment 엔티티 조회 (1:1 관계)
+        Payment payment = reservation.getPayment();
+        if(payment == null) {
+            payment.setReservation(reservation);
+        }
 
         // 승인 성공 → Payment 엔티티 업데이트
+        payment.setPaymentKey(tossResponse.getPaymentKey());
+        payment.setPaymentMethod(tossResponse.getMethod());
+        payment.setApprovedAt(tossResponse.getApprovedAt());
+        payment.setStatus(PaymentStatus.paid);
+
+        paymentRepository.save(payment);
 
         // Reservation 상태 CONFIRMED 변경
+        reservation.setStatus(ReservationStatus.confirmed);
 
         // DB 저장 & 응답 반환
+        return PaymentConfirmResponse.of(payment, reservation);
+    }
 
-        return null;
+    private void validateRequest(PaymentConfirmRequest request) {
+        if(request.getPaymentKey() == null || request.getPaymentKey().isBlank()) {
+            throw new CustomException(PAYMENT_KEY_MISSING);
+        }
+        if(request.getOrderId() == null || request.getOrderId().isBlank()) {
+            throw new CustomException(ORDER_ID_MISSING);
+        }
+        if(request.getAmount() == null request.getAmount() <= 0) {
+            throw new CustomException(AMOUNT_INVALID);
+        }
     }
 }

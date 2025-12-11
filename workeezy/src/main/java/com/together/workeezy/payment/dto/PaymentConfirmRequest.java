@@ -7,7 +7,6 @@ public class PaymentConfirmRequest {
 
     private String paymentKey;
     private String orderId;
-    private long amount;
-    private long reservationId;
-
+    private Long reservationId;
+    private Long amount;
 }
