@@ -35,7 +35,7 @@ public class ReservationService {
         // 오늘 날짜 문자열 (예: 20251209)
         String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 
-        // 오늘 날짜로 시작하는 예약번호 중 가장 마지막 값 1개 조회
+        // 오늘 날짜로 시작하는 예약번호 중 가장 마지막 값 1개 조회1
         Pageable limitOne = PageRequest.of(0, 1);
         List<String> latestList = reservationRepository.findLatestReservationNoByDate(today, limitOne);
         String latestNo = latestList.isEmpty() ? null : latestList.get(0);

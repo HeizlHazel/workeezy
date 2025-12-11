@@ -4,10 +4,9 @@ import axios from "../../../api/axios.js";
 import { useNavigate } from "react-router-dom";
 
 export default function DraftMenuBar({
-  isAdmin = false,
-  isOpen = false,
-  onClose,
-  latestDraftId,
+  isOpen = false, // 열림-닫힘 상태
+  onClose, // 닫기 함수
+  latestDraftId, // 최근 저장된 draft id
 }) {
   const [openItems, setOpenItems] = useState([]);
   const [draftList, setDraftList] = useState([]);
@@ -18,6 +17,7 @@ export default function DraftMenuBar({
   const userMenu = [
     {
       title: "임시저장 리스트",
+      // useEffect-setDraftList
       sub: draftList.map((draft) => ({
         key: draft.key,
         data: draft.data,
@@ -28,11 +28,14 @@ export default function DraftMenuBar({
 
   // Redis 임시저장 목록 불러오기
   useEffect(() => {
+    // 메뉴가 닫혀 있으면 불러오기 시도 x
     if (!isOpen) return;
     const token = localStorage.getItem("accessToken");
+    // 토큰이 없으면 불러오기 시도 x
     if (!token) return;
-
     setLoading(true);
+    // 실제 걸리는 시간동안 Loading 화면
+
     axios
       .get("http://localhost:8080/api/reservations/draft/me", {
         headers: { Authorization: `Bearer ${token}` },
@@ -40,7 +43,7 @@ export default function DraftMenuBar({
       .then((res) => setDraftList(res.data || []))
       .catch((err) => console.error("임시저장 목록 불러오기 실패", err))
       .finally(() => setLoading(false));
-  }, [isOpen]);
+  }, [isOpen]); //
 
   // ✅ 임시저장 불러오기
   const handleLoadDraft = async (draftKey) => {

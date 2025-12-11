@@ -7,13 +7,15 @@ import axios from "../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar";
 
 export default function ReservationForm({
-  initialData, // 사용자가 입력한 초기 데이터
+  initialData, // 사용자가 선택한 초기 데이터
   rooms = [], // 해당 워케이션 프로그램에서 선택 가능한 룸
   offices = [], // 해당 워케이션 프로그램에서 선택 가능한 오피스
 }) {
+  // 초기 데이터에서 필요한 값만 꺼냄
   const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
 
-  // 전체 배열에서 사용자가 선택한 id와 같은 id가 일치하는 객체를 찾아서 세팅
+  // 각 배열에서 find 메소드를 이용해 각 요소(객체)를 순회하면서
+  // 사용자가 선택한 Id와 같은 Id를 가진 첫 번째 객체를 찾아서 반환한다.
   const selectedRoom = rooms.find((r) => r.id === Number(roomId));
   const selectedOffice = offices.find((o) => o.id === Number(officeId));
 
@@ -51,11 +53,14 @@ export default function ReservationForm({
   useEffect(() => {
     if (initialData) {
       setForm((prev) => ({
-        ...prev,
+        ...prev, // 기존 form을 베이스로 하고 아래 필드로 덮어쓰기
+
+        // 초기값 우선, 초기값 없으면 기존 prev 값
         programId: initialData.programId || prev.programId,
         programTitle: initialData.programTitle || prev.programTitle,
 
-        // DraftData 및 ReservationData 모두 대응
+        // DraftData 및 ReservationData Data 동시 처리
+        // checkIn - 예약바 / startDate - 임시저장 및 수정 데이터
         startDate:
           initialData.checkIn || initialData.startDate
             ? new Date(initialData.checkIn || initialData.startDate)
@@ -138,14 +143,21 @@ export default function ReservationForm({
     e.preventDefault(); // 브라우저 자동 새로고침 막기
     const token = localStorage.getItem("accessToken");
 
+    // Number 캐스팅
+    const formattedForm = {
+      ...form,
+      programId: Number(form.programId),
+      roomId: Number(form.roomId),
+      officeId: Number(form.officeId),
+    };
+
     try {
       if (initialData && initialData.id) {
         // id가 있으면 예약 수정
-        console.log("🧾 initialData:", initialData);
-        // PUT : 예약 수정 (기존 예약 업데이트)
+        // console.log("🧾 initialData:", initialData);
         await axios.put(
           `http://localhost:8080/api/reservations/${initialData.id}`,
-          form,
+          formattedForm,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -158,12 +170,7 @@ export default function ReservationForm({
         // 신규 예약 등록
         await axios.post(
           "http://localhost:8080/api/reservations",
-          {
-            ...form,
-            programId: Number(form.programId),
-            roomId: Number(form.roomId),
-            officeId: Number(form.officeId),
-          },
+          formattedForm,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -183,7 +190,8 @@ export default function ReservationForm({
   // 임시 저장
   // -------------------------------------------------------------------
   const handleDraftSave = async () => {
-    const token = localStorage.getItem("accessToken"); // 로그인 시 저장된 JWT 토큰
+    const token = localStorage.getItem("accessToken");
+    // 로그인 시 저장된 JWT 토큰
 
     if (!token) {
       alert("로그인이 필요합니다.");

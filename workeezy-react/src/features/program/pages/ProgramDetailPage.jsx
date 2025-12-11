@@ -40,7 +40,6 @@ export default function ProgramDetailPage() {
         subImages={program.subImages}
       />
 
-      {/* 3) 예약바 */}
       <ProgramReserveBar
         rooms={program.hotel?.rooms ?? []}
         offices={program.offices ?? []}
