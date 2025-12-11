@@ -30,3 +30,9 @@ jwt:
   secret: VEhJU19JU19BX1NVUEVSX0xPTkdfU0VDUkVUX0tFWV9GT1JfSldUX1RPS0VOXzEyMzQ1Njc4
   access-expiration-ms: 1800000      # 30분
   refresh-expiration-ms: 604800000   # 7일
+
+toss:
+  payments:
+    secret-key: ${TOSS_SECRET_KEY:test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6}
+    client-key: ${TOSS_CLIENT_KEY:test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm} # 프론트에서 사용
+    base-url: https://api.tosspayments.com

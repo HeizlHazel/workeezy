@@ -63,6 +63,7 @@ export default function MenuBar({isAdmin = false, onClose}) {
             sub: [
                 {name: "개인 정보 조회", path: "/profile-check"},
                 {name: "찜 목록", path: "/likes"},
+                {name: "결제 내역", path: "/pay"},
             ],
         },
         {
