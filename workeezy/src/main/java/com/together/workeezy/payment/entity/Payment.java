@@ -1,5 +1,6 @@
-package com.together.workeezy.payment;
+package com.together.workeezy.payment.entity;
 
+import com.together.workeezy.payment.enums.PaymentStatus;
 import com.together.workeezy.reservation.Reservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -38,18 +39,20 @@ public class Payment {
     private Integer amount;
 
     @NotNull
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    private String status;
+    private PaymentStatus status; // ready, paid, cancelled, failed
 
     @Size(max = 50)
     @NotNull
     @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod;
 
-    @Column(name = "approved_at", updatable = false)
+    // 결제 승인 시각
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
+    // 결제 요청 시각
     @NotNull
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

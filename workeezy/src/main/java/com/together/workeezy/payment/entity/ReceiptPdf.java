@@ -1,4 +1,4 @@
-package com.together.workeezy.payment;
+package com.together.workeezy.payment.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

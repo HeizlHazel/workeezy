@@ -1,5 +1,7 @@
-package com.together.workeezy.payment;
+package com.together.workeezy.payment.entity;
 
+import com.together.workeezy.payment.enums.RefundStatus;
+import com.together.workeezy.payment.enums.RequestedBy;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
-public class UserMeResponse {
+public class UserMeResponseDto {
 
     private String email;
     private String name;

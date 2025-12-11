@@ -1,6 +1,6 @@
-package com.together.workeezy.auth.jwt;
+package com.together.workeezy.auth.security.jwt;
 
-import com.together.workeezy.auth.security.CustomUserDetailsService;
+import com.together.workeezy.auth.security.user.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

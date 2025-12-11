@@ -1,4 +1,4 @@
-package com.together.workeezy.auth.dto;
+package com.together.workeezy.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

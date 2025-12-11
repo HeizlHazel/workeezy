@@ -1,5 +1,6 @@
-package com.together.workeezy.payment;
+package com.together.workeezy.payment.entity;
 
+import com.together.workeezy.payment.enums.EventType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -27,9 +28,9 @@ public class PaymentLog {
     private String responseData;
 
     @NotNull
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false)
-    private String eventType;
+    private EventType eventType; // request, response, callback, fail
 
     @Column(name = "http_status")
     private Integer httpStatus;

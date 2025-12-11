@@ -1,4 +1,4 @@
-package com.together.workeezy.auth.security;
+package com.together.workeezy.auth.security.user;
 
 import com.together.workeezy.user.entity.User;
 import lombok.Getter;
