@@ -38,6 +38,11 @@ public class SearchAsyncService {
             List<Place> places = placeRepository.findByProgramId(program.getId());
             int score = calculator.calculate(program, places, keyword);
 
+            // ⭐ 점수가 0 이하면 저장하지 않음
+            if (score <= 0) {
+                continue;
+            }
+
             SearchProgram sp = new SearchProgram();
             sp.setSearch(search);
             sp.setProgram(program);
