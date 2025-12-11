@@ -4,7 +4,7 @@
 
 # 제출했던 파일은 조장이 가지고 있습니다
 
-# 12/3 업데이트 완
+# 12/11 업데이트 완
 
 # USE 사용DB명;
 
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     reservation_no VARCHAR(20) NOT NULL COMMENT '예약번호(YYYYMMDD-000000010)',
     start_date TIMESTAMP NOT NULL COMMENT '예약 시작 날짜',
     end_date TIMESTAMP NOT NULL COMMENT '예약 종료 날짜',
-    status ENUM('waiting', 'confirm', 'cancel') NOT NULL DEFAULT 'waiting' COMMENT '예약 상태(대기/확정/취소)',
+    status ENUM('waiting_payment', 'confirmed', 'cancel_requested', 'cancelled') NOT NULL DEFAULT 'waiting_payment' COMMENT '예약 상태(대기/확정/취소)',
     created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '예약 생성일',
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '예약 수정일',
     total_price BIGINT NOT NULL COMMENT '워케이션 총 금액',
@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
 ALTER TABLE tb_reservation ADD COLUMN people_count INT NOT NULL DEFAULT 1 COMMENT '예약 인원수';
+
 # 소셜 로그인 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_social_login (
     social_id        BIGINT NOT NULL AUTO_INCREMENT                COMMENT '소셜 로그인 고유 식별자',
@@ -193,7 +194,6 @@ CREATE TABLE IF NOT EXISTS tb_review (
     review_id      BIGINT NOT NULL AUTO_INCREMENT 			COMMENT '리뷰 고유 식별자',
     program_id     BIGINT NOT NULL 							COMMENT '프로그램 FK',
     user_id        BIGINT NOT NULL 							COMMENT '유저 FK',
-    review_title   VARCHAR(100) NOT NULL 					COMMENT '제목',
     review_content TEXT NULL								COMMENT '내용',
     review_date    TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP	COMMENT '작성일',
     review_point   INT NULL DEFAULT 0 						COMMENT '별점',
@@ -483,13 +483,13 @@ VALUES
  'https://coffee-gangneung.kr');
 
 INSERT INTO tb_review
-(program_id, user_id, review_title, review_content, review_point)
+(program_id, user_id, review_content, review_point)
 VALUES
-(1, 1, '완전 만족!', '숙소도 좋고 바다뷰가 최고였어요.', 5),
-(1, 2, '만족스러운 워케이션', '오피스 환경이 깔끔해요.', 4),
-(2, 3, '힐링 성공', '가평 자연이 너무 좋아요.', 5),
-(3, 4, '무난합니다', '기본 패키지로 적당했습니다.', 3),
-(4, 5, '좋았습니다', '커피거리 최고!', 5);
+(1, 1, '숙소도 좋고 바다뷰가 최고였어요.', 5),
+(1, 2, '오피스 환경이 깔끔해요.', 4),
+(2, 3, '가평 자연이 너무 좋아요.', 5),
+(3, 4, '기본 패키지로 적당했습니다.', 3),
+(4, 5, '커피거리 최고!', 5);
 
 INSERT INTO tb_search
 (user_id, search_phrase)
@@ -569,11 +569,11 @@ VALUES
 INSERT INTO tb_reservation
 (user_id, program_id, room_id, reservation_no, start_date, end_date, status, total_price, people_count)
 VALUES
-(1, 1, 1, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting', 450000, 4),
-(2, 1, 2, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirm', 380000, 6),
-(3, 1, 2, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancel', 290000, 6),
-(4, 1, 1, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting', 650000, 2),
-(5, 1, 2, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirm', 520000, 3);
+(1, 1, 1, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting_payment', 450000, 4),
+(2, 1, 2, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirmed', 380000, 6),
+(3, 1, 2, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancelled', 290000, 6),
+(4, 1, 1, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting_payment', 650000, 2),
+(5, 1, 2, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirmed', 520000, 3);
 
 # 결제 관련 샘플 데이터
 INSERT INTO tb_payments (reservation_id, order_id, payment_key, amount, payment_status, payment_method, approved_at, created_at)
@@ -994,5 +994,6 @@ VALUES
  'attraction11_1.jpg', 'attraction11_2.jpg', 'attraction11_3.jpg',
  'https://visitjeju.net', '제주');
 
-ALTER TABLE tb_review DROP COLUMN review_title;
+
+
 commit;
