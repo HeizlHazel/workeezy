@@ -6,12 +6,25 @@ import FloatingButtons from "../../../shared/common/FloatingButtons.jsx";
 import SearchCard from "../components/SearchCard.jsx";
 
 import publicApi from "../../../api/publicApi.js";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { jwtDecode } from "jwt-decode";
 import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 export default function SearchPage() {
-    const [search, setSearch] = useState("");
+    // ---------------------------------------------
+    // ⭐ URL keyword 읽기
+    // ---------------------------------------------
+    const [params] = useSearchParams();
+    const urlKeyword = params.get("keyword") || "";
+    const navigate = useNavigate();
+
+    // ---------------------------------------------
+    // ⭐ 검색 상태 (초기값 = URL keyword)
+    // ---------------------------------------------
+    const [search, setSearch] = useState(() => urlKeyword);
+
     const [allPrograms, setAllPrograms] = useState([]);
     const [recommended, setRecommended] = useState([]);
 
@@ -22,6 +35,7 @@ export default function SearchPage() {
     const [bigRegion, setBigRegion] = useState("전체");
     const [smallRegions, setSmallRegions] = useState([]);
 
+
     // ⭐ 로그인 사용자
     let userId = null;
     const token = localStorage.getItem("accessToken");
@@ -30,52 +44,76 @@ export default function SearchPage() {
         userId = decoded.userId;
     }
 
-    // ⭐ 페이지 최초 로드
+    // ---------------------------------------------------------
+    // ⭐ URL 변경 시 검색창(search) 동기화
+    // ---------------------------------------------------------
+    const initialized = useRef(false);
+
+
     useEffect(() => {
-        publicApi
-            .get("/api/programs/cards")
-            .then((res) => setAllPrograms(res.data))
-            .catch((err) => console.log("프로그램 로드 실패:", err));
-    }, []);
+        setSearch(urlKeyword);
+    }, [urlKeyword]);
 
-    // ⭐ 검색 API 호출
-    const handleSearch = () => {
-        if (!search.trim()) return;
 
-        publicApi
-            .get("/api/search", {
-                params: {
-                    keyword: search,
-                    userId: userId,
-                    regions: [], // 여긴 DB 검색 시 지역 필터 넣고 싶으면 넣으면 됨
-                },
-            })
-            .then((res) => {
-                setAllPrograms(res.data.cards);
-                setRecommended(res.data.recommended);
-                setCurrentPage(1);
-            })
-            .catch((err) => console.log("검색 실패:", err));
-    };
 
     // ---------------------------------------------------------
-    // ⭐ 최종 필터링 (검색어 + 지역필터 모두 반영)
+    // ⭐ URL keyword 변경 시:
+    //    keyword 있으면 → 검색 API
+    //    keyword 없으면 → 전체 프로그램 로드
+    // ---------------------------------------------------------
+    useEffect(() => {
+        console.log("🔥 API 호출 keyword:", urlKeyword);
+
+        if (urlKeyword && urlKeyword.trim() !== "") {
+            publicApi.get("/api/search", {
+                params: { keyword: urlKeyword, userId, regions: [] }
+            }).then(res => {
+                console.log("🔥 검색 API 응답(cards):", res.data.cards);
+                setAllPrograms(res.data.cards);
+                setRecommended(res.data.recommended);
+            });
+        } else {
+            publicApi.get("/api/programs/cards")
+                .then(res => {
+                    console.log("🔥 전체목록 API 응답:", res.data);
+                    setAllPrograms(res.data);
+                });
+        }
+    }, [urlKeyword]);
+
+
+
+    // ---------------------------------------------------------
+    // ⭐ 검색 버튼 / 엔터 → URL 이동
+    // ---------------------------------------------------------
+    const handleSearch = () => {
+        const trimmed = search.trim();
+
+        if (trimmed === "") {
+            navigate("/search");
+            setSearch("");
+            return;
+        }
+
+        navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
+        setCurrentPage(1);
+    };
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [urlKeyword]);
+
+
+
+
+    // ---------------------------------------------------------
+    // ⭐ 최종 필터링 (title + region 만 필터링)
     // ---------------------------------------------------------
     const filteredPrograms = allPrograms.filter((p) => {
         const keyword = search.trim().toLowerCase();
 
-        // 🔍 1) 검색어 필터
-        if (keyword) {
-            const match =
-                (p.title && p.title.toLowerCase().includes(keyword)) ||
-                (p.region && p.region.toLowerCase().includes(keyword)) ||
-                (p.address && p.address.toLowerCase().includes(keyword)) ||
-                (p.info && p.info.toLowerCase().includes(keyword));
 
-            if (!match) return false;
-        }
 
-        // 🌎 2) 지역 필터
+        // 🌍 대지역 필터
         if (bigRegion !== "전체") {
             const regionMap = {
                 수도권: ["서울", "경기", "인천"],
@@ -92,7 +130,7 @@ export default function SearchPage() {
             if (!p.region || !validSmall.includes(p.region)) return false;
         }
 
-        // 🔽 3) 작은 지역 선택 시
+        // 🔽 소지역 필터
         if (smallRegions.length > 0) {
             if (!smallRegions.includes(p.region)) return false;
         }
@@ -113,7 +151,7 @@ export default function SearchPage() {
             <SearchBar
                 value={search}
                 onChange={setSearch}
-                onSearch={handleSearch}
+                onSearch={handleSearch}  // 검색 = URL 이동
             />
 
             {/* 🗂 지역 카테고리 */}
@@ -121,7 +159,7 @@ export default function SearchPage() {
                 bigRegion={bigRegion}
                 setBigRegion={(r) => {
                     setBigRegion(r);
-                    setSmallRegions([]); // 1차 지역 바뀌면 2차 초기화
+                    setSmallRegions([]);
                     setCurrentPage(1);
                 }}
                 smallRegions={smallRegions}
@@ -131,23 +169,23 @@ export default function SearchPage() {
                 }}
             />
 
-            {/* ⭐ 추천 프로그램 */}
-            {recommended.length > 0 && (
-                <>
-                    <h3>추천 프로그램</h3>
-                    <div className="search-grid">
-                        {recommended.map((p) => (
-                            <SearchCard
-                                key={p.id}
-                                id={p.id}
-                                title={p.title}
-                                photo={p.photo}
-                                price={p.price}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
+            {/*/!* ⭐ 추천 프로그램 *!/*/}
+            {/*{recommended.length > 0 && (*/}
+            {/*    <>*/}
+            {/*        <h3>추천 프로그램</h3>*/}
+            {/*        <div className="search-grid">*/}
+            {/*            {recommended.map((p) => (*/}
+            {/*                <SearchCard*/}
+            {/*                    key={p.id}*/}
+            {/*                    id={p.id}*/}
+            {/*                    title={p.title}*/}
+            {/*                    photo={p.photo}*/}
+            {/*                    price={p.price}*/}
+            {/*                />*/}
+            {/*            ))}*/}
+            {/*        </div>*/}
+            {/*    </>*/}
+            {/*)}*/}
 
             {/* ⭐ 필터링된 프로그램 목록 */}
             <div className="search-grid">
