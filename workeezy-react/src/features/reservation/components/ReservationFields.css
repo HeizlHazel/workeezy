@@ -1,3 +1,11 @@
+/* ============================================
+   ReservationFields.css
+   필드 이름 + input 가로 정렬 + 밑줄 스타일
+   (ArittaDodum 폰트 전역 상속 버전)
+============================================ */
+
+/* 공통 필드 박스 */
+.program-title,
 .user-name,
 .user-company,
 .user-phone,
@@ -7,83 +15,88 @@
 .roomtype,
 .people-count {
   display: flex;
-  flex-direction: column;
-  gap: var(--var-sds-size-space-200, 8px);
-  align-items: flex-start;
+  flex-direction: row; /* ✅ 가로 정렬 */
+  gap: 25px; /* 라벨과 인풋 간 여백 */
+  align-items: center; /* 세로 중앙정렬 */
   justify-content: flex-start;
   align-self: stretch;
   flex-shrink: 0;
   position: relative;
+  margin-bottom: 12px; /* 각 행 간격 */
 }
 
+/* 필드 라벨 (예: 신청자명, 이메일 등) */
 .div {
-  color: var(--var-sds-color-text-default-default, #1e1e1e);
+  width: 100px; /* 라벨 폭 고정 */
   text-align: left;
-  font-family: var(--body-base-font-family, "Inter-Regular", sans-serif);
-  font-size: var(--body-base-font-size, 13px);
+  color: var(--var-sds-color-text-default-default, #000000);
+  font-size: var(--body-base-font-size, 15px);
   line-height: var(--body-base-line-height, 140%);
   font-weight: var(--body-base-font-weight, 400);
-  position: relative;
-  align-self: stretch;
 }
 
+/* 입력창 감싸는 영역 */
 .input {
-  background: var(--var-sds-color-background-default-default, #ffffff);
-  border-radius: var(--var-sds-size-radius-200, 8px);
-  padding: var(--var-sds-size-space-300, 12px)
-    var(--var-sds-size-space-400, 16px) var(--var-sds-size-space-300, 12px)
-    var(--var-sds-size-space-400, 16px);
+  flex: 1; /* 가능한 폭 전부 차지 */
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #b9b9b9; /* ✅ 밑줄 스타일 */
+  padding: 8px 0;
   display: flex;
-  flex-direction: row;
-  gap: 0px;
   align-items: center;
-  justify-content: flex-start;
-  align-self: stretch;
-  flex-shrink: 0;
-  min-width: 120px;
-  position: relative;
-  overflow: hidden;
 }
 
+/* 입력창 자체 */
 .value {
-  color: var(--var-sds-color-text-default-tertiary, #b3b3b3);
-  text-align: left;
-  font-family: var(
-    --single-line-body-base-font-family,
-    "Inter-Regular",
-    sans-serif
-  );
-  font-size: var(--single-line-body-base-font-size, 14px);
-  line-height: var(--single-line-body-base-line-height, 100%);
-  font-weight: var(--single-line-body-base-font-weight, 400);
-  position: relative;
+  border: none;
+  outline: none;
+  background: transparent;
   flex: 1;
+  color: #1e1e1e;
+  font-family: inherit; /* ✅ 전역 폰트 상속 */
+  font-size: 14px;
+  font-weight: 400;
+  padding: 4px 0;
+}
+
+/* placeholder 색상 */
+.value::placeholder {
+  font-family: inherit;
+  color: #b3b3b3;
+  opacity: 1;
+}
+
+/* 포커스 시 밑줄 색상 강조 */
+.input:focus-within {
+  border-bottom-color: #f2ecd6;
+  transition: 0.2s ease;
 }
 
 /* 날짜 필드 */
-.date {
-  padding: 5px 15px 5px 15px;
-  align-self: stretch;
-  flex-shrink: 0;
-  display: grid;
-  gap: 24px;
-  position: relative;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(1, minmax(0, 1fr));
+.res-date {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 25px;
 }
 
+.date {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  flex: 1;
+}
+
+/* 날짜 input 래퍼 */
 .started-at,
 .ended-at {
-  border-radius: 4px;
-  border: 2.5px solid #e4dbc2;
-  background-color: #ffffff;
+  flex: 1;
+  border: none;
+  border-bottom: 2px solid #b9b9b9;
+  background: transparent;
+  height: 35px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 35px;
-  position: relative;
-  overflow: hidden;
 }
 
 .started-at input[type="date"],
@@ -93,21 +106,42 @@
   border: none;
   outline: none;
   background: transparent;
-  font-family: var(--m3-body-large-font-family, "Roboto-Regular", sans-serif);
-  font-size: var(--m3-body-large-font-size, 14px);
-  line-height: var(--m3-body-large-line-height, 24px);
-  letter-spacing: var(--m3-body-large-letter-spacing, 0.5px);
-  font-weight: var(--m3-body-large-font-weight, 400);
-  padding: 10px;
-  box-sizing: border-box;
+  font-family: inherit; /* ✅ 전역 폰트 상속 */
+  font-size: 14px;
   color: #1d1b20;
   cursor: pointer;
 }
 
-/* 브라우저 기본 아이콘 여백 조정 (옵션) */
+/* 캘린더 아이콘 스타일 */
 .started-at input[type="date"]::-webkit-calendar-picker-indicator,
 .ended-at input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.8;
-  margin-right: 8px;
+  margin-right: 6px;
+}
+
+/* ============================================
+   🧩 폰트 상속 보정 (전역적)
+============================================ */
+
+/* 모든 입력 요소가 body의 폰트를 상속받도록 */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* placeholder에도 동일 폰트 적용 */
+input::placeholder,
+textarea::placeholder {
+  font-family: inherit;
+  color: #b3b3b3;
+  opacity: 1;
+}
+
+/* 날짜 입력 필드 텍스트에도 폰트 상속 */
+input[type="date"] {
+  font-family: inherit;
+  color: #1e1e1e;
 }

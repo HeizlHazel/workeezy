@@ -1,7 +1,9 @@
 package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.Payment;
+import com.together.workeezy.program.entity.Place;
 import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,24 +39,28 @@ public class Reservation {
     @JoinColumn(name = "program_id", nullable = false)
     private Program program;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     @NotNull
     @Column(name = "reservation_no", nullable = false, length = 20)
     private String reservationNo;
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ReservationStatus status = ReservationStatus.WAITING;
+    private ReservationStatus status = ReservationStatus.waiting_payment;
 
-    @NotNull
+
     @CreationTimestamp
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;

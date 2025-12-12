@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -47,22 +49,34 @@ public class AuthController {
         String email = userDetails.getUsername();
         String role = userDetails.getUser().getRole().name();
         String name = userDetails.getUser().getUserName();
+        Long userId = userDetails.getUser().getId();
 
         // Access Token 생성
-        String accessToken = jwtProvider.createAccessToken(email, role);
-
+        String accessToken = jwtProvider.createAccessToken(email, role, userId);
         // Refresh Token 생성
-        String refreshToken = jwtProvider.createRefreshToken(email, role);
+        String refreshToken = jwtProvider.createRefreshToken(email, role, userId);
 
         // Redis에 refreshToken 저장 (AuthService)
         authService.saveRefreshToken(email, refreshToken);
 
+        // autoLogin 값 꺼내기
+        boolean autoLogin = request.isAutoLogin();
+
         // Refresh Token -> HttpOnly 쿠키로 내려주기
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-
-        cookie.setMaxAge((int) (jwtProvider.getRefreshExpiration() / 1000));
         cookie.setPath("/");
+        cookie.setDomain("localhost");
+
+        if (autoLogin) {
+            // 자동 로그인 on -> refreshToken 유효기간 전체 사용
+            int maxAgeSec = (int) (jwtProvider.getRefreshExpiration() / 1000);
+            cookie.setMaxAge(maxAgeSec);
+        } else {
+            // 자동 로그인 off -> 세션 쿠키
+            cookie.setMaxAge(-1);
+        }
+
         response.addCookie(cookie);
         System.out.println("✅ 인증 성공: " + authentication.getName());
 
@@ -92,15 +106,30 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
-        // 쿠키에서 refreshtoken 꺼내기
-        String refreshToken = extractRefreshToken(request);
+        deleteRefreshCookie(response);
 
-        if (refreshToken == null) {
-            return ResponseEntity.status(400).body("Refresh token 없음");
+        // 헤더에서 AccessToken 꺼내기
+        String accessToken = resolveAccessToken(request);
+        System.out.println("로그아웃 accessToken = " + accessToken);
+
+        if (accessToken != null && jwtProvider.validateToken(accessToken)) {
+
+            long ttl = jwtProvider.getRemainingExpiration(accessToken);
+
+            System.out.println("로그아웃 accessToken = " + accessToken);
+            System.out.println("TTL 남은 시간(ms) = " + ttl);
+
+            // 남은 ttl만큼 블랙리스트에 저장
+            redisService.blacklistAccessToken(accessToken, ttl);
+            System.out.println("블랙리스트 저장 시도 완료");
         }
 
-        // 쿠키에서도 삭제(MaxAge = 0)
-        deleteRefreshCookie(response);
+        // refreshToken 삭제
+        String refreshToken = extractRefreshToken(request);
+        if (refreshToken != null) {
+            String email = jwtProvider.getEmailFromToken(refreshToken);
+            redisService.deleteRefreshToken(email);
+        }
 
         return ResponseEntity.ok("로그아웃 성공");
     }
@@ -148,7 +177,18 @@ public class AuthController {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setDomain("localhost");
         cookie.setMaxAge(0); // 즉시 삭제
         response.addCookie(cookie);
     }
+
+    // Authorization 헤더에서 Bearer 토큰 추출
+    private String resolveAccessToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
+    }
+
 }

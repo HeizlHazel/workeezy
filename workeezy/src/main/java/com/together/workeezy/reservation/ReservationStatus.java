@@ -1,5 +1,5 @@
 package com.together.workeezy.reservation;
 
 public enum ReservationStatus {
-    WAITING, CONFIRM, CANCEL;
+    waiting_payment, confirmed,cancelled;
 }

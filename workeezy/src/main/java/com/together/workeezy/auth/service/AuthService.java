@@ -50,9 +50,11 @@ public class AuthService {
         // role 꺼내기
         Claims claims = jwtTokenProvider.getClaims(refreshToken);
         String role = (String) claims.get("role");
+        // userId 꺼내기
+        Long userId = claims.get("userId", Long.class);
 
         // 새 Access Token 발급
-        return jwtTokenProvider.createAccessToken(email, role);
+        return jwtTokenProvider.createAccessToken(email, role, userId);
 
     }
 

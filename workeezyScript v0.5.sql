@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     user_id BIGINT NOT NULL COMMENT '사용자 FK',
     program_id BIGINT NOT NULL COMMENT '프로그램 FK',
     room_id BIGINT NOT NULL COMMENT '룸 FK',
-    stay_id BIGINT NULL COMMENT '숙소 ID', 
+    stay_id BIGINT NULL COMMENT '숙소 ID',
     reservation_no VARCHAR(20) NOT NULL COMMENT '예약번호(YYYYMMDD-000000010)',
     start_date TIMESTAMP NOT NULL COMMENT '예약 시작 날짜',
     end_date TIMESTAMP NOT NULL COMMENT '예약 종료 날짜',
@@ -412,7 +412,7 @@ ALTER TABLE tb_reservation
     ADD CONSTRAINT fk_reservation_stayid
         FOREIGN KEY (stay_id)
         REFERENCES tb_place(place_id);
-		
+
 # 예약 수정 요청 FK 설정
 ALTER TABLE tb_reservation_modify
 ADD CONSTRAINT fk_modify_reservationid

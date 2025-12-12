@@ -1,10 +1,7 @@
 package com.together.workeezy.auth.jwt;
 
 import com.together.workeezy.auth.security.CustomUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
@@ -47,13 +44,14 @@ public class JwtTokenProvider {
     }
 
     // Access Token 생성
-    public String createAccessToken(String email, String role) {
+    public String createAccessToken(String email, String role, Long userId) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessExpiration);
 
         return Jwts.builder()
                 .setSubject(email) // 토큰 주인(email)
+                .claim("userId", userId)
                 .claim("role", role) // role을 claim에 넣는다
                 .setIssuedAt(now)
                 .setExpiration(expiry)
@@ -62,13 +60,14 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token 생성
-    public String createRefreshToken(String email, String role) {
+    public String createRefreshToken(String email, String role, Long userId) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshExpiration);
 
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
@@ -106,11 +105,16 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
+                    .setAllowedClockSkewSeconds(30) // 허용 시간차
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            System.out.println("토큰 만료됨");
+            return false;
         } catch (Exception e) {
-            return false; // 만료 or 변조
+            System.out.println("토큰 검증 실패");
+            return false;
         }
     }
 
@@ -128,5 +132,22 @@ public class JwtTokenProvider {
         return refreshExpiration;
     }
 
+    public Long getUserIdFromToken(String token) {
+        return getClaims(token).get("userId", Long.class);
+    }
+
+    // Access/Refresh 토큰 남은 만료시간(ms) 계산
+    public long getRemainingExpiration(String token) {
+        try {
+            Claims claims = getClaims(token);
+            Date expiration = claims.getExpiration();
+            long now = System.currentTimeMillis();
+
+            long diff = expiration.getTime() - now;
+            return Math.max(diff, 0); // 음수 방지
+        } catch (Exception e) {
+            return 0; // 만료된 토큰이면 0 리턴
+        }
+    }
 }
 

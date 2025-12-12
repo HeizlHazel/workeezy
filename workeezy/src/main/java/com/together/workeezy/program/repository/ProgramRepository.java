@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 
@@ -16,17 +17,15 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     FROM Program p
     JOIN p.places pl
     WHERE 
-        pl.placeRegion IS NOT NULL
-        AND (
-            p.title LIKE %:keyword%
-            OR pl.placeRegion LIKE %:keyword%
-        )
+        LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(pl.placeRegion) LIKE LOWER(CONCAT('%', :keyword, '%'))
 """)
     List<Program> searchByKeyword(@Param("keyword") String keyword);
 
 
 
-
+    // 정확한 워케이션명으로 단일 조회
+    Optional<Program> findByTitle(String title);
 
 
 }

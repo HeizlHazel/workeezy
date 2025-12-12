@@ -32,4 +32,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     String findRegionByProgramId(Long programId);
 
 
+    String findFirstRegionByProgramId(Long programId);
 }

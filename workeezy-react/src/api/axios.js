@@ -1,15 +1,9 @@
 import axios from "axios";
 
-// 전역 설정
-axios.defaults.withCredentials = true;
-
 const api = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: "http://localhost:8080",
     withCredentials: true,
 });
-
-// 인스턴스 설정 (추가 안전)
-api.defaults.withCredentials = true;
 
 // 요청마다 accessToken 자동 포함
 api.interceptors.request.use(
@@ -18,6 +12,8 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        console.log("헤더 보내기:", config.headers.Authorization);
+        console.log("🔐 Authorization 보내는 값:", config.headers.Authorization);
         return config;
     });
 
@@ -28,6 +24,8 @@ const refreshAxios = axios.create({
     withCredentials: true,
 });
 
+refreshAxios.defaults.withCredentials = true;
+
 // 응답 인터셉터 → AccessToken 만료 시 자동 재발급 처리
 api.interceptors.response.use(
     (res) => res,
@@ -37,7 +35,7 @@ api.interceptors.response.use(
         const status = err.response?.status;
 
         // accessToken 만료(401) → refresh 시도
-        if (status === 401 && !originalRequest._retry) {
+        if ((status === 401 || status === 403) && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
@@ -46,6 +44,13 @@ api.interceptors.response.use(
 
                 localStorage.setItem("accessToken", newAccessToken);
 
+                // axios 기본 헤더 갱신
+                api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
+
+                // originalRequest 헤더 보정
+                if (!originalRequest.headers) {
+                    originalRequest.headers = {};
+                }
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
                 return api(originalRequest); // 실패한 요청 재시도
@@ -65,9 +70,9 @@ api.interceptors.response.use(
         }
 
         // 접근 권한 없음(403) → 에러 페이지 이동
-        if (status === 403) {
-            window.location.href = "/403";
-        }
+        // if (status === 403) {
+        //     window.location.href = "/403";
+        // }
 
         // 서버 문제(500) → 에러 페이지 이동
         if (status === 500) {
@@ -77,5 +82,4 @@ api.interceptors.response.use(
         return Promise.reject(err);
     }
 );
-
 export default api;

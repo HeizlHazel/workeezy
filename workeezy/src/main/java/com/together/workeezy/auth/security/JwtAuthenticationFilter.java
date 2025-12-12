@@ -1,11 +1,13 @@
 package com.together.workeezy.auth.security;
 
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.redis.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     // 토큰 검증 제외할 URL (화이트리스트)
@@ -29,8 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/programs/**",
-            "/api/search/**"
+            "/api/reviews/**",
+            "/api/recommendations/**"
     );
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     protected void doFilterInternal(
@@ -59,14 +64,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // Authentication 생성
-            Authentication auth = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (token != null) {
 
-            System.out.println("🔥 JWT 인증 성공: " + auth.getName());
+            // 블랙리스트 체크
+            if (redisService.isBlacklisted(token)) {
+                System.out.println("🚫 블랙리스트 토큰 → 인증 차단");
+                // 바로 인증 세팅하지 않고 통과만(익명 사용자로 처리)
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 유효하면 정상 인증
+            if (jwtTokenProvider.validateToken(token)) {
+                // Authentication 생성
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println("🔥 JWT 인증 성공: " + auth.getName());
+            } else {
+                System.out.println("❌ JWT 인증 실패 또는 없음");
+            }
         } else {
-            System.out.println("❌ JWT 인증 실패 또는 없음");
+            System.out.println("❌ JWT 토큰 없음");
         }
         System.out.println("인증 성공 여부 = " +
                 SecurityContextHolder.getContext().getAuthentication());
@@ -74,16 +92,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
     // Authorization 헤더에서 Bearer 토큰 추출
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-
+        System.out.println("🪶 Authorization 헤더 내용: " + header);
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
         return null;
-
     }
-
 }
