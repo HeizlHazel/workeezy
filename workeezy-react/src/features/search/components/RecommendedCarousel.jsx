@@ -1,8 +1,9 @@
+// RecommendedCarousel.jsx
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RecommendedCard from "./RecommendedCard";
 
-import "./RecommendecCarousel.css"
+import "./RecommendecCarousel.css";
 import api from "../../../api/axios.js";
 
 export default function RecommendedCarousel() {
@@ -12,9 +13,11 @@ export default function RecommendedCarousel() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        api().get("/api/recommendations/recent")
+        api.get("/api/recommendations/recent")
             .then((res) => {
-                setItems(res.data || []);
+                console.log("🔥 추천 API 응답:", res.data);
+                const list = res.data.cards || res.data || [];
+                setItems(list);
             })
             .catch((err) => {
                 console.error("추천 API 에러:", err);
@@ -29,12 +32,21 @@ export default function RecommendedCarousel() {
         const card = container.querySelector(".recommend-card");
         if (!card) return;
 
-        const cardWidth = card.offsetWidth + 24;
+        const cardWidth = card.offsetWidth + 24; // gap 24px 가정
         const delta = direction === "left" ? -cardWidth : cardWidth;
         container.scrollBy({ left: delta, behavior: "smooth" });
     };
 
-    if (!loading && items.length === 0) return null;
+    if (!loading && items.length === 0) {
+        return (
+            <section className="recommend-section">
+                <h2 className="recommend-section-title">다른 지역은 어떠세요?</h2>
+                <p style={{ padding: "1rem", color: "#888" }}>
+                    아직 추천할 프로그램이 없습니다.
+                </p>
+            </section>
+        );
+    }
 
     return (
         <section className="recommend-section">
@@ -49,11 +61,15 @@ export default function RecommendedCarousel() {
                 </button>
 
                 <div className="recommend-list" ref={listRef}>
-                    {items.map((item) => (
+                    {items.map((p) => (
                         <RecommendedCard
-                            key={item.id}
-                            item={item}
-                            onClick={() => navigate(`/programs/${item.id}`)}
+                            key={p.id}
+                            id={p.id}
+                            title={p.title}
+                            photo={p.photo}
+                            price={p.price}
+                            region={p.region}
+                            onClick={() => navigate(`/programs/${p.id}`)}
                         />
                     ))}
                 </div>
