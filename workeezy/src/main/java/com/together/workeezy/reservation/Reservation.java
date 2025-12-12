@@ -58,7 +58,7 @@ public class Reservation {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ReservationStatus status = ReservationStatus.waiting;
+    private ReservationStatus status = ReservationStatus.waiting_payment;
 
 
     @CreationTimestamp

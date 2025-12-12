@@ -40,7 +40,7 @@ public class ReservationController {
         System.out.println("📅 startDate = " + dto.getStartDate());
         System.out.println("📅 endDate = " + dto.getEndDate());
         System.out.println("👥 peopleCount = " + dto.getPeopleCount());
-        System.out.println("🏠 placeName = " + dto.getPlaceName());
+        System.out.println("🏠 placeName = " + dto.getOfficeName());
         System.out.println("🏡 roomType = " + dto.getRoomType());
         System.out.println("🎯 programId = " + dto.getProgramId());
         System.out.println("🎯 programTitle = " + dto.getProgramTitle());

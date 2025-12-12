@@ -41,15 +41,15 @@ export default function ProgramReserveBar({
       alert("필수 항목을 입력해주세요!");
       return;
     }
-    navigate("/newreservation", {
+    navigate("/reservation/new", {
       state: {
         programId,
+        programTitle,
+        programPrice,
         roomId: roomType,
         officeId: officeType,
         checkIn,
         checkOut,
-        programPrice,
-        programTitle,
         rooms,
         offices,
       },

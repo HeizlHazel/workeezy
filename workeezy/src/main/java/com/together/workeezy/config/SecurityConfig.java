@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/recommendations/**").permitAll()
 
 
+
+                        .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
 
                         // CORS Preflight 허용

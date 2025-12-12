@@ -2,10 +2,10 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 250px;
+  width: 270px;
   height: 100%;
   background: #fff;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: -3px 0 12px rgba(0, 0, 0, 0.05);
   padding: 80px 20px 20px;
   overflow-y: auto;
   z-index: 900;
@@ -23,33 +23,74 @@
   transition: 0.3s;
 }
 
-/* ========================= 메뉴 항목 ========================= */
-.draft-menu-item {
-  margin-bottom: 20px;
-}
-
+/* 제목 */
 .draft-menu-title {
   font-size: 18px;
-  font-weight: 600;
-  color: #111;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 4px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 6px;
 }
 
-/* ========================= 서브메뉴 ========================= */
-.draft-submenu {
-  margin-top: 8px;
+/* ========================= 카드형 리스트 ========================= */
+.draft-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.draft-card:hover {
+  background: #fafafa;
+  transform: translateY(-2px);
+}
+
+.draft-card.selected {
+  background: #ffffff;
+  border-color: #b4d1ba;
+}
+
+/* ========================= 카드 헤더 ========================= */
+.draft-card-header {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  animation: dropdown 0.3s ease forwards;
+  position: relative;
 }
 
-@keyframes dropdown {
+.draft-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.draft-card-date {
+  font-size: 12px;
+  color: #777;
+}
+
+/* ========================= 카드 내용 ========================= */
+.draft-card-body {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e0e0e0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #444;
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -57,53 +98,43 @@
   }
 }
 
-.draft-submenu-item {
-  position: relative;
-  font-size: 15px;
-  color: #333;
-  padding: 8px 10px;
+/* ========================= 불러오기 버튼 ========================= */
+.draft-load-btn {
+  margin-top: 8px;
+  background: #35593d;
+  color: #fff;
+  border: none;
   border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
   cursor: pointer;
   transition: background 0.2s;
 }
 
-/* hover 시 배경 / X 아이콘 표시 */
-.draft-submenu-item:hover {
-  background: #f9f9f9;
+.draft-load-btn:hover {
+  background: #35593dad;
 }
 
-.draft-submenu-item:hover .draft-delete-btn {
-  opacity: 1;
-  pointer-events: all;
-}
-
-/* 선택된 항목 */
-.draft-submenu-item.selected {
-  background: #f0f0f0;
-  font-weight: 500;
-}
-
-/* ========================= 삭제 버튼 (가운데 정렬) ========================= */
+/* ========================= 삭제 버튼 ========================= */
 .draft-delete-btn {
   position: absolute;
-  top: 53%; /* 🔹 세로 중앙 기준 */
-  right: 8px;
-  transform: translateY(-50%); /* 🔹 중앙으로 정렬 */
+  top: 0;
+  right: 0;
   background: none;
   border: none;
   color: #aaa;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
-
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
 }
 
-/* hover 시 빨간색 + 확대 */
+.draft-card:hover .draft-delete-btn {
+  opacity: 1;
+}
+
 .draft-delete-btn:hover {
   color: #ff4d4f;
-  transform: translateY(-50%) scale(1.15); /* 중앙 유지하면서 확대 */
 }
 
 /* ========================= 닫기 버튼 ========================= */
@@ -123,12 +154,14 @@
   color: #000;
 }
 
-/* ========================= New! 태그 ========================= */
+/* ========================= NEW 태그 ========================= */
 .draft-new-tag {
-  margin-left: 6px;
   color: #ff4d4f;
-  font-weight: 600;
-  font-size: 0.85em;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #ffecec;
 }
 
 /* ========================= 링크 초기화 ========================= */

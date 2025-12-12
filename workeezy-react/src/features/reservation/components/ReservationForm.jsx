@@ -5,18 +5,17 @@ import SubmitButton from "./SubmitButton.jsx";
 import "./ReservationForm.css";
 import axios from "../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar";
-// import { useLocation } from "react-router-dom"; // 부모 reserveBar의 state로 전달된 값 받을 용도
 
 export default function ReservationForm({
-  initialData,
-  rooms = [],
-  offices = [],
+  initialData, // 사용자가 선택한 초기 데이터
+  rooms = [], // 해당 워케이션 프로그램에서 선택 가능한 룸
+  offices = [], // 해당 워케이션 프로그램에서 선택 가능한 오피스
 }) {
-  // const location = useLocation();
-  // const { state } = location || {};
-  // const { programId, roomId, officeId, checkIn, checkOut } = state || {};
+  // 초기 데이터에서 필요한 값만 꺼냄
   const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
 
+  // 각 배열에서 find 메소드를 이용해 각 요소(객체)를 순회하면서
+  // 사용자가 선택한 Id와 같은 Id를 가진 첫 번째 객체를 찾아서 반환한다.
   const selectedRoom = rooms.find((r) => r.id === Number(roomId));
   const selectedOffice = offices.find((o) => o.id === Number(officeId));
 
@@ -32,8 +31,10 @@ export default function ReservationForm({
     email: "",
     startDate: checkIn ? new Date(checkIn).toISOString().slice(0, 10) : "",
     endDate: checkOut ? new Date(checkOut).toISOString().slice(0, 10) : "",
-    placeName: selectedOffice?.name || "", // 화면 표시용 이름
+    officeName: selectedOffice?.name || "", // 화면 표시용 이름
+    officeId: selectedOffice?.id || "",
     roomType: selectedRoom?.roomType || "", // 화면 표시용 이름
+    roomId: selectedRoom?.id || "",
     peopleCount: 1,
   });
 
@@ -51,22 +52,48 @@ export default function ReservationForm({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (initialData) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       setForm((prev) => ({
-        ...prev,
+        ...prev, // 기존 form을 베이스로 하고 아래 필드로 덮어쓰기
+
+        // 초기값 우선, 초기값 없으면 기존 prev 값
         programId: initialData.programId || prev.programId,
-        startDate: initialData.checkIn
-          ? new Date(initialData.checkIn).toISOString().slice(0, 10)
-          : prev.startDate,
-        endDate: initialData.checkOut
-          ? new Date(initialData.checkOut).toISOString().slice(0, 10)
-          : prev.endDate,
-        placeName: initialData.officeName || prev.placeName,
-        roomType: initialData.roomType || prev.roomType,
         programTitle: initialData.programTitle || prev.programTitle,
+
+        // DraftData 및 ReservationData Data 동시 처리
+        // checkIn - 예약바 / startDate - 임시저장 및 수정 데이터
+        startDate:
+          initialData.checkIn || initialData.startDate
+            ? new Date(initialData.checkIn || initialData.startDate)
+                .toISOString()
+                .slice(0, 10)
+            : prev.startDate,
+
+        endDate:
+          initialData.checkOut || initialData.endDate
+            ? new Date(initialData.checkOut || initialData.endDate)
+                .toISOString()
+                .slice(0, 10)
+            : prev.endDate,
+
+        // 장소, 방 타입
+        officeId: initialData.officeId || selectedOffice?.id || prev.officeId,
+        officeName:
+          initialData.officeName || selectedOffice?.name || prev.officeName,
+
+        roomId: initialData.roomId || selectedRoom?.id || prev.roomId,
+        roomType:
+          initialData.roomType || selectedRoom?.roomType || prev.roomType,
+
+        // 사용자 정보
+        userName: initialData.userName || prev.userName,
+        company: initialData.company || prev.company,
+        email: initialData.email || prev.email,
+        phone: initialData.phone || prev.phone,
+
+        peopleCount: initialData.peopleCount || prev.peopleCount,
       }));
     }
-  }, [initialData]);
+  }, [initialData, selectedRoom, selectedOffice]);
 
   // -------------------------------------------------------------------
   // 사용자 정보 자동 채우기 (localStorage에서 가져오기)
@@ -85,7 +112,7 @@ export default function ReservationForm({
         // localStorage에 저장 (다음번 자동 완성용)
         localStorage.setItem("user", JSON.stringify(userData));
 
-        // form 자동 채우기
+        // form 자동 채우기(프로그램 정보가 기본으로 세팅된 prev)
         setForm((prev) => ({
           ...prev,
           userName: userData.name || userData.userName || prev.userName,
@@ -99,7 +126,7 @@ export default function ReservationForm({
     };
 
     fetchUser();
-  }, []);
+  }, []); // 첫 마운트 때 한번
 
   // -------------------------------------------------------------------
   // 입력 변경 핸들러 (Form의 모든 Field에 적용)
@@ -118,13 +145,21 @@ export default function ReservationForm({
     e.preventDefault(); // 브라우저 자동 새로고침 막기
     const token = localStorage.getItem("accessToken");
 
+    // Number 캐스팅
+    const formattedForm = {
+      ...form,
+      programId: Number(form.programId),
+      roomId: Number(form.roomId),
+      officeId: Number(form.officeId),
+    };
+
     try {
       if (initialData && initialData.id) {
-        console.log("🧾 initialData:", initialData);
-        // PUT : 예약 수정 (기존 예약 업데이트)
+        // id가 있으면 예약 수정
+        // console.log("🧾 initialData:", initialData);
         await axios.put(
           `http://localhost:8080/api/reservations/${initialData.id}`,
-          form,
+          formattedForm,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -134,14 +169,10 @@ export default function ReservationForm({
         );
         alert("예약이 성공적으로 수정 되었습니다!");
       } else {
-        // POST : 신규 예약 등록
+        // 신규 예약 등록
         await axios.post(
           "http://localhost:8080/api/reservations",
-          {
-            ...form,
-            roomId: initialData.roomId, // DB용 id
-            officeId: initialData.officeId, // DB용 id
-          },
+          formattedForm,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -161,7 +192,8 @@ export default function ReservationForm({
   // 임시 저장
   // -------------------------------------------------------------------
   const handleDraftSave = async () => {
-    const token = localStorage.getItem("accessToken"); // 로그인 시 저장된 JWT 토큰
+    const token = localStorage.getItem("accessToken");
+    // 로그인 시 저장된 JWT 토큰
 
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -171,6 +203,8 @@ export default function ReservationForm({
     const draftData = {
       ...form,
       title: form.programTitle,
+      rooms,
+      offices,
     };
     try {
       const res = await axios.post(
@@ -196,7 +230,7 @@ export default function ReservationForm({
   };
 
   // 임시 저장 불러오기
-  // 불러오기 기능은 DraftMenuBar 내부에서 실행됨 (props 통해 연결)
+  // 불러오기 기능은 DraftMenuBar 내부에서 실행(props 통해 연결)
 
   // UI 렌더링
   return (

@@ -1,7 +1,6 @@
 import "./ReservationFields.css";
 
 export default function ReservationFields({
-  programId,
   programTitle,
   userName,
   company,
@@ -9,13 +8,34 @@ export default function ReservationFields({
   email,
   startDate,
   endDate,
-  placeName,
-  roomType,
   peopleCount,
   onChange,
   rooms = [],
+  roomId,
+  roomName,
   offices = [],
+  officeId,
+  officeName,
 }) {
+  // 공용 select 핸들러
+  const handleSelectChange = (type, e) => {
+    const { value } = e.target;
+
+    if (type === "room") {
+      const selected = rooms.find((r) => r.id === Number(value));
+      onChange({ target: { name: "roomId", value } });
+      onChange({
+        target: { name: "roomName", value: selected?.roomType || "" },
+      });
+    } else if (type === "office") {
+      const selected = offices.find((o) => o.id === Number(value));
+      onChange({ target: { name: "officeId", value } });
+      onChange({
+        target: { name: "officeName", value: selected?.name || "" },
+      });
+    }
+  };
+
   return (
     <>
       {/* 프로그램 제목 */}
@@ -123,9 +143,9 @@ export default function ReservationFields({
         <div className="div">오피스</div>
         <div className="input">
           <select
-            name="placeName"
-            value={placeName || ""}
-            onChange={onChange}
+            name="officeId"
+            value={officeId || ""}
+            onChange={(e) => handleSelectChange("office", e)}
             className="value"
             disabled={offices.length === 0}
           >
@@ -133,7 +153,7 @@ export default function ReservationFields({
               {offices.length === 0 ? "선택할 오피스 없음" : "오피스 선택"}
             </option>
             {offices.map((o) => (
-              <option key={o.id} value={o.name}>
+              <option key={o.id} value={o.id}>
                 {o.name}
               </option>
             ))}
@@ -146,14 +166,14 @@ export default function ReservationFields({
         <div className="div">룸 타입</div>
         <div className="input">
           <select
-            name="roomType"
-            value={roomType || ""}
-            onChange={onChange}
+            name="roomId"
+            value={roomId || ""}
+            onChange={(e) => handleSelectChange("room", e)}
             className="value"
           >
             <option value="">룸 선택</option>
             {rooms.map((r) => (
-              <option key={r.id} value={r.roomType}>
+              <option key={r.id} value={r.id}>
                 {r.roomType}
               </option>
             ))}

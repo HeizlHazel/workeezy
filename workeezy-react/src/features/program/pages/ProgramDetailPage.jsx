@@ -23,7 +23,7 @@ export default function ProgramDetailPage() {
     api
       .get(`/api/programs/${id}`)
       .then((res) => setProgram(res.data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error("프로그램 불러오기 실패:", err));
   }, [id]);
 
   if (!program) return <div>Loading...</div>;
@@ -40,12 +40,12 @@ export default function ProgramDetailPage() {
         subImages={program.subImages}
       />
 
-      {/* 3) 예약바 */}
       <ProgramReserveBar
         rooms={program.hotel?.rooms ?? []}
         offices={program.offices ?? []}
         programId={program.id}
         programTitle={program.title}
+        programPrice={program.programPrice}
       />
 
       {/* 4) 탭 */}

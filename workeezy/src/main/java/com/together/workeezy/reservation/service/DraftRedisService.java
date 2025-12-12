@@ -23,8 +23,20 @@ public class DraftRedisService {
 
     // 임시저장 생성
     public String saveDraft(Long userId, Object draftData) {
+
+        Map<String, Object> dataWithTime = new HashMap<>();
+
+        // drafData가 Map 형태일 경우 내부 데이터 복사
+        if (draftData instanceof Map<?, ?> mapData) {
+            dataWithTime.putAll((Map<String, Object>) mapData);
+        }
+
+        // 저장 시각 추가
+        dataWithTime.put("savedAt", new Date().toString());
+        
+        // redis 키 생성
         String key = DRAFT_PREFIX + userId + ":" + System.currentTimeMillis(); // draft:hong@naver.com:1733301234567
-        draftRedisTemplate.opsForValue().set(key, draftData, 14, TimeUnit.DAYS);
+        draftRedisTemplate.opsForValue().set(key, dataWithTime, 14, TimeUnit.DAYS);
         return key;
 
     }
@@ -79,6 +91,11 @@ public class DraftRedisService {
         // 커서.close, 커넥션.close 가 호출되어 메모리/소켓 리소스 정리(redis 서버는 안 꺼짐.)
         // 이전 버전에서는 커넥션이 암묵적으로 닫혔지만 명시적으로 하면서 더 안전하고 명확!
         return results;
+    }
+
+    // 특정 임시저장 1개 불러오기
+    public Object getDraftByKey(String key) {
+        return draftRedisTemplate.opsForValue().get(key);
     }
 
     // 특정 임시저장 삭제
