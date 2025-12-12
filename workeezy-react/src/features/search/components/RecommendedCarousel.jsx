@@ -16,7 +16,7 @@ export default function RecommendedCarousel() {
         api.get("/api/recommendations/recent")
             .then((res) => {
                 console.log("🔥 추천 API 응답:", res.data);
-                const list = res.data.cards || res.data || [];
+                const list = res.data || [];
                 setItems(list);
             })
             .catch((err) => {
@@ -63,7 +63,7 @@ export default function RecommendedCarousel() {
                 <div className="recommend-list" ref={listRef}>
                     {items.map((p) => (
                         <RecommendedCard
-                            key={p.id}
+                            key={p.id}                    // ✅ 이제 항상 고유 id 있음
                             id={p.id}
                             title={p.title}
                             photo={p.photo}
@@ -73,6 +73,7 @@ export default function RecommendedCarousel() {
                         />
                     ))}
                 </div>
+
 
                 <button
                     className="recommend-arrow recommend-arrow-right"

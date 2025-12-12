@@ -1,4 +1,3 @@
-// RecommendedCard.jsx
 import "./RecommendedCard.css";
 
 export default function RecommendedCard({ id, title, photo, price, region, onClick }) {

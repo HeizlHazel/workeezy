@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/programs/**",
-            "/api/reviews/**"
+            "/api/reviews/**",
+            "/api/recommendations/**"
     );
     private final RedisTemplate<String, String> redisTemplate;
 

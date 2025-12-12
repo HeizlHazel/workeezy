@@ -5,6 +5,7 @@ import com.together.workeezy.program.entity.Place;
 import com.together.workeezy.program.entity.PlaceType;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.repository.ProgramRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecommendationService {
 
     private final RecentSearchService recentSearchService;
@@ -26,7 +28,7 @@ public class RecommendationService {
         if (userId == null) return List.of();
 
         // 1) 최근 검색어 최대 3개 사용 (최근일수록 가중치 높음)
-        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 3);
+        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 5);
         if (recentKeywords.isEmpty()) {
             return List.of();
         }
