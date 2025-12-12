@@ -6,7 +6,7 @@
 
 # 12/3 업데이트 완
 
-# USE 사용DB명;
+USE workeezy;
 
 -- 1. 외래 키 체크 해제
 SET FOREIGN_KEY_CHECKS = 0;
@@ -17,7 +17,7 @@ SET group_concat_max_len = 100000;
 -- 3. 삭제할 테이블 목록 가져오기
 SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) INTO @tables
 FROM information_schema.tables
-# WHERE table_schema = '사용DB명';
+WHERE table_schema = 'workeezy';
 
 -- 4. 테이블이 존재할 때만 DROP 실행
 SET @drop_query = IF(@tables IS NOT NULL, CONCAT('DROP TABLE IF EXISTS ', @tables), 'SELECT "No tables to drop"');
@@ -80,7 +80,6 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     UNIQUE KEY uq_reservation_no (reservation_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
-ALTER TABLE tb_reservation ADD COLUMN people_count INT NOT NULL DEFAULT 1 COMMENT '예약 인원수';
 # 소셜 로그인 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_social_login (
     social_id        BIGINT NOT NULL AUTO_INCREMENT                COMMENT '소셜 로그인 고유 식별자',
@@ -804,7 +803,7 @@ UPDATE tb_place SET
     place_region = '강원'
 WHERE place_id = 6;
 
-UPDATE place SET
+UPDATE tb_place SET
     program_id = 4,
     place_type = 'stay',
     place_name = '남해 지족 오션뷰 리조트',
