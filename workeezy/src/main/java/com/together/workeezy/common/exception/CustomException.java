@@ -1,8 +1,6 @@
-package com.together.workeezy.payment;
+package com.together.workeezy.common.exception;
 
-import com.together.workeezy.ErrorCode;
-
-public class CustomException extends Exception{
+public class CustomException extends RuntimeException{
 
     private final ErrorCode errorCode;
 

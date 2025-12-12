@@ -1,4 +1,4 @@
-package com.together.workeezy;
+package com.together.workeezy.common.exception;
 
 public enum ErrorCode {
 
