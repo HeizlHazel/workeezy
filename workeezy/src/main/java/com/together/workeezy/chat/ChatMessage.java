@@ -33,7 +33,6 @@ public class ChatMessage {
     @Column(name = "sender_role", nullable = false)
     private ChatSenderRole senderRole;
 
-    @Lob
     @Column(name = "msg_text")
     private String msgText;
 
