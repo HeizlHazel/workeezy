@@ -27,4 +27,7 @@ public class ReservationCreateDto {
     private String roomType; // 문자열로 enum 매칭
     private Long roomId;
 
+    private Long stayId;
+    private String stayName; // 조회용
+
 }

@@ -43,6 +43,11 @@ public class Reservation {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    /* 숙소 */
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "stay_id")
+    private Place stay;
+
     @NotNull
     @Column(name = "reservation_no", nullable = false, length = 20)
     private String reservationNo;
