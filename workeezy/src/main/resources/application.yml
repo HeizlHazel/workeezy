@@ -6,9 +6,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://workeezy.iptime.org:3306/workeezy
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://workeezy-database.clkcmami2d6r.ap-northeast-2.rds.amazonaws.com:3306/workeezy?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: admin
+    password: workeezy33
 
   jpa:
     hibernate:
