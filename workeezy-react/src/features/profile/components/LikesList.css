@@ -1,6 +1,0 @@
-.likes-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px 35px;
-    width: 100%;
-}
