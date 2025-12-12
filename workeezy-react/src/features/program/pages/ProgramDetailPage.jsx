@@ -27,8 +27,6 @@ export default function ProgramDetailPage() {
   }, [id]);
 
   if (!program) return <div>Loading...</div>;
-  console.log("MAIN IMAGE:", program.mainImage);
-  console.log("SUBS:", program.subImages);
   return (
     <PageLayout>
       {/* 1) 제목 */}
@@ -46,7 +44,7 @@ export default function ProgramDetailPage() {
         programId={program.id}
         programTitle={program.title}
         programPrice={program.programPrice}
-        placeId={program.placeId}
+        stayId={program.stayId}
       />
 
       {/* 4) 탭 */}

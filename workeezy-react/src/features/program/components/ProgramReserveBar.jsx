@@ -10,7 +10,7 @@ export default function ProgramReserveBar({
                                               programId,
                                               programPrice,
                                               programTitle,
-                                              placeId
+                                              stayId
                                           }) {
     const navigate = useNavigate();
 
@@ -53,7 +53,7 @@ export default function ProgramReserveBar({
                 checkOut,
                 rooms,
                 offices,
-                placeId
+                stayId
             },
         });
     };
