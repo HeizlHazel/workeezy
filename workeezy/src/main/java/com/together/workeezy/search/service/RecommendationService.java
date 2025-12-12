@@ -27,8 +27,7 @@ public class RecommendationService {
         // 로그인 안 했으면 추천 안 함
         if (userId == null) return List.of();
 
-        // 1) 최근 검색어 최대 3개 사용 (최근일수록 가중치 높음)
-        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 5);
+        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 10);
         if (recentKeywords.isEmpty()) {
             return List.of();
         }
@@ -50,7 +49,7 @@ public class RecommendationService {
         // 점수순 정렬
         return scoreMap.entrySet().stream()
                 .sorted((a, b) -> b.getValue() - a.getValue())
-                .limit(5) // 추천 5개 제한
+                .limit(10) // 추천 5개 제한
                 .map(entry -> convert(entry.getKey()))
                 .toList();
     }

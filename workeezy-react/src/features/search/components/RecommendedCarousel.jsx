@@ -10,6 +10,7 @@ export default function RecommendedCarousel() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const listRef = useRef(null);
+    const autoPlayRef = useRef(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,21 +33,46 @@ export default function RecommendedCarousel() {
         const card = container.querySelector(".recommend-card");
         if (!card) return;
 
-        const cardWidth = card.offsetWidth + 24; // gap 24px 가정
+        const cardWidth = card.offsetWidth + 24;
         const delta = direction === "left" ? -cardWidth : cardWidth;
-        container.scrollBy({ left: delta, behavior: "smooth" });
+
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const current = container.scrollLeft;
+        const next = current + delta;
+
+        if (direction === "right") {
+            // 끝에 거의 다 갔으면 → 맨 앞으로 순간 이동 (회전 느낌)
+            if (next >= maxScrollLeft - 5) {
+                container.scrollTo({ left: 0, behavior: "auto" });
+            } else {
+                container.scrollBy({ left: delta, behavior: "smooth" });
+            }
+        } else {
+            // 왼쪽으로 가다가 거의 맨 앞이면 → 맨 끝으로 점프
+            if (next <= 0) {
+                container.scrollTo({ left: maxScrollLeft, behavior: "auto" });
+            } else {
+                container.scrollBy({ left: delta, behavior: "smooth" });
+            }
+        }
     };
 
-    if (!loading && items.length === 0) {
-        return (
-            <section className="recommend-section">
-                <h2 className="recommend-section-title">다른 지역은 어떠세요?</h2>
-                <p style={{ padding: "1rem", color: "#888" }}>
-                    아직 추천할 프로그램이 없습니다.
-                </p>
-            </section>
-        );
-    }
+    useEffect(() => {
+        if (items.length === 0) return;
+
+        autoPlayRef.current = setInterval(() => {
+            scroll("right");
+        }, 3000);
+
+        return () => {
+            if(autoPlayRef.current) {
+                clearInterval(autoPlayRef.current);
+            }
+        };
+    }, [items]);
+
+    if (!loading && items.length === 0) return null;
+
 
     return (
         <section className="recommend-section">
