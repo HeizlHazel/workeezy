@@ -71,6 +71,7 @@ public class ReservationService {
         reservation.setUser(user);
         reservation.setProgram(program);
         reservation.setRoom(room);
+        reservation.setStay(room.getPlace());
         reservation.setReservationNo(newReservationNo);
         reservation.setStartDate(dto.getStartDate());
         reservation.setEndDate(dto.getEndDate());

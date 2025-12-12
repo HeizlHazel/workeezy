@@ -38,6 +38,8 @@ export default function ReservationForm({
     roomType: selectedRoom?.roomType || "", // 화면 표시용 이름
     roomId: selectedRoom?.id || "",
     peopleCount: 1,
+    stayId: initialData.stayId || "",
+    stayName: initialData.stayName || "",
   });
 
   // -------------------------------------------------------------------
@@ -76,6 +78,10 @@ export default function ReservationForm({
                 .toISOString()
                 .slice(0, 10)
             : prev.endDate,
+
+        // 숙소 정보 반영
+        stayId: initialData.stayId || prev.stayId,
+        stayName: initialData.stayName || prev.stayName,
 
         // 장소, 방 타입
         officeId: initialData.officeId || selectedOffice?.id || prev.officeId,
@@ -153,6 +159,7 @@ export default function ReservationForm({
       programId: Number(form.programId),
       roomId: Number(form.roomId),
       officeId: Number(form.officeId),
+      stayId: Number(form.stayId),
     };
 
     try {

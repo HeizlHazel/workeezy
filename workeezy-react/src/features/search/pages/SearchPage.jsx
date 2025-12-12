@@ -4,13 +4,14 @@ import CategoryFilter from "../components/CategoryFilter.jsx";
 import Pagination from "../../../shared/common/Pagination.jsx";
 import FloatingButtons from "../../../shared/common/FloatingButtons.jsx";
 import SearchCard from "../components/SearchCard.jsx";
+import RecommendedCarousel from "../components/RecommendedCarousel.jsx";
 
-import publicApi from "../../../api/publicApi.js";
 import {useEffect, useRef, useState} from "react";
 import { jwtDecode } from "jwt-decode";
 import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
+import api from "../../../api/axios.js";
 
 export default function SearchPage() {
     // ---------------------------------------------
@@ -61,25 +62,27 @@ export default function SearchPage() {
     //    keyword 있으면 → 검색 API
     //    keyword 없으면 → 전체 프로그램 로드
     // ---------------------------------------------------------
+
     useEffect(() => {
         console.log("🔥 API 호출 keyword:", urlKeyword);
 
         if (urlKeyword && urlKeyword.trim() !== "") {
-            publicApi.get("/api/search", {
-                params: { keyword: urlKeyword, userId, regions: [] }
+            api.get("/api/search", {
+                params: { keyword: urlKeyword, regions: [] }
             }).then(res => {
                 console.log("🔥 검색 API 응답(cards):", res.data.cards);
                 setAllPrograms(res.data.cards);
                 setRecommended(res.data.recommended);
             });
         } else {
-            publicApi.get("/api/programs/cards")
+            api.get("/api/programs/cards")
                 .then(res => {
                     console.log("🔥 전체목록 API 응답:", res.data);
                     setAllPrograms(res.data);
                 });
         }
     }, [urlKeyword]);
+
 
 
 
@@ -210,7 +213,7 @@ export default function SearchPage() {
                 />
             )}
 
-            <FloatingButtons />
+            <RecommendedCarousel/>
         </PageLayout>
     );
 }

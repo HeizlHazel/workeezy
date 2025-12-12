@@ -69,6 +69,9 @@ export default function DraftMenuBar({
         officeId: draftData.officeId || draftData.placeId || "",
         // 룸 ID
         roomId: draftData.roomId || "",
+        // 숙소
+        stayId: draftData.stayId || "",
+        stayName: draftData.stayName || draftData.hotelName || "",
       };
 
       // ✅ 3️⃣ (수정) 더 이상 API 요청 안 함 — draft 안에 있는 rooms/offices 사용
@@ -171,8 +174,9 @@ export default function DraftMenuBar({
                   {/* 상세정보 (토글 시 표시) */}
                   {openItems.includes(sub.key) && (
                     <div className="draft-card-body">
-                      <p>🏢 {sub.data.officeName || sub.data.placeName}</p>
-                      <p>🛏 {sub.data.roomName || sub.data.roomType}</p>
+                      <p>숙소명 : {sub.data.stayName || sub.data.stayName}</p>
+                      <p>룸타입 : {sub.data.roomType || sub.data.roomType}</p>
+
                       <p>
                         📅 {sub.data.startDate} ~ {sub.data.endDate}
                       </p>
