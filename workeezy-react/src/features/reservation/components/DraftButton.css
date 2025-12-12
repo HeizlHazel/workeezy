@@ -7,9 +7,9 @@
   justify-content: center;
   width: 85px;
   position: absolute;
-  left: 500px;
+  left: 550px;
   top: 0;
-  bottom: 750px;
+  bottom: 800px;
   overflow: hidden;
   cursor: pointer;
 }

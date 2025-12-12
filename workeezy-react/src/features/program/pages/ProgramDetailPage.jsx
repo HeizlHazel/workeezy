@@ -44,7 +44,8 @@ export default function ProgramDetailPage() {
         programId={program.id}
         programTitle={program.title}
         programPrice={program.programPrice}
-        stayId={program.stayId}
+        stayId={program.hotel?.id}
+        stayName={program.hotel?.name}
       />
 
       {/* 4) 탭 */}

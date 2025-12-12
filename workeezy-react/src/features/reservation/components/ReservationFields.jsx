@@ -16,6 +16,8 @@ export default function ReservationFields({
   offices = [],
   officeId,
   officeName,
+  stayName,
+  stayId,
 }) {
   // 공용 select 핸들러
   const handleSelectChange = (type, e) => {
@@ -137,27 +139,19 @@ export default function ReservationFields({
           </div>
         </div>
       </div>
-
-      {/* 오피스 */}
-      <div className="office">
-        <div className="div">오피스</div>
+      {/* 숙소명 */}
+      <div className="stay-name">
+        <div className="div">숙소명</div>
         <div className="input">
-          <select
-            name="officeId"
-            value={officeId || ""}
-            onChange={(e) => handleSelectChange("office", e)}
+          <input
+            type="text"
+            name="stayName"
+            value={stayName || ""}
+            onChange={onChange}
+            placeholder="숙소명"
             className="value"
-            disabled={offices.length === 0}
-          >
-            <option value="">
-              {offices.length === 0 ? "선택할 오피스 없음" : "오피스 선택"}
-            </option>
-            {offices.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
+            readOnly // 숙소는 고정이므로 선택 불필요
+          />
         </div>
       </div>
 
@@ -175,6 +169,28 @@ export default function ReservationFields({
             {rooms.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.roomType}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {/* 오피스 */}
+      <div className="office">
+        <div className="div">오피스</div>
+        <div className="input">
+          <select
+            name="officeId"
+            value={officeId || ""}
+            onChange={(e) => handleSelectChange("office", e)}
+            className="value"
+            disabled={offices.length === 0}
+          >
+            <option value="">
+              {offices.length === 0 ? "선택할 오피스 없음" : "오피스 선택"}
+            </option>
+            {offices.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
               </option>
             ))}
           </select>
