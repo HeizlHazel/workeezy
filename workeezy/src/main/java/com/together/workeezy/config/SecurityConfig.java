@@ -48,6 +48,9 @@ public class SecurityConfig {
                 // 경로별 권한 설정
                 .authorizeHttpRequests(auth -> auth
 
+                        // 서버 상태 확인
+                        .requestMatchers("/health").permitAll()
+
                         // Auth 공개 API
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
@@ -66,10 +69,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
                         .requestMatchers("/api/recommendations/**").permitAll()
 
-
-
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
+
+                        // 에러 페이지
+                        .requestMatchers("/error").permitAll()
 
                         // CORS Preflight 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
