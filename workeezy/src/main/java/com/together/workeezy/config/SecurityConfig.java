@@ -96,6 +96,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://www.workeezy.cloud");
         config.addAllowedOrigin("https://workeezy-react.vercel.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
