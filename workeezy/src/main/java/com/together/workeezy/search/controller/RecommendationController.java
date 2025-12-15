@@ -1,6 +1,6 @@
 package com.together.workeezy.search.controller;
 
-import com.together.workeezy.auth.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.program.dto.ProgramCardDto;
 import com.together.workeezy.search.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
