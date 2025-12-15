@@ -99,7 +99,8 @@ public class SecurityConfig {
 
         // 허용 Origin
         config.setAllowedOrigins(List.of(
-                "https://www.workeezy.cloud"
+                "https://www.workeezy.cloud",
+                "https://workeezy-react.vercel.app"
         ));
 
         // 허용 메서드 / 헤더
@@ -114,6 +115,7 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
