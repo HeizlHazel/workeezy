@@ -2,7 +2,7 @@ import PageLayout from "../../../layout/PageLayout.jsx";
 import AdminReservationSection from "../components/AdminReservationSection";
 import AdminReservationListView from "../components/AdminReservationListView";
 
-export default function AdimnReservationListPage() {
+export default function AdminReservationListPage() {
   return (
     <PageLayout>
       <AdminReservationSection>
