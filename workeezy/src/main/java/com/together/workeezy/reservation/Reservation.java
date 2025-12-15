@@ -1,6 +1,7 @@
 package com.together.workeezy.reservation;
 
 import com.together.workeezy.payment.entity.Payment;
+import com.together.workeezy.program.entity.Place;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.user.entity.User;
