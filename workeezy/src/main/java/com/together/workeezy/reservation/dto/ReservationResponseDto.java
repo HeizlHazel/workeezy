@@ -1,0 +1,29 @@
+package com.together.workeezy.reservation.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+public class ReservationResponseDto {
+    private String reservationNo;  // 예약번호 (ex: 20251212-000001)
+    private String status;             // 예약상태
+
+    private LocalDate startDate;       // 시작일
+    private LocalDate endDate;         // 종료일
+
+    private String programTitle;       // 워케이션 프로그램명
+    private String stayName;           // 숙소명
+    private String officeName;         // 오피스명 (null 가능)
+    private String roomType;           // 룸타입
+
+    private Long totalPrice;        // 총 가격
+    private Integer peopleCount;       // 인원수
+
+    //private String mainImage;           // 대표 이미지 (썸네일용)
+    //private List<String> subImages;     // 관련 이미지 (선택 시 표시)
+
+}

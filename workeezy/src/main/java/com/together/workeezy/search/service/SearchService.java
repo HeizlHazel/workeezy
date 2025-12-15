@@ -12,6 +12,7 @@ import com.together.workeezy.search.dto.SearchResultDto;
 import com.together.workeezy.search.repository.SearchProgramRepository;
 import com.together.workeezy.search.repository.SearchRepository;
 import com.together.workeezy.user.entity.User;
+import com.together.workeezy.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class SearchService {
     private final SearchProgramRepository searchProgramRepository;
     private final ProgramRepository programRepository;
     private final SearchAsyncService asyncService;
+    private final RecentSearchService recentSearchService;
 
     @Transactional
     public SearchResultDto search(String keyword, List<String> regions, Long userId) {
@@ -42,6 +44,8 @@ public class SearchService {
             search.setUser(user);
             search.setSearchPhrase(keyword);
             searchRepository.save(search);
+            recentSearchService.saveKeyword(userId, keyword);
+
         }
 
         // -----------------------------

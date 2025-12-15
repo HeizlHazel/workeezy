@@ -5,11 +5,9 @@ import com.together.workeezy.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reservations") // 기본 url
@@ -40,7 +38,7 @@ public class ReservationController {
         System.out.println("📅 startDate = " + dto.getStartDate());
         System.out.println("📅 endDate = " + dto.getEndDate());
         System.out.println("👥 peopleCount = " + dto.getPeopleCount());
-        System.out.println("🏠 placeName = " + dto.getPlaceName());
+        System.out.println("🏠 placeName = " + dto.getOfficeName());
         System.out.println("🏡 roomType = " + dto.getRoomType());
         System.out.println("🎯 programId = " + dto.getProgramId());
         System.out.println("🎯 programTitle = " + dto.getProgramTitle());
@@ -53,5 +51,20 @@ public class ReservationController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("예약 실패: " + e.getMessage());
         }
+    }
+
+    // 내 예약 목록 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyReservations(Authentication authentication) {
+        String email = authentication.getName();
+        try {
+            System.out.println("📥 예약 목록 조회 요청 by " + email);
+            return ResponseEntity.ok(reservationService.getMyReservations(email));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("예약 조회 실패: " + e.getMessage());
+        }
+
+
     }
 }

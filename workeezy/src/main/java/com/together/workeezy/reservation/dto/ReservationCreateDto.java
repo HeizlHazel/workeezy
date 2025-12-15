@@ -22,8 +22,12 @@ public class ReservationCreateDto {
     private LocalDate endDate;
     private int peopleCount;
 
-    private String placeName; // 오피스명
+    private String officeName; // 오피스명
+    private Long officeId;
     private String roomType; // 문자열로 enum 매칭
     private Long roomId;
+
+    private Long stayId;
+    private String stayName; // 조회용
 
 }

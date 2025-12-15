@@ -19,5 +19,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     ORDER BY r.reservationNo DESC
 """)
     List<String> findLatestReservationNoByDate(@Param("datePrefix") String datePrefix, Pageable pageable);
+    List<Reservation> findByUserId(Long userId);
 
+    // 조회 화면 최적화용 (program, room, stay 즉시 로딩)
+    @Query("""
+           select r
+           from Reservation r
+             join fetch r.program p
+             left join fetch r.room rm
+             left join fetch r.stay s
+           where r.user.id = :userId
+           order by r.createdDate desc
+           """)
+    List<Reservation> findByUserIdWithJoins(Long userId);
 }

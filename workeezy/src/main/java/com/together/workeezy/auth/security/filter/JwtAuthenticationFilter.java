@@ -29,9 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> WHITELIST = List.of(
             "/api/auth/login",
             "/api/auth/refresh",
-            "/api/search/**",
             "/api/programs/**",
-            "/api/reviews/**"
+            "/api/reviews/**",
+            "/api/recommendations/**"
     );
     private final RedisTemplate<String, String> redisTemplate;
 
