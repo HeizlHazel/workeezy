@@ -4,7 +4,7 @@
 
 # 제출했던 파일은 조장이 가지고 있습니다
 
-# 12/3 업데이트 완
+# 12/11 업데이트 완
 
 # USE 사용DB명;
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS tb_users (
   birth      DATE NOT NULL                      COMMENT '생년월일',
   company    VARCHAR(30) NOT NULL               COMMENT '소속 회사',
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '정보 수정 시각',
-  user_role  ENUM('user','admin') NOT NULL DEFAULT 'user' COMMENT '사용자 권한',
+  user_role  VARCHAR(50) NOT NULL DEFAULT 'user' COMMENT '사용자 권한',
   PRIMARY KEY (user_id),
   UNIQUE KEY uq_user_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='사용자 테이블';
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     reservation_no VARCHAR(20) NOT NULL COMMENT '예약번호(YYYYMMDD-000000010)',
     start_date TIMESTAMP NOT NULL COMMENT '예약 시작 날짜',
     end_date TIMESTAMP NOT NULL COMMENT '예약 종료 날짜',
-    status ENUM('waiting', 'confirm', 'cancel') NOT NULL DEFAULT 'waiting' COMMENT '예약 상태(대기/확정/취소)',
+    status VARCHAR(50) NOT NULL DEFAULT 'waiting_payment' COMMENT '예약 상태(대기/확정/취소)',
     created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '예약 생성일',
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '예약 수정일',
     total_price BIGINT NOT NULL COMMENT '워케이션 총 금액',
@@ -79,11 +79,12 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
 ALTER TABLE tb_reservation ADD COLUMN people_count INT NOT NULL DEFAULT 1 COMMENT '예약 인원수';
+
 # 소셜 로그인 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_social_login (
     social_id        BIGINT NOT NULL AUTO_INCREMENT                COMMENT '소셜 로그인 고유 식별자',
     user_id          BIGINT NOT NULL                               COMMENT '사용자 FK',
-    provider         ENUM('kakao', 'naver') NULL                   COMMENT '소셜 연동 플랫폼',
+    provider         VARCHAR(50) NULL                   COMMENT '소셜 연동 플랫폼',
     provider_user_id VARCHAR(255) NULL                             COMMENT '소셜 연동 고유 ID',
     email            VARCHAR(100) NULL                             COMMENT '플랫폼에서 받은 이메일',
     created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '연동 날짜',
@@ -98,7 +99,7 @@ CREATE TABLE IF NOT EXISTS tb_login_history (
     login_ip     VARCHAR(45) NOT NULL 							COMMENT '로그인 IP',
     login_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 	COMMENT '로그인 시각',
     user_agent   VARCHAR(512) NOT NULL 							COMMENT '브라우저, OS, 디바이스 정보',
-    login_status ENUM('success', 'failed', 'blocked') NOT NULL	COMMENT '로그인 상태',
+    login_status VARCHAR(50) NOT NULL	COMMENT '로그인 상태',
     fail_reason  VARCHAR(100) NULL 								COMMENT '로그인 실패 사유',
     PRIMARY KEY (history_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='로그인 로그 테이블';
@@ -110,7 +111,7 @@ CREATE TABLE IF NOT EXISTS tb_payments (
     order_id        VARCHAR(100) NULL										COMMENT '토스 API 주문 번호',
     payment_key     VARCHAR(200) NULL 										COMMENT '토스 API 고유 결제키',
     amount          INT NOT NULL 											COMMENT '결제 금액',
-    payment_status  ENUM('ready', 'paid', 'cancelled', 'failed') NOT NULL	COMMENT '결제 상태',
+    payment_status  VARCHAR(50) NOT NULL	COMMENT '결제 상태',
     payment_method  VARCHAR(50) NOT NULL 									COMMENT '결제 방법',
     approved_at     TIMESTAMP NULL 											COMMENT '결제 승인시각',
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 			COMMENT '결제 시각',
@@ -125,8 +126,8 @@ CREATE TABLE IF NOT EXISTS tb_refund (
     refund_amount   INT NOT NULL 														COMMENT '취소 금액',
     refund_reason   VARCHAR(200) NULL 													COMMENT '취소 사유',
     cancel_key      VARCHAR(200) NULL 													COMMENT '토스 API 연관 컬럼',
-    refund_status   ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending' 	COMMENT '취소 상태',
-    requested_by    ENUM('user', 'admin') NULL DEFAULT 'user' 							COMMENT '취소 요청자',
+    refund_status   VARCHAR(50) NOT NULL DEFAULT 'pending' 	COMMENT '취소 상태',
+    requested_by    VARCHAR(50) NULL DEFAULT 'user' 							COMMENT '취소 요청자',
     refunded_at     TIMESTAMP NULL 														COMMENT '취소 완료시각',
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 						COMMENT '취소 요청시각',
     PRIMARY KEY (refund_id)
@@ -137,7 +138,7 @@ CREATE TABLE IF NOT EXISTS tb_payment_logs (
     paymentlog_id BIGINT NOT NULL AUTO_INCREMENT 							COMMENT '결제로그 고유 식별자',
     payment_id    BIGINT NOT NULL 											COMMENT '결제 FK',
     response_data JSON NULL 												COMMENT '토스 API 응답값',
-    event_type    ENUM('request', 'response', 'callback', 'fail') NOT NULL	COMMENT '로그 분류',
+    event_type    VARCHAR(50) NOT NULL	COMMENT '로그 분류',
     http_status   INT NULL 													COMMENT '상태 코드',
     logged_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 				COMMENT '로그 발생시각',
     PRIMARY KEY (paymentlog_id)
@@ -147,7 +148,7 @@ CREATE TABLE IF NOT EXISTS tb_payment_logs (
 CREATE TABLE IF NOT EXISTS tb_place (
     place_id        BIGINT NOT NULL AUTO_INCREMENT				COMMENT '장소 고유 식별자',
     program_id      BIGINT NOT NULL								COMMENT '프로그램 FK',
-    place_type      ENUM('stay', 'office', 'attraction') NULL 	COMMENT '장소 종류',
+    place_type      VARCHAR(50) NULL 	COMMENT '장소 종류',
     place_name      VARCHAR(100) NOT NULL 						COMMENT '장소명',
     place_code      VARCHAR(100) NULL 							COMMENT '지역구분코드',
     place_address   VARCHAR(1000) NULL 							COMMENT '숙소 주소',
@@ -193,7 +194,6 @@ CREATE TABLE IF NOT EXISTS tb_review (
     review_id      BIGINT NOT NULL AUTO_INCREMENT 			COMMENT '리뷰 고유 식별자',
     program_id     BIGINT NOT NULL 							COMMENT '프로그램 FK',
     user_id        BIGINT NOT NULL 							COMMENT '유저 FK',
-    review_title   VARCHAR(100) NOT NULL 					COMMENT '제목',
     review_content TEXT NULL								COMMENT '내용',
     review_date    TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP	COMMENT '작성일',
     review_point   INT NULL DEFAULT 0 						COMMENT '별점',
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS tb_review (
 CREATE TABLE IF NOT EXISTS tb_chat_session (
     session_id  BIGINT NOT NULL AUTO_INCREMENT 											COMMENT '세션 ID',
     user_id     BIGINT NOT NULL 														COMMENT '사용자 FK',
-    status      ENUM('open', 'closed', 'waiting', 'assigned') NOT NULL DEFAULT 'closed' COMMENT '세션 상태',
+    status      VARCHAR(50) NOT NULL DEFAULT 'closed' COMMENT '세션 상태',
     is_ai_only  TINYINT(1) NOT NULL DEFAULT 1 											COMMENT '챗봇 세션 구분',
     create_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP 								COMMENT '생성 시간',
     closed_time TIMESTAMP NULL 															COMMENT '종료 시간',
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS tb_chat_message (
     chat_id     BIGINT NOT NULL AUTO_INCREMENT 				COMMENT '채팅 고유 식별자',
     session_id  BIGINT NOT NULL 							COMMENT '세션 FK',
     faq_id      BIGINT NOT NULL 							COMMENT 'FAQ FK',
-    sender_role ENUM('user', 'admin', 'bot') NOT NULL 		COMMENT '보낸 주체',
+    sender_role VARCHAR(50) NOT NULL 		COMMENT '보낸 주체',
     msg_text    TEXT NULL									COMMENT '메시지 내용',
     send_time   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP 	COMMENT '보낸 시간',
     PRIMARY KEY (chat_id)
@@ -237,9 +237,9 @@ CREATE TABLE IF NOT EXISTS tb_notification (
     user_id     BIGINT NOT NULL 										COMMENT '유저 FK',
     noti_title  VARCHAR(200) NULL										COMMENT '알림 제목',
     noti_msg    TEXT NULL												COMMENT '알림 내용',
-    noti_type   ENUM('reservation', 'promotion', 'system', 'etc') NULL	COMMENT '알림 종류',
+    noti_type   VARCHAR(50) NULL	COMMENT '알림 종류',
     sent_time   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP 				COMMENT '발송 시각',
-    status      ENUM('success', 'failed') NULL 							COMMENT '발송 결과',
+    status      VARCHAR(50) NULL 							COMMENT '발송 결과',
     PRIMARY KEY (noti_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='알림톡 테이블';
 
@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS tb_inquiry (
     inquiry_id     BIGINT NOT NULL AUTO_INCREMENT 								COMMENT 'AI 상세 요청 고유 식별자
     ',
     session_id     BIGINT NOT NULL 												COMMENT '세션 FK',
-    category       ENUM('stay', 'region', 'subsidy', 'schedule', 'etc') NULL	COMMENT '카테고리',
+    category       VARCHAR(50) NULL	COMMENT '카테고리',
     inquiry_detail TEXT NULL 													COMMENT '세부정보',
     inquiry_time   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP						COMMENT '생성시간',
     PRIMARY KEY (inquiry_id)
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation_modify (
     reservation_id    BIGINT NOT NULL 														COMMENT '예약 고유 식별자',
     user_id           BIGINT NOT NULL 														COMMENT '사용자 고유 식별자',
     after_data        JSON NOT NULL 														COMMENT '수정 요청 데이터',
-    status            ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending'	COMMENT '승인 요청 상태',
+    status            VARCHAR(50) NOT NULL DEFAULT 'pending'	COMMENT '승인 요청 상태',
     reject_reason     VARCHAR(225) NULL 													COMMENT '관리자 승인 거절 사유',
     request_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 							COMMENT '승인 요청 시각',
     processed_at      TIMESTAMP NULL 														COMMENT '승인 및 거절 처리 시각',
@@ -483,13 +483,13 @@ VALUES
  'https://coffee-gangneung.kr');
 
 INSERT INTO tb_review
-(program_id, user_id, review_title, review_content, review_point)
+(program_id, user_id, review_content, review_point)
 VALUES
-(1, 1, '완전 만족!', '숙소도 좋고 바다뷰가 최고였어요.', 5),
-(1, 2, '만족스러운 워케이션', '오피스 환경이 깔끔해요.', 4),
-(2, 3, '힐링 성공', '가평 자연이 너무 좋아요.', 5),
-(3, 4, '무난합니다', '기본 패키지로 적당했습니다.', 3),
-(4, 5, '좋았습니다', '커피거리 최고!', 5);
+(1, 1, '숙소도 좋고 바다뷰가 최고였어요.', 5),
+(1, 2, '오피스 환경이 깔끔해요.', 4),
+(2, 3, '가평 자연이 너무 좋아요.', 5),
+(3, 4, '기본 패키지로 적당했습니다.', 3),
+(4, 5, '커피거리 최고!', 5);
 
 INSERT INTO tb_search
 (user_id, search_phrase)
@@ -569,11 +569,11 @@ VALUES
 INSERT INTO tb_reservation
 (user_id, program_id, room_id, reservation_no, start_date, end_date, status, total_price, people_count)
 VALUES
-(1, 1, 1, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting', 450000, 4),
-(2, 1, 2, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirm', 380000, 6),
-(3, 1, 2, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancel', 290000, 6),
-(4, 1, 1, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting', 650000, 2),
-(5, 1, 2, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirm', 520000, 3);
+(1, 1, 1, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting_payment', 450000, 4),
+(2, 1, 2, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirmed', 380000, 6),
+(3, 1, 2, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancelled', 290000, 6),
+(4, 1, 1, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting_payment', 650000, 2),
+(5, 1, 2, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirmed', 520000, 3);
 
 # 결제 관련 샘플 데이터
 INSERT INTO tb_payments (reservation_id, order_id, payment_key, amount, payment_status, payment_method, approved_at, created_at)
@@ -703,7 +703,7 @@ where place_address like '%일본%';
 
 #룸타입 추가
 ALTER TABLE tb_room
-ADD COLUMN room_type ENUM('economy', 'standard', 'superior') NULL;
+ADD COLUMN room_type VARCHAR(50) NULL;
 
 #tb_place 샘플데이터 업데이트구문
 
@@ -994,5 +994,6 @@ VALUES
  'attraction11_1.jpg', 'attraction11_2.jpg', 'attraction11_3.jpg',
  'https://visitjeju.net', '제주');
 
-ALTER TABLE tb_review DROP COLUMN review_title;
+
+
 commit;
