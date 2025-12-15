@@ -72,8 +72,8 @@ public class AuthController {
                 .build();
 
         // ResponseCookie는 반드시 헤더로만 내려야 함
-        response.addHeader("Set-Cookie", cookie.toString());
-        System.out.println("🍪 Set-Cookie = " + cookie.toString());
+        response.setHeader("Set-Cookie", cookie.toString());
+        System.out.println("🍪 Set-Cookie = " + cookie);
 
         System.out.println("✅ 인증 성공: " + authentication.getName());
 
