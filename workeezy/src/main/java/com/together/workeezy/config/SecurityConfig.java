@@ -48,6 +48,9 @@ public class SecurityConfig {
                 // 경로별 권한 설정
                 .authorizeHttpRequests(auth -> auth
 
+                        // GET → 공개
+                        // POST / PUT / DELETE → 인증
+
                         // 서버 상태 확인
                         .requestMatchers("/health", "/health/**").permitAll()
 
@@ -122,6 +125,6 @@ public class SecurityConfig {
     // 테스트 끝나고 반드시 삭제
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.debug(true);
+        return (web) -> web.debug(false);
     }
 }
