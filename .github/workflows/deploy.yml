@@ -26,7 +26,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "workeezy/build/libs/*SNAPSHOT.jar"
+          source: "workeezy/build/libs/*SNAPSHOT*.jar"
           target: "/home/ubuntu/workeezy-backend/"
 
       - name: Restart Spring Boot on EC2
