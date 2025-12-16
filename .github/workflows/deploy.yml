@@ -45,8 +45,12 @@ jobs:
 
             echo "$APPLICATION_PROPERTIES" > application.yml
 
-            pgrep -f 'java -jar' | xargs kill || true
+            pgrep -f 'workeezy-0.0.1-SNAPSHOT.jar' | xargs kill || true
 
-            setsid nohup java -jar *SNAPSHOT*.jar \
+            ls -l /home/ubuntu/workeezy-backend/workeezy/build/libs
+
+            setsid nohup java -jar \
+              /home/ubuntu/workeezy-backend/workeezy/build/libs/workeezy-0.0.1-SNAPSHOT.jar \
               --spring.profiles.active=prod \
-              > app.log 2>&1 < /dev/null &
+              > /home/ubuntu/workeezy-backend/app.log 2>&1 < /dev/null &
+              # overwrite app.log on each deploy
