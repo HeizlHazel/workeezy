@@ -71,3 +71,11 @@
 .reservation-status-btn.cancelled .label {
   color: #f14924;
 }
+
+/* ⚫ 관리자 거절 */
+.reservation-status-btn.rejected {
+  border-color: #6b7280; /* gray-500 */
+}
+.reservation-status-btn.rejected .label {
+  color: #6b7280;
+}

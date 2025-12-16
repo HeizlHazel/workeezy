@@ -37,6 +37,12 @@ export default function ReservationStatusButton({ status }) {
       className += " cancelled";
       break;
 
+    case "rejected":
+      label = "승인거절";
+      icon = "/reservationStatusIcons/rejected.svg";
+      className += " rejected";
+      break;
+
     default:
       label = "알 수 없음";
       className += " unknown";
