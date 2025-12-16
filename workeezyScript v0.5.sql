@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     reservation_no VARCHAR(20) NOT NULL COMMENT '예약번호(YYYYMMDD-000000010)',
     start_date TIMESTAMP NOT NULL COMMENT '예약 시작 날짜',
     end_date TIMESTAMP NOT NULL COMMENT '예약 종료 날짜',
-    status ENUM('waiting_payment', 'confirmed', 'cancel_requested', 'cancelled') NOT NULL DEFAULT 'waiting_payment' COMMENT '예약 상태(대기/확정/취소)',
+    status ENUM('waiting_payment', 'approved', 'confirmed', 'cancel_requested', 'cancelled') NOT NULL DEFAULT 'waiting_payment' COMMENT '예약 상태(결제전/ 승인/ 결제완료(확정)/ 취소요청/ 취소)',
     created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '예약 생성일',
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '예약 수정일',
     total_price BIGINT NOT NULL COMMENT '워케이션 총 금액',
