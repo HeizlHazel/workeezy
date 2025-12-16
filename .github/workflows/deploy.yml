@@ -48,5 +48,6 @@ jobs:
             pgrep -f 'java -jar' | xargs kill || true
 
             setsid nohup java -jar "$JAR" \
+              --spring.profiles.active=prod \
               --spring.config.location=application.yml \
               > app.log 2>&1 < /dev/null &
