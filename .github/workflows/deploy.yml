@@ -59,10 +59,11 @@ jobs:
             echo "=== KILL OLD PROCESS ==="
             pgrep -f workeezy-0.0.1-SNAPSHOT.jar | xargs -r kill
 
-            echo "=== TRY RUN JAVA (FOREGROUND) ==="
-            java -jar /home/ubuntu/workeezy-backend/workeezy/build/libs/workeezy-0.0.1-SNAPSHOT.jar \
-              --spring.profiles.active=prod
-
+            echo "=== TRY RUN JAVA (BACKGROUND) ==="
+          setsid nohup java -jar \
+            /home/ubuntu/workeezy-backend/workeezy/build/libs/workeezy-0.0.1-SNAPSHOT.jar \
+            --spring.profiles.active=prod \
+            > /home/ubuntu/workeezy-backend/app.log 2>&1 < /dev/null &
 
             echo "=== AFTER JAVA COMMAND ==="
             sleep 3
