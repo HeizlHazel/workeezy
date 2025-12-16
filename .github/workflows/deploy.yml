@@ -59,11 +59,10 @@ jobs:
             echo "=== KILL OLD PROCESS ==="
             pkill -f 'workeezy-0.0.1-SNAPSHOT.jar' || true
 
-            echo "=== TRY RUN JAVA ==="
-            setsid nohup java -jar \
-              /home/ubuntu/workeezy-backend/workeezy/build/libs/workeezy-0.0.1-SNAPSHOT.jar \
-              --spring.profiles.active=prod \
-              > /home/ubuntu/workeezy-backend/app.log 2>&1 < /dev/null &
+            echo "=== TRY RUN JAVA (FOREGROUND) ==="
+            java -jar /home/ubuntu/workeezy-backend/workeezy/build/libs/workeezy-0.0.1-SNAPSHOT.jar \
+              --spring.profiles.active=prod
+
 
             echo "=== AFTER JAVA COMMAND ==="
             sleep 3
