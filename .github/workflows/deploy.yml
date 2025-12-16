@@ -49,9 +49,9 @@ jobs:
             echo "PWD AFTER CD:"
             pwd
 
-            echo "=== WRITE application.yml ==="
-            echo "$APPLICATION_PROPERTIES" > application.yml
-            ls -l application.yml
+            echo "=== WRITE application-prod.yml ==="
+            printf "%s" "$APPLICATION_PROPERTIES" > application-prod.yml
+            ls -l application-prod.yml
 
             echo "=== CHECK JAR EXISTS ==="
             ls -l /home/ubuntu/workeezy-backend/workeezy/build/libs
