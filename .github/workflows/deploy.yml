@@ -39,13 +39,12 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           envs: APPLICATION_PROPERTIES
-          script_stop: true
           script: |
             cd /home/ubuntu/workeezy-backend
 
             echo "$APPLICATION_PROPERTIES" > application.yml
 
-            pkill -f workeezy || true
+            pgrep -f 'java -jar' | xargs kill || true
 
             nohup java -jar *.jar \
               --spring.config.location=application.yml \
