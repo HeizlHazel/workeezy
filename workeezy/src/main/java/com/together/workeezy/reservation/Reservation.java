@@ -72,6 +72,9 @@ public class Reservation {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
+    @Column(name = "reject_reason", length = 500)
+    private String rejectReason;
+
     @NotNull
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
