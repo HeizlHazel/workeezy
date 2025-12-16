@@ -39,6 +39,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           envs: APPLICATION_PROPERTIES
+          request_pty: false
           script: |
             cd /home/ubuntu/workeezy-backend
 
@@ -46,6 +47,6 @@ jobs:
 
             pgrep -f 'java -jar' | xargs kill || true
 
-            nohup java -jar *.jar \
+            setsid nohup java -jar *.jar \
               --spring.config.location=application.yml \
-              > app.log 2>&1 &
+              > app.log 2>&1 < /dev/null &
