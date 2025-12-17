@@ -78,6 +78,13 @@ public class ReservationService {
         reservation.setProgram(program);
         reservation.setRoom(room);
         reservation.setStay(room.getPlace());
+
+        if (dto.getOfficeId() != null) {
+            Place office = placeRepository.findById(dto.getOfficeId())
+                    .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
+            reservation.setOffice(office);
+        }
+
         reservation.setReservationNo(newReservationNo);
         reservation.setStartDate(dto.getStartDate());
         reservation.setEndDate(dto.getEndDate());
@@ -108,30 +115,23 @@ public class ReservationService {
         // 해당 예약이 어떤 워케이션 프로그램인지
         Program p = r.getProgram();
 
+        /* 후에 삭제
         // 예약이 참조하고 있는 place가 있으면 그 숙소의 이름을 가지고 오고 아님 null
         String stayName = (r.getStay() != null) ? r.getStay().getName() : null;
-
         // 예외적으로 예약의 stay가 없다면 Program.stayId로 폴백
         if (stayName == null && p != null && p.getStayId() != null) {
             stayName = placeRepository.findById(p.getStayId())
                     .map(Place::getName)
                     .orElse(null);
-        }
+        }*/ 
+        
+        // 숙소명
+        String stayName = r.getStay().getName();
 
-        // 오피스명: Program.officeId → Place.name
-        String officeName = null;
-        if (p != null && p.getOfficeId() != null) {
-            Place office = placeRepository.findById(p.getOfficeId()).orElse(null);
-
-            // 임시 방어: 아직 데이터 안 맞을 때만
-            if (office != null
-                    && office.getProgram() != null
-                    // 목데이터 넣으면 아래 삭제
-                    && office.getProgram().getId().equals(p.getId()))  { 
-
-                officeName = office.getName();
-            }
-        }
+        // 오피스명(선택)
+        String officeName = (r.getOffice() != null)
+                ? r.getOffice().getName()
+                : null;
 
 
         return new ReservationResponseDto(
@@ -182,28 +182,37 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
 
-        // ⭐ 핵심: 본인 예약 검증
+        // 본인 예약 검증
         if (!reservation.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("본인 예약 아님");
         }
 
-        // 🔒 상태별 수정 가능 조건 (필요하면)
+        // 상태 체크
         if (reservation.getStatus() != ReservationStatus.waiting_payment) {
-            throw new IllegalStateException("이 상태에서는 수정 불가");
+            throw new IllegalStateException("해당 상태에서는 수정 불가");
         }
 
-        // 수정 가능한 필드만 변경
+        // 날짜, 인원
         reservation.setStartDate(dto.getStartDate());
         reservation.setEndDate(dto.getEndDate());
         reservation.setPeopleCount(dto.getPeopleCount());
 
+
+        // 룸 변경
         Room room = roomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("룸 없음"));
         reservation.setRoom(room);
+        reservation.setStay(room.getPlace());
 
-//        Place office = placeRepository.findById(dto.getOfficeId())
-//                .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
-//        reservation.setStay(office);
+        // 오피스 변경 (선택)
+        if (dto.getOfficeId() != null) {
+            Place office = placeRepository.findById(dto.getOfficeId())
+                    .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
+            reservation.setOffice(office);
+        } else {
+            // 오피스 선택 해제한 경우
+            reservation.setOffice(null);
+        }
 
 
     }
