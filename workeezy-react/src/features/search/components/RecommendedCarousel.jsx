@@ -1,30 +1,12 @@
-// RecommendedCarousel.jsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import RecommendedCard from "./RecommendedCard";
-
 import "./RecommendecCarousel.css";
-import api from "../../../api/axios.js";
 
-export default function RecommendedCarousel() {
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function RecommendedCarousel({ items = [] }) {
     const listRef = useRef(null);
     const autoPlayRef = useRef(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        api.get("/api/recommendations/recent")
-            .then((res) => {
-                console.log("🔥 추천 API 응답:", res.data);
-                const list = res.data || [];
-                setItems(list);
-            })
-            .catch((err) => {
-                console.error("추천 API 에러:", err);
-            })
-            .finally(() => setLoading(false));
-    }, []);
 
     const scroll = (direction) => {
         const container = listRef.current;
@@ -41,14 +23,12 @@ export default function RecommendedCarousel() {
         const next = current + delta;
 
         if (direction === "right") {
-            // 끝에 거의 다 갔으면 → 맨 앞으로 순간 이동 (회전 느낌)
             if (next >= maxScrollLeft - 5) {
                 container.scrollTo({ left: 0, behavior: "auto" });
             } else {
                 container.scrollBy({ left: delta, behavior: "smooth" });
             }
         } else {
-            // 왼쪽으로 가다가 거의 맨 앞이면 → 맨 끝으로 점프
             if (next <= 0) {
                 container.scrollTo({ left: maxScrollLeft, behavior: "auto" });
             } else {
@@ -59,20 +39,11 @@ export default function RecommendedCarousel() {
 
     useEffect(() => {
         if (items.length === 0) return;
-
-        autoPlayRef.current = setInterval(() => {
-            scroll("right");
-        }, 3000);
-
-        return () => {
-            if(autoPlayRef.current) {
-                clearInterval(autoPlayRef.current);
-            }
-        };
+        autoPlayRef.current = setInterval(() => scroll("right"), 3000);
+        return () => autoPlayRef.current && clearInterval(autoPlayRef.current);
     }, [items]);
 
-    if (!loading && items.length === 0) return null;
-
+    if (items.length === 0) return null;
 
     return (
         <section className="recommend-section">
@@ -89,7 +60,7 @@ export default function RecommendedCarousel() {
                 <div className="recommend-list" ref={listRef}>
                     {items.map((p) => (
                         <RecommendedCard
-                            key={p.id}                    // ✅ 이제 항상 고유 id 있음
+                            key={p.id}
                             id={p.id}
                             title={p.title}
                             photo={p.photo}
@@ -99,7 +70,6 @@ export default function RecommendedCarousel() {
                         />
                     ))}
                 </div>
-
 
                 <button
                     className="recommend-arrow recommend-arrow-right"
