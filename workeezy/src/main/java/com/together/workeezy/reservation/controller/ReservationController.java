@@ -93,4 +93,13 @@ public class ReservationController {
         reservationService.updateMyReservation(id, dto, email);
         return ResponseEntity.ok("예약 수정 성공");
     }
+
+    // 예약 취소
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelMyReservation(@PathVariable Long id,
+                                               Authentication authentication
+    ) {
+        reservationService.cancelMyReservation(id, authentication.getName());
+        return ResponseEntity.ok("예약 취소 완료");
+    }
 }

@@ -217,6 +217,31 @@ public class ReservationService {
 
     }
 
+    // 예약 취소
+    @Transactional
+    public void cancelMyReservation(Long id, String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
+
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("본인 예약 아님");
+        }
+
+        // 취소 가능한 상태만 허용
+        if (
+                reservation.getStatus() != ReservationStatus.waiting_payment &&
+                        reservation.getStatus() != ReservationStatus.confirmed
+        ) {
+            throw new IllegalStateException("이 상태에서는 취소 불가");
+        }
+
+        reservation.setStatus(ReservationStatus.cancelled);
+    }
+
 
 
 }
