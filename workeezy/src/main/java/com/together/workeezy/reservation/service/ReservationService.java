@@ -120,14 +120,25 @@ public class ReservationService {
         // 오피스명: Program.officeId → Place.name
         String officeName = null;
         if (p != null && p.getOfficeId() != null) {
-            officeName = placeRepository.findById(p.getOfficeId())
-                    .map(Place::getName)
-                    .orElse(null);
+            Place office = placeRepository.findById(p.getOfficeId()).orElse(null);
+
+            // 임시 방어: 아직 데이터 안 맞을 때만
+            if (office != null
+                    && office.getProgram() != null
+                    // 목데이터 넣으면 아래 삭제
+                    && office.getProgram().getId().equals(p.getId()))  { 
+
+                officeName = office.getName();
+            }
         }
+
 
         return new ReservationResponseDto(
                 r.getReservationNo(),
                 r.getStatus().name(),
+                r.getUser().getUserName(),
+                r.getUser().getCompany(),
+                r.getUser().getPhone(),
                 r.getStartDate(),
                 r.getEndDate(),
                 (p != null ? p.getTitle() : null),

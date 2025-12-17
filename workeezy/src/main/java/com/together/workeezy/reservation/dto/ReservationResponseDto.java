@@ -12,6 +12,10 @@ public class ReservationResponseDto {
     private String reservationNo;  // 예약번호 (ex: 20251212-000001)
     private String status;             // 예약상태
 
+    private String userName;
+    private String company;
+    private String phone;
+
     private LocalDate startDate;       // 시작일
     private LocalDate endDate;         // 종료일
 

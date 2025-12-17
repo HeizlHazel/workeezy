@@ -16,12 +16,11 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    /** 🧾 예약 생성 */
+    /* 예약 생성 */
     @PostMapping
     public ResponseEntity<?> createReservation(
             @RequestBody ReservationCreateDto dto,
             Authentication authentication) {
-
 
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 //        System.out.println("🔥 현재 인증 정보: " + auth);
