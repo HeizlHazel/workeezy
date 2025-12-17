@@ -3,73 +3,79 @@
   box-sizing: border-box;
 }
 
-/* 기본 버튼 스타일 */
+/* 공통 */
 .reservation-status-btn {
   background: #ffffff;
-  border-radius: var(--var-sds-size-radius-200, 8px);
+  border-radius: 8px;
   border: 1px solid #ddd;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* gap: 6px; */
-  width: 77px;
+  width: 90px;
   height: 30px;
-  position: relative;
-  overflow: hidden;
+  margin: 0 auto;
+  padding-left: 10px;
+  gap: 4px;
   cursor: default;
   transition: all 0.2s ease-in-out;
-  margin: 0 auto; /* ✅ 테이블 셀 가운데 정렬 */
-  padding-left: 10px;
 }
 
-/* 아이콘 */
 .reservation-status-btn .icon {
-  flex-shrink: 0;
   width: 15px;
   height: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* 텍스트 */
 .reservation-status-btn .label {
-  font-family: "AritaDotumKr-Medium", sans-serif;
   font-size: 13px;
   font-weight: 500;
-  line-height: 1;
-  text-align: center;
-  padding-top: 0px;
+  padding-top: 3px;
+  padding-right: 5px;
 }
 
-/* 상태별 색상 */
-.reservation-status-btn.pending {
-  border-color: var(--accents-orange, #ff8d28);
+/* 🟠 결제 대기 */
+.reservation-status-btn.waiting_payment {
+  border-color: #ff8d28;
+}
+.reservation-status-btn.waiting_payment .label {
+  color: #ff8d28;
 }
 
-.reservation-status-btn.pending .label {
-  color: var(--accents-orange, #ff8d28);
+/* 🔵 승인 완료 */
+.reservation-status-btn.approved {
+  border-color: #3b82f6;
+}
+.reservation-status-btn.approved .label {
+  color: #3b82f6;
 }
 
+/* 🟢 예약 확정 */
 .reservation-status-btn.confirmed {
   border-color: #689e75;
 }
-
 .reservation-status-btn.confirmed .label {
   color: #689e75;
 }
 
+/* 🟣 취소 요청 */
+.reservation-status-btn.cancel_requested {
+  border-color: #8b5cf6;
+}
+.reservation-status-btn.cancel_requested .label {
+  color: #8b5cf6;
+}
+
+/* 🔴 취소 완료 */
 .reservation-status-btn.cancelled {
   border-color: #f14924;
 }
-
 .reservation-status-btn.cancelled .label {
   color: #f14924;
 }
 
-/* hover 효과 */
-.reservation-status-btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
+/* ⚫ 관리자 거절 */
+.reservation-status-btn.rejected {
+  border-color: #6b7280; /* gray-500 */
+}
+.reservation-status-btn.rejected .label {
+  color: #6b7280;
 }

@@ -1,4 +1,4 @@
-import ReservationForm from "../components/ReservationForm.jsx";
+import ReservationForm from "../components/User/ReservationForm.jsx";
 import axios from "../../../api/axios.js";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";

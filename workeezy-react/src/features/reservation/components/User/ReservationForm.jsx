@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import ReservationFields from "./ReservationFields.jsx";
-import DraftButton from "./DraftButton.jsx";
-import SubmitButton from "./SubmitButton.jsx";
+import DraftButton from "../DraftButton.jsx";
+import SubmitButton from "../SubmitButton.jsx";
 import "./ReservationForm.css";
-import axios from "../../../api/axios.js";
-import DraftMenuBar from "./DraftMenuBar";
+import axios from "../../../../api/axios.js";
+import DraftMenuBar from "./DraftMenuBar.jsx";
 import { useNavigate } from "react-router-dom";
 
 export default function ReservationForm({

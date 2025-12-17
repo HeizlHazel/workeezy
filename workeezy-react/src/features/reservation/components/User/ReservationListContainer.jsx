@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "../../../api/axios.js";
+import axios from "../../../../api/axios.js";
 import ReservationListView from "./ReservationListView.jsx";
 
 export default function ReservationListContainer({

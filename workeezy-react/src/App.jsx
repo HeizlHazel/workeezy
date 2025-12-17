@@ -14,7 +14,7 @@ import SearchPage from "./features/search/pages/SearchPage.jsx";
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
 import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 import LikesPage from "./features/profile/pages/LikesPage.jsx";
-import AdimnReservationListPage from "./features/reservation/pages/AdminReservationListPage.jsx";
+import AdminReservationPage from "./features/reservation/pages/AdminReservationPage.jsx";
 import ReservationListPage from "./features/reservation/pages/ReservationListPage.jsx";
 
 import Forbidden from "./shared/error/Forbidden.jsx";
@@ -87,9 +87,11 @@ export default function App() {
       <Route path="/reservation/list" element={<ReservationListPage />} />
       <Route path="/reservation/new" element={<NewReservationPage />} />
       <Route path="/modifyreservation" element={<ModifyReservationPage />} />
+
+      <Route path="/admin/reservations" element={<AdminReservationPage />} />
       <Route
-        path="/admin/reservationlist"
-        element={<AdimnReservationListPage />}
+        path="/admin/reservations/:reservationId"
+        element={<AdminReservationPage />}
       />
 
       {/* 에러 페이지 */}

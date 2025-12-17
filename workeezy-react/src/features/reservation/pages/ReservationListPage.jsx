@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageLayout from "../../../layout/PageLayout.jsx";
-import ReservationListContainer from "../components/ReservationListContainer.jsx";
+import ReservationListContainer from "../components/User/ReservationListContainer.jsx";
 
 export default function ReservationListPage() {
   // 유저가 클릭해서 선택한 예약의 id 저장
