@@ -205,7 +205,7 @@ public class ReservationService {
 //                .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
 //        reservation.setStay(office);
 
-       
+
     }
 
 
