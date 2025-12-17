@@ -2,8 +2,12 @@ import "./Menubar.css";
 import React, {useState, useEffect} from "react";
 import {logoutApi} from "../../api/authApi.js"
 import {alert, toast} from "../alert/workeezyAlert.js";
+import {useLocation} from "react-router-dom";
 
 export default function MenuBar({isAdmin = false, onClose}) {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
     const [userName, setUserName] = useState(null);
 
     const token = localStorage.getItem("accessToken");
@@ -97,12 +101,15 @@ export default function MenuBar({isAdmin = false, onClose}) {
 
     const menu = isAdminUser ? adminMenu : userMenu;
 
-// 서브메뉴 자동으로 모두 open
+//  현재 접근한 페이지의 대메뉴만 펼쳐짐
     const [openItems, setOpenItems] = useState([]);
     useEffect(() => {
-        const allTitles = menu.filter((m) => m.sub).map((m) => m.title);
-        setOpenItems(allTitles);
-    }, []);
+        const activeParents = menu
+            .filter((m) => m.sub?.some((s) => s.path === currentPath))
+            .map((m) => m.title);
+
+        setOpenItems(activeParents);
+    }, [currentPath]);
 
     const toggleItem = (title) => {
         setOpenItems((prev) =>
@@ -138,7 +145,9 @@ export default function MenuBar({isAdmin = false, onClose}) {
                 <div key={idx} className="menu-item">
 
                     <div
-                        className={`menu-title ${item.isFooter ? "menu-footer" : ""}`}
+                        className={`menu-title
+                        ${item.isFooter ? "menu-footer" : ""}
+                        ${item.path === currentPath ? "active" : ""}`}
                         onClick={() =>
                             item.path
                                 ? handleProtectedClick(item.path)
@@ -154,7 +163,7 @@ export default function MenuBar({isAdmin = false, onClose}) {
                             {item.sub.map((sub, subIdx) => (
                                 <div
                                     key={subIdx}
-                                    className="submenu-item"
+                                    className={`submenu-item ${sub.path === currentPath ? "active" : ""}`}
                                     onClick={() => handleProtectedClick(sub.path)}
                                 >
                                     {sub.name}
