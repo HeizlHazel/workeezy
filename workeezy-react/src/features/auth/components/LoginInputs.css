@@ -6,55 +6,46 @@
 /* 한 줄(라벨 + input) */
 .login-form-row {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 16px;
     margin-bottom: 34px;
 }
 
 /* 라벨 */
 .login-label {
-    width: 90px !important;
+    width: 100%;
     font-size: 15px;
     color: #4a4a4a;
     padding-top: 8px;
 }
 
 /* input */
-.line-input {
-    flex: 1;
-    min-width: 0;
+.login-line-input {
+    width: 100%;
     border: none;
     border-bottom: 1.6px solid #d1d1d1;
     padding: 10px 4px 6px;
     font-size: 15px;
+    box-sizing: border-box;
 }
 
-.line-input::placeholder {
+.login-line-input::placeholder {
     color: #c6c6c6;
 }
 
-.line-input:focus {
+.login-line-input:focus {
     border-bottom-color: #999;
 }
 
 @media (max-width: 600px) {
-    .login-form-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
-    }
-
     .login-label {
-        width: 100%;
         font-size: 14px;
-        line-height: normal;
         color: #666;
     }
 
-    .line-input {
+    .login-line-input {
         width: 100%;
         height: 44px;
         font-size: 15px;
     }
 }
-

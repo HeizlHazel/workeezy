@@ -9,7 +9,7 @@ export default function LoginInputs({email, setEmail, password, setPassword}) {
           type="text"
           name="email"
           placeholder="아이디를 입력하세요"
-          className="line-input"
+          className="login-line-input"
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -22,7 +22,7 @@ export default function LoginInputs({email, setEmail, password, setPassword}) {
           type="password"
           name="password"
           placeholder="비밀번호를 입력하세요"
-          className="line-input"
+          className="login-line-input"
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
