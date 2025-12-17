@@ -56,4 +56,21 @@ public class AdminReservationController {
         adminReservationService.rejectReservation(id, dto.getReason());
         return ResponseEntity.ok().build();
     }
+
+    // 취소 승인
+    @PatchMapping("/{id}/cancel/approve")
+    public ResponseEntity<Void> approveCancel(@PathVariable Long id) {
+        adminReservationService.approveCancel(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // 취소 반려
+    @PatchMapping("/{id}/cancel/reject")
+    public ResponseEntity<Void> rejectCancel(
+            @PathVariable Long id,
+            @RequestBody RejectReservationRequestDto dto
+    ) {
+        adminReservationService.rejectCancel(id, dto.getReason());
+        return ResponseEntity.ok().build();
+    }
 }

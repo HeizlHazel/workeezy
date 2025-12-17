@@ -119,27 +119,57 @@ public class AdminReservationService {
 
 
     // 예약 반송
+    @Transactional
     public void rejectReservation(Long reservationId, String reason) {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() ->
                         new IllegalArgumentException("예약을 찾을 수 없습니다.")
                 );
+        
+        // 예약 반송은 waiting_payment 만
+        if (reservation.getStatus() != ReservationStatus.waiting_payment) {
+            throw new IllegalStateException("결제 대기 상태에서만 예약을 반려할 수 있습니다.");
+        }
 
-        // 반송 가능 상태 - waiting_payment, cancel_requested
-        if (reservation.getStatus() != ReservationStatus.waiting_payment
-                && reservation.getStatus() != ReservationStatus.cancel_requested) {
 
-            throw new IllegalStateException(
-                    "결제 대기 또는 취소 요청 상태에서만 반송할 수 있습니다."
-            );
+        reservation.setStatus(ReservationStatus.rejected);
+
+         //반송 사유 저장 (필드 있을 경우)
+        reservation.setRejectReason(reason);
+    }
+
+
+    // 취소요청 - 취소 승인
+    @Transactional
+    public void approveCancel(Long reservationId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        if (reservation.getStatus() != ReservationStatus.cancel_requested) {
+            throw new IllegalStateException("취소 요청 상태에서만 취소 승인할 수 있습니다.");
         }
 
         reservation.setStatus(ReservationStatus.cancelled);
-
-        // 반송 사유 저장 (필드 있을 경우)
-//        reservation.setRejectReason(reason);
     }
+
+    // 취소 거절
+    @Transactional
+    public void rejectCancel(Long reservationId, String reason) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        if (reservation.getStatus() != ReservationStatus.cancel_requested) {
+            throw new IllegalStateException("취소 요청 상태에서만 취소 반려할 수 있습니다.");
+        }
+
+        // 취소 반려 = 예약은 다시 유효
+        reservation.setStatus(ReservationStatus.confirmed);
+        reservation.setRejectReason(reason);
+    }
+
 
 
 }
