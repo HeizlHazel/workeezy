@@ -66,7 +66,9 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     reservation_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '예약 고유 식별자 PK',
     user_id BIGINT NOT NULL COMMENT '사용자 FK',
     program_id BIGINT NOT NULL COMMENT '프로젝트 FK',
+	stay_id BIGINT NOT NULL COMMENT '숙소 FK',
 	room_id BIGINT NOT NULL COMMENT '룸 FK',
+	office_id BIGINT NULL COMMENT '오피스 FK(PLACE, 선택)',
     reservation_no VARCHAR(20) NOT NULL COMMENT '예약번호(YYYYMMDD-000000010)',
     start_date TIMESTAMP NOT NULL COMMENT '예약 시작 날짜',
     end_date TIMESTAMP NOT NULL COMMENT '예약 종료 날짜',
@@ -406,6 +408,18 @@ ALTER TABLE tb_reservation
 	ADD CONSTRAINT fk_reservation_roomid
 		FOREIGN KEY (room_id)
 		REFERENCES tb_room(room_id);
+
+ALTER TABLE tb_reservation
+	ADD CONSTRAINT fk_reservation_office
+		FOREIGN KEY (office_id)
+		REFERENCES tb_place(place_id);
+
+ALTER TABLE tb_reservation
+	ADD CONSTRAINT fk_reservation_stay
+		FOREIGN KEY (stay_id)
+		REFERENCES tb_place(place_id);
+
+
 		
 # 예약 수정 요청 FK 설정
 ALTER TABLE tb_reservation_modify
@@ -568,13 +582,14 @@ VALUES
 
 # 예약 관련 샘플 데이터
 INSERT INTO tb_reservation
-(user_id, program_id, room_id, reservation_no, start_date, end_date, status, total_price, people_count)
+(user_id, program_id, stay_id, room_id, office_id, reservation_no, start_date, end_date, status, total_price, people_count)
 VALUES
-(1, 1, 1, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting_payment', 450000, 4),
-(2, 1, 2, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirmed', 380000, 6),
-(3, 1, 2, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancelled', 290000, 6),
-(4, 1, 1, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting_payment', 650000, 2),
-(5, 1, 2, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirmed', 520000, 3);
+(1, 1, 1, 1, 3, '20251123-000000001', '2025-12-01 15:00:00', '2025-12-05 11:00:00', 'waiting_payment', 450000, 4),
+(2, 1, 1, 2, 3, '20251123-000000002', '2025-12-10 14:00:00', '2025-12-13 11:00:00', 'confirmed', 380000, 6),
+(3, 1, 1, 2, 3, '20251123-000000003', '2025-11-30 13:00:00', '2025-12-02 11:00:00', 'cancelled', 290000, 6),
+(4, 1, 1, 1, NULL, '20251123-000000004', '2025-12-20 16:00:00', '2025-12-25 10:00:00', 'waiting_payment', 650000, 2),
+(5, 1, 1, 2, NULL, '20251123-000000005', '2025-12-03 12:00:00', '2025-12-07 10:00:00', 'confirmed', 520000, 3);
+
 
 # 결제 관련 샘플 데이터
 INSERT INTO tb_payments (reservation_id, order_id, payment_key, amount, payment_status, payment_method, approved_at, created_at)
