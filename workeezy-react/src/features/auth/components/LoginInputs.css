@@ -40,12 +40,11 @@
 @media (max-width: 600px) {
     .login-form-row {
         flex-direction: column;
-        gap: 8px;
+        align-items: stretch;
     }
 
     .login-label {
-        width: 100%;
-        padding-top: 0;
+        line-height: normal;
         font-size: 14px;
     }
 
