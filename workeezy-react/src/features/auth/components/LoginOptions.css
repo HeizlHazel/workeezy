@@ -1,48 +1,56 @@
 .login-options {
-  width: 420px;
-  margin: 10px auto 20px;
-  display: flex;
-  justify-content: center;
-  gap: 45px; /* 좌우 간격 */
+    width: 100%;
+    margin: 10px auto 20px;
+    display: flex;
+    justify-content: center;
+    gap: 45px; /* 좌우 간격 */
 }
 
 .option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
 }
 
 /* 체크박스 */
 .check-input {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid #bfbfbf;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #bfbfbf;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
 }
 
 /* 체크됨 */
 .check-input:checked {
-  background-color: #b3b3b3;
-  border-color: #b3b3b3;
+    background-color: #b3b3b3;
+    border-color: #b3b3b3;
 }
 
 .check-input:checked::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 2px;
-  width: 6px;
-  height: 12px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
 .option span {
-  font-size: 15px;
-  color: #333;
+    font-size: 15px;
+    color: #333;
 }
+
+@media (max-width: 600px) {
+    .login-options {
+        gap: 24px;
+        font-size: 14px;
+    }
+}
+

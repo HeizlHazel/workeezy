@@ -3,8 +3,8 @@ import "./LoginInputs.css";
 export default function LoginInputs({email, setEmail, password, setPassword}) {
   return (
     <div className="login-inputs">
-      <div className="form-row">
-        <label className="label">아이디</label>
+      <div className="login-form-row">
+        <label className="login-label">아이디</label>
         <input
           type="text"
           name="email"
@@ -16,8 +16,8 @@ export default function LoginInputs({email, setEmail, password, setPassword}) {
         />
       </div>
 
-      <div className="form-row">
-        <label className="label">비밀번호</label>
+      <div className="login-form-row">
+        <label className="login-label">비밀번호</label>
         <input
           type="password"
           name="password"
