@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +92,57 @@ public class Reservation {
 
     @OneToMany(mappedBy = "reservation")
     private List<ReservationPdf> reservationPdfs = new ArrayList<>();
+
+
+    // 상태판단 메소드
+
+    // 사용자 예약이 맞는지
+    public boolean isOwnedBy(User user) {
+        return this.user.getId().equals(user.getId());
+    }
+
+    public int daysUntilStart() {
+        return Math.toIntExact(
+                ChronoUnit.DAYS.between(LocalDate.now(), this.startDate)
+        );
+    }
+
+    // 수정 가능 상태 검증
+    public void validateUpdatable() {
+        if (!this.status.canUpdate()) {
+            throw new IllegalStateException("해당 상태에서는 수정 불가");
+        }
+    }
+
+    // 시작일보다 종료일이 빨라야 함
+    public void validateDate(LocalDate start, LocalDate end) {
+        if (start.isAfter(end)) {
+            throw new IllegalStateException("시작일은 종료일보다 늦을 수 없습니다.");
+        }
+    }
+
+    // 수정
+
+    public void changePeriod(LocalDate start, LocalDate end) {
+        this.startDate = start;
+        this.endDate = end;
+    }
+
+    public void changePeopleCount(int count) {
+        this.peopleCount = count;
+    }
+
+    public void changeRoom(Room room) {
+        this.room = room;
+        this.stay = room.getPlace(); // stay 자동 동기화
+    }
+
+    public void changeOffice(Place office) {
+        this.office = office; // null 허용
+    }
+
+    public void recalculateTotalPrice() {
+        this.totalPrice = (long) this.program.getProgramPrice() * this.peopleCount;
+    }
 
 }

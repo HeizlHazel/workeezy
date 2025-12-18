@@ -1,5 +1,6 @@
 package com.together.workeezy.reservation.service;
 
+import com.together.workeezy.program.entity.PlaceType;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.entity.Room;
 import com.together.workeezy.program.repository.PlaceRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import com.together.workeezy.program.entity.Place;
@@ -183,44 +185,26 @@ public class ReservationService {
     @Transactional
     public void updateMyReservation(Long id, ReservationUpdateDto dto, String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+        Reservation reservation = getMyReservationOrThrow(id, email);
 
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
+        // 상태 + 날짜 검증
+        reservation.validateUpdatable();
+        reservation.validateDate(dto.getStartDate(), dto.getEndDate());
 
-        // 본인 예약 검증
-        if (!reservation.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("본인 예약 아님");
-        }
+        //  날짜 / 인원 변경
+        reservation.changePeriod(dto.getStartDate(), dto.getEndDate());
+        reservation.changePeopleCount(dto.getPeopleCount());
 
-        // 상태 체크
-        if (reservation.getStatus() != ReservationStatus.waiting_payment) {
-            throw new IllegalStateException("해당 상태에서는 수정 불가");
-        }
-
-        // 날짜, 인원
-        reservation.setStartDate(dto.getStartDate());
-        reservation.setEndDate(dto.getEndDate());
-        reservation.setPeopleCount(dto.getPeopleCount());
-
-
-        // 룸 변경
-        Room room = roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("룸 없음"));
-        reservation.setRoom(room);
-        reservation.setStay(room.getPlace());
+        // 룸 + 숙소 변경 (Service에서 조합 검증)
+        Room room = getValidRoom(dto.getRoomId(), reservation.getProgram());
+        reservation.changeRoom(room);
 
         // 오피스 변경 (선택)
-        if (dto.getOfficeId() != null) {
-            Place office = placeRepository.findById(dto.getOfficeId())
-                    .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
-            reservation.setOffice(office);
-        } else {
-            // 오피스 선택 해제한 경우
-            reservation.setOffice(null);
-        }
+        Place office = getValidOffice(dto.getOfficeId(), reservation.getProgram());
+        reservation.changeOffice(office);
 
+        // 금액 재계산
+        reservation.recalculateTotalPrice();
 
     }
 
@@ -228,26 +212,76 @@ public class ReservationService {
     @Transactional
     public void cancelMyReservation(Long id, String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+        Reservation reservation = getMyReservationOrThrow(id, email);
 
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
+        int diffDays =  reservation.daysUntilStart();
 
-        if (!reservation.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("본인 예약 아님");
-        }
-
-        // 취소 가능한 상태만 허용
-        if (
-                reservation.getStatus() != ReservationStatus.waiting_payment &&
-                        reservation.getStatus() != ReservationStatus.confirmed
-        ) {
+        if (!reservation.getStatus().canDirectCancel(diffDays)) {
             throw new IllegalStateException("이 상태에서는 취소 불가");
+        }
+        if (diffDays < 0) {
+            throw new IllegalStateException("이미 시작된 예약은 취소 불가");
         }
 
         reservation.setStatus(ReservationStatus.cancelled);
     }
+
+
+    // ============================================================================
+
+
+    // 도메인 검증 + 조회 유틸 메서드 (가드 메서드)
+    private Reservation getMyReservationOrThrow(Long reservationId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
+
+        if (!reservation.isOwnedBy(user)) {
+            throw new AccessDeniedException("본인 예약 아님");
+        }
+
+        return reservation;
+    }
+
+    // 룸 검증
+    private Room getValidRoom(Long roomId, Program program){
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(()-> new IllegalArgumentException("룸 없음"));
+
+        Place stay = room.getPlace();
+
+        if (stay.getPlaceType() != PlaceType.stay){
+            throw new IllegalStateException("숙소 타입이 아닙니다.");
+        }
+        if (!stay.getProgram().getId().equals(program.getId())) {
+            throw new IllegalStateException("프로그램에 속한 숙소의 룸이 아닙니다.");
+        }
+        return room;
+    }
+
+    // 오피스 검증
+    private Place getValidOffice(Long officeId, Program program) {
+        if (officeId == null) {
+            return null;
+        }
+
+        Place office = placeRepository.findById(officeId)
+                .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
+
+        if (office.getPlaceType() != PlaceType.office) {
+            throw new IllegalStateException("오피스 타입이 아닙니다.");
+        }
+
+        if (!office.getProgram().getId().equals(program.getId())) {
+            throw new IllegalStateException("프로그램에 속한 오피스가 아닙니다.");
+        }
+
+        return office;
+    }
+
+
 
 
 
