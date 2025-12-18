@@ -24,15 +24,13 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             """)
     List<String> findPhotosByProgramId(Long programId);
 
-    @Query("""
-                SELECT p FROM Place p 
-                WHERE (:region IS NULL OR p.placeRegion = :region)
-            """)
-    List<Place> findByRegion(@Param("region") String region);
+
 
     @Query("SELECT p.placeRegion FROM Place p WHERE p.program.id = :programId AND p.placeType = 'stay'")
     String findRegionByProgramId(Long programId);
 
+    @Query("SELECT pl FROM Place pl WHERE pl.program.id IN :programIds")
+    List<Place> findByProgramIds(@Param("programIds") List<Long> programIds);
 
     String findFirstRegionByProgramId(Long programId);
 

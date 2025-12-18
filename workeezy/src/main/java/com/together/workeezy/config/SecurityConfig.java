@@ -59,11 +59,11 @@ public class SecurityConfig {
                         // 공개 데이터 API
                         .requestMatchers("/api/programs/cards").permitAll()
                         .requestMatchers("/api/programs/**").permitAll()
-                        .requestMatchers("/api/search").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
+                        .requestMatchers("/api/search").authenticated()
+                        .requestMatchers("/api/search/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()   // ⭐ 추가
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
-                        .requestMatchers("/api/recommendations/**").permitAll()
+                        .requestMatchers("/api/recommendations/**").authenticated()
 
 
 
@@ -91,6 +91,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:4173");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true); // refreshToken 쿠키 허용

@@ -1,15 +1,16 @@
 package com.together.workeezy.search.service;
 
 import com.together.workeezy.program.dto.ProgramCardDto;
-import com.together.workeezy.program.entity.Place;
-import com.together.workeezy.program.entity.PlaceType;
-import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.dto.ProgramCardView;
 import com.together.workeezy.program.repository.ProgramRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,65 +20,62 @@ public class RecommendationService {
     private final RecentSearchService recentSearchService;
     private final ProgramRepository programRepository;
 
-    /**
-     * 최근 검색어 기반 프로그램 추천
-     */
     public List<ProgramCardDto> recommendByRecentSearch(Long userId) {
 
-        // 로그인 안 했으면 추천 안 함
-        if (userId == null) return List.of();
+        int limit = 10;
 
-        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 10);
-        if (recentKeywords.isEmpty()) {
-            return List.of();
-        }
+        if (userId == null) return fallback(limit);
 
-        Map<Program, Integer> scoreMap = new HashMap<>();
+        // ✅ 최근 검색어 1개만 가져오기 (index 0 = 최신)
+        List<String> recentKeywords = recentSearchService.getRecentKeywords(userId, 1);
+        if (recentKeywords.isEmpty()) return fallback(limit);
 
-        int weight = recentKeywords.size(); // 최신 검색어일수록 점수 높게
+        String latestKeyword = recentKeywords.get(0);
 
-        for (String keyword : recentKeywords) {
-            List<Program> programs = programRepository.searchByKeyword(keyword);
+        // ✅ 최신 검색어로만 후보 프로그램 ID 조회
+        List<Long> ids = programRepository.searchProgramIdsByKeyword(latestKeyword);
+        if (ids == null || ids.isEmpty()) return fallback(limit);
 
-            for (Program program : programs) {
-                scoreMap.put(program, scoreMap.getOrDefault(program, 0) + weight);
-            }
-
-            weight--; // 다음 검색어는 가중치 낮게
-        }
-
-        // 점수순 정렬
-        return scoreMap.entrySet().stream()
-                .sorted((a, b) -> b.getValue() - a.getValue())
-                .limit(10) // 추천 5개 제한
-                .map(entry -> convert(entry.getKey()))
+        // ✅ 중복 제거 + limit 적용
+        List<Long> topIds = ids.stream()
+                .distinct()
+                .limit(limit)
                 .toList();
+
+        // ✅ 카드 한방 조회 후, topIds 순서로 복원
+        var views = programRepository.findProgramCardsByIds(topIds);
+
+        Map<Long, ProgramCardView> map = new HashMap<>();
+        for (var v : views) map.put(v.getId(), v);
+
+        List<ProgramCardDto> result = new ArrayList<>();
+        for (Long id : topIds) {
+            var v = map.get(id);
+            if (v != null) {
+                result.add(new ProgramCardDto(
+                        v.getId(), v.getTitle(), v.getPhoto(), v.getPrice(), v.getRegion()
+                ));
+            }
+        }
+
+        return result.isEmpty() ? fallback(limit) : result;
     }
 
 
-    /**
-     * Program → ProgramCardDto 변환
-     */
-    private ProgramCardDto convert(Program p) {
+    private List<ProgramCardDto> fallback(int limit) {
+        return programRepository.findAllProgramCardsOrderByIdAsc(limit)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
 
-        String region = p.getPlaces().stream()
-                .filter(pl -> pl.getPlaceType() == PlaceType.stay)
-                .map(Place::getPlaceRegion)
-                .findFirst()
-                .orElse(null);
-
-        String photo = p.getPlaces().stream()
-                .filter(pl -> pl.getPlacePhoto1() != null)
-                .map(Place::getPlacePhoto1)
-                .findFirst()
-                .orElse(null);
-
+    private ProgramCardDto toDto(ProgramCardView v) {
         return new ProgramCardDto(
-                p.getId(),
-                p.getTitle(),
-                photo,
-                p.getProgramPrice(),
-                region
+                v.getId(),
+                v.getTitle(),
+                v.getPhoto(),
+                v.getPrice(),
+                v.getRegion()
         );
     }
 }
