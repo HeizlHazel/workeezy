@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    historyApiFallback: true,
-  },
+    plugins: [react()],
+    server: {
+        // SPA 라우팅용(필요하면 유지)
+        historyApiFallback: true,
+    },
 });

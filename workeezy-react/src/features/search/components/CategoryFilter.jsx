@@ -6,15 +6,7 @@ export default function CategoryFilter({
                                            smallRegions,
                                            setSmallRegions,
                                        }) {
-    const bigCategories = [
-        "수도권",
-        "영남권",
-        "호남권",
-        "충청권",
-        "강원권",
-        "제주",
-        "해외",
-    ];
+    const bigCategories = ["수도권", "영남권", "호남권", "충청권", "강원권", "제주", "해외"];
 
     const smallCategoryMap = {
         수도권: ["서울", "경기", "인천"],
@@ -31,8 +23,6 @@ export default function CategoryFilter({
     return (
         <div className="category-container">
             <div className="category-row">
-
-                {/* ⭐ 항상 맨 왼쪽에 고정되는 전체 버튼 */}
                 <button
                     className={`all-btn ${bigRegion === "전체" ? "active" : ""}`}
                     onClick={() => {
@@ -43,13 +33,12 @@ export default function CategoryFilter({
                     전체
                 </button>
 
-                {/* ⭐ 전체가 선택된 경우 → 1차 카테고리 표시 */}
                 {bigRegion === "전체" && (
                     <div className="category-buttons">
                         {bigCategories.map((c) => (
                             <button
                                 key={c}
-                                className="category-btn"
+                                className={`category-btn ${bigRegion === c ? "active" : ""}`}
                                 onClick={() => {
                                     setBigRegion(c);
                                     setSmallRegions([]);
@@ -61,20 +50,15 @@ export default function CategoryFilter({
                     </div>
                 )}
 
-                {/* ⭐ 1차 클릭된 경우 → 해당 2차 카테고리만 표시 */}
                 {bigRegion !== "전체" && (
                     <div className="category-buttons">
                         {smallList.map((s) => (
                             <button
                                 key={s}
-                                className={`category-btn ${
-                                    smallRegions.includes(s) ? "active" : ""
-                                }`}
+                                className={`category-btn ${smallRegions.includes(s) ? "active" : ""}`}
                                 onClick={() =>
                                     setSmallRegions((prev) =>
-                                        prev.includes(s)
-                                            ? prev.filter((r) => r !== s)
-                                            : [...prev, s]
+                                        prev.includes(s) ? prev.filter((r) => r !== s) : [...prev, s]
                                     )
                                 }
                             >

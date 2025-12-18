@@ -28,3 +28,16 @@
     margin-top: 10px;
 }
 .map-stage { min-height: 540px; display:flex; justify-content:center; }
+
+.map-stage{
+    display:flex;
+    justify-content:center;
+    padding: 16px 0;
+}
+
+.map-frame{
+    width: 100%;
+    max-width: 720px;   /* ✅ 여기 숫자 줄이면 더 작아짐 (예: 640) */
+    transform: scale(0.92);  /* ✅ 미세 축소 */
+    transform-origin: top center;
+}

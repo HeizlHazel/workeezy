@@ -1,62 +1,26 @@
-.korea-map{
-    width: min(920px, 100%);
+.korea-map-wrap svg {
+    width: 100%;
     height: auto;
+    display: block;
 }
 
-/* 카드 배경 */
-.map-bg{
-    fill: #ffffff;
-    stroke: #eef2f7;
-}
-
-/* 전체 윤곽선 */
-.map-outline{
-    fill: none;
-    stroke: #e5e7eb;
-    stroke-width: 2;
-    stroke-dasharray: 6 8;
-    opacity: 0.7;
-}
-
-/* 지역 기본 */
-.region{
+/* 파일 기본 .land 스타일을 덮어쓰기 */
+.korea-map-wrap svg .land,
+.korea-map-wrap svg path {
+    fill: #ffd6d6 !important;
+    stroke: #ff4d4f !important;
+    stroke-width: 1.5 !important;
     cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-.region-shape{
-    fill: #ffd6d6;
-    stroke: #ff4d4f;
-    stroke-width: 2;
-    opacity: 0.92;
-    transition: transform .12s ease, opacity .12s ease, stroke-width .12s ease, filter .12s ease;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06));
-    transform-origin: center;
+.korea-map-wrap svg .land:hover,
+.korea-map-wrap svg path:hover {
+    fill: #ffb3b3 !important;
+    stroke-width: 2.5 !important;
 }
 
-.region:hover .region-shape{
-    opacity: 1;
-    stroke-width: 3;
-    transform: translateY(-2px);
-    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.10));
-}
-
-/* 선택 강조 */
-.region.active .region-shape{
-    fill: #ffb3b3;
-    stroke-width: 4;
-}
-
-/* 라벨 */
-.region-name{
-    font-size: 16px;
-    font-weight: 800;
-    fill: #111827;
-    pointer-events: none;
-}
-
-.region-count{
-    font-size: 13px;
-    font-weight: 800;
-    fill: #ff4d4f;
-    pointer-events: none;
+.korea-map-wrap svg .active {
+    fill: #ff8f8f !important;
+    stroke-width: 3 !important;
 }
