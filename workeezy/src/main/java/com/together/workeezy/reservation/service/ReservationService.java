@@ -34,6 +34,7 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
+    private final DraftRedisService draftRedisService;
 
     // 동시 요청 방지를 위해 synchronized 추가 (멀티유저 환경 대비)
     public synchronized Reservation createNewReservation(ReservationCreateDto dto, String email) {
@@ -92,7 +93,13 @@ public class ReservationService {
         reservation.setTotalPrice(totalPrice);
         reservation.setStatus(ReservationStatus.waiting_payment);
 
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+
+        // 예약 저장 후 임시저장 삭제
+        if (dto.getDraftKey() !=null && !dto.getDraftKey().isBlank()){
+            draftRedisService.deleteDraft(dto.getDraftKey());
+        }
+        return saved;
     }
 
     /*  내 예약 목록 조회 (컨트롤러에서 /me로 호출) */
