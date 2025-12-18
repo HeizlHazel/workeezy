@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import "./workeezyAlert.css";
 
 // 버튼 필요한 alert
 export const alert = Swal.mixin({

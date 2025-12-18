@@ -1,22 +1,20 @@
 .profile-page {
-    width: 700px; /* 전체 폼 폭 */
+    width: 65%;
     margin: 0 auto; /* 중앙 정렬 */
-    padding: 60px 120px;
 }
 
 /* 섹션 */
-.section {
+.profile-section {
     margin-bottom: 80px;
 }
 
-.section-title {
+.profile-section-title {
     font-size: 18px;
     font-weight: 500;
     margin-bottom: 30px;
 }
 
-/* 라벨 + 인풋 가로 정렬 */
-.form-row {
+.profile-form-row {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -25,14 +23,14 @@
 }
 
 /* 왼쪽 라벨 */
-.form-row label {
+.profile-form-row label {
     width: 150px;
     font-size: 15px;
     color: #333;
 }
 
 /* 오른쪽 input 라인 스타일 */
-.form-row input {
+.profile-form-row input {
     flex: 1;
     border: none;
     border-bottom: 1px solid #ccc;
@@ -41,7 +39,7 @@
     outline: none;
 }
 
-.form-row input:focus {
+.profile-form-row input:focus {
     border-bottom-color: #35593d;
 }
 
@@ -112,4 +110,39 @@
 
 .readonly-profile {
     color: #aaaaaa;
+}
+
+@media (max-width: 768px) {
+
+    /* 라벨 + 인풋 세로 전환 */
+    .profile-form-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    /* 라벨 폭 해제 */
+    .profile-form-row label {
+        width: 100%;
+        font-size: 14px;
+        color: #555;
+    }
+
+    /* 인풋 가로 꽉 차게 */
+    .profile-form-row input {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    /* 안내 문구 위치 보정 */
+    .hint {
+        margin: 12px 0 20px;
+        font-size: 12px;
+    }
+
+    /* 버튼 크기 보정 */
+    .primary-btn {
+        width: 100%;
+        max-width: 320px;
+    }
 }

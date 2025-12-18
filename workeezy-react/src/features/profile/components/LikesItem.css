@@ -51,3 +51,13 @@
     color: #ff4d6d; /* 핑크 하트 */
 }
 
+@media (max-width: 600px) {
+    .likes-card-img {
+        height: 200px;
+    }
+
+    .likes-card-title {
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+}

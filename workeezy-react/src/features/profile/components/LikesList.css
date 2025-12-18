@@ -2,5 +2,20 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px 35px;
-    width: 100%;
+    width: 80%;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .likes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+}
+
+@media (max-width: 600px) {
+    .likes-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
 }

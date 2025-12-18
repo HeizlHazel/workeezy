@@ -1,37 +1,36 @@
 .header {
-  width: 100%;
-  border-bottom: 1px solid #dedede;
-  background: white;
+    width: 100%;
+    border-bottom: 1px solid #dedede;
+    background: white;
 }
 
 .header-inner {
-  margin: 0 25px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    margin: 0 25px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .header-logo {
-  height: 60px;
-  cursor: pointer;
+    height: 60px;
+    cursor: pointer;
 }
 
 .header-right {
-  display: flex;
-  align-items: center;
-  gap: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
 }
 
 .user-icon,
 .menu-icon {
-  font-size: 22px;
-  color: #333;
-  cursor: pointer;
+    font-size: 22px;
+    color: #333;
+    cursor: pointer;
 }
 
-/* hover 효과 */
 .user-icon:hover,
 .menu-icon:hover {
-  opacity: 0.7;
+    opacity: 0.7;
 }

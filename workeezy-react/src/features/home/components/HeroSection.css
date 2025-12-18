@@ -1,38 +1,89 @@
-/* Hero 전체 영역 */
 .section.hero {
     width: 100%;
-    max-width: 1600px;   /* 메인 영역 제한 */
+    /*max-width: 1600px;*/
     margin: 0 auto;
     box-sizing: border-box;
+    padding: 0 24px;
 
-    height: 720px;
+    min-height: 75vh;
+    max-height: 900px;
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    background: url("/main.webp") no-repeat center center / cover;  /* public/hero.jpg → /hero.jpg */
+    background-image: url("/main.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+
     border-radius: 12px;
     position: relative;
+    overflow: hidden;
 }
 
 /* 내부 콘텐츠 중앙 정렬 */
 .hero-content {
     text-align: center;
     color: #fff;
-    margin: 200px 0 15px 0;
-    /*backdrop-filter: brightness(0.9);*/
+    margin-top: clamp(140px, 22vh, 200px);
+    z-index: 2;
 }
 
-/* 타이틀 */
 .hero-title {
-    font-size: 48px;
+    font-size: clamp(26px, 4vw, 48px);
     font-weight: 700;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    line-height: 1.25;
 }
 
-/* 부제 */
 .hero-subtitle {
-    font-size: 20px;
-    margin-bottom: 30px;
+    font-size: clamp(14px, 1.8vw, 20px);
+    margin-bottom: clamp(20px, 4vh, 30px);
     opacity: 0.9;
+}
+
+.section.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.35),
+            rgba(0, 0, 0, 0.25)
+    );
+    z-index: 1;
+}
+
+@media (max-width: 480px) {
+    .hero-content {
+        margin-top: 120px;
+    }
+
+    .main-searchBar {
+        max-width: 100%;
+    }
+}
+
+/* 태블릿 */
+@media (max-width: 1024px) {
+    .section.hero {
+        background-position: center top;
+    }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+    .section.hero {
+        height: 520px;
+        background-position: 60% center;
+        /*border-radius: 0;*/
+    }
+}
+
+/* 초소형 모바일 */
+@media (max-width: 480px) {
+    .section.hero {
+        height: 480px;
+        background-position: 65% center;
+    }
 }

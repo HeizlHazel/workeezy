@@ -2,25 +2,32 @@
     width: 100%;
     background: #fff;
     border-top: 1px solid #eee;
-    padding: 100px 0;
+    padding: clamp(48px, 8vw, 100px) 0;
 }
 
 .footer-container {
     max-width: 1200px;
     margin: 0 auto;
+
     display: flex;
-    gap: 80px;
+    gap: clamp(32px, 6vw, 80px);
+
+    padding: 0 24px;
+    box-sizing: border-box;
 }
 
 .footer-logo {
-    font-size: 18px;
-    font-weight: 600;
-    font-family: "AritaDotumKr-Medium", sans-serif;
+    font-size: clamp(16px, 2vw, 18px);
 }
 
 .footer-info {
-    font-size: 13px;
-    color: #444;
+    font-size: clamp(12px, 1.6vw, 13px);
     line-height: 1.7;
-    font-family: "AritaDotumKr-Medium", sans-serif;
+}
+
+@media (max-width: 900px) {
+    .footer-container {
+        flex-direction: column;
+        gap: 32px;
+    }
 }

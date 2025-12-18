@@ -43,13 +43,13 @@ export default function ProfilePasswordCheckForm() {
 
                 <h2 className="profile-check-title">개인 정보 조회</h2>
 
-                <div className="form-row">
-                    <label className="label">비밀번호</label>
+                <div className="profile-check-form-row">
+                    <label className="profile-check-label">비밀번호</label>
                     <input
                         type="password"
                         name="password"
                         placeholder="비밀번호를 입력하세요"
-                        className="line-input"
+                        className="profile-check-line-input"
                         required
                         onChange={(e) => setPassword(e.target.value)}
                     />

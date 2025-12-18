@@ -2,14 +2,13 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 250px;
+    width: 300px;
     height: 100%;
+    padding: 120px 5px 5px;
     background: #fff;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
-    padding: 80px 20px 20px;
     overflow-y: auto;
     z-index: 1000;
-    /* transform: translateX(100%); */
     transition: transform 0.4s ease;
 }
 
@@ -19,75 +18,40 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.4); /* 반투명 */
-    z-index: 999; /* 메뉴바 아래 / 전체 중간 */
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
 }
 
-.menu-bar.open {
-    transform: translateX(0);
-}
+.menu-bar.open { transform: translateX(0); }
+.menu-bar.close { transform: translateX(100%); }
 
-.menu-bar.close {
-    transform: translateX(100%);
-}
+/* PC 기본 값 */
+.menu-item      { margin-bottom: 22px; }
+.menu-title     { font-size: 22px; padding: 8px 4px; }
+.submenu        { gap: 8px; margin-top: 8px; display: flex; flex-direction: column; align-items: flex-end; }
+.submenu-item   { width: 100%; font-size: 16px; padding: 8px 6px; text-align: right; }
 
-.menu-item {
-    margin-bottom: 20px;
-}
-
+/* 공용 */
 .menu-title {
-    font-size: 22px;
+    color: #222;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
-    padding: 8px 4px;
     border-radius: 6px;
     text-align: right;
-    margin-right: 10px;
-}
-
-.menu-item.active .menu-title {
-    background: #f0f0f0;
-}
-
-/* ✅ 아래로 펼쳐지는 소메뉴 */
-.submenu {
-    margin-top: 8px;
-    padding-right: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
-    margin-right: 5px;
-    animation: dropdown 0.3s ease forwards;
-}
-
-@keyframes dropdown {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    box-sizing: border-box;
 }
 
 .submenu-item {
-    font-size: 16px;
     color: #222;
-    margin-bottom: 2px;
-    padding: 6px 2px;
-    /*transition: background 0.2s;*/
+    box-sizing: border-box;
     border-radius: 4px;
     cursor: pointer;
-
-    display: block;
-    width: 100%;
-    text-align: right;
 }
 
+.menu-title:hover,
 .submenu-item:hover {
+    color: #444;
     background: #f7f7f7;
 }
 
@@ -97,40 +61,6 @@
     right: 20px;
     font-size: 13px;
     color: #bbb;
-}
-
-.close-menu {
-    font-size: 22px;
-    color: #333;
-    cursor: pointer;
-    /*position: absolute;*/
-    transform: translateX(-12px);
-}
-
-.close-menu:hover {
-    color: #000;
-}
-
-/* ✅ 모든 링크 기본 스타일 제거 */
-a,
-a:link,
-a:visited,
-a:hover,
-a:active {
-    text-decoration: none; /* 밑줄 제거 */
-    color: inherit; /* 부모 색상 상속 (기본 파란색 제거) */
-}
-
-/* ✅ 메뉴 전용 링크도 안전하게 커버 */
-.menu-title,
-.submenu-item {
-    color: #222; /* 원하는 텍스트 색 */
-}
-
-.menu-title:hover,
-.submenu-item:hover {
-    color: #000; /* 호버 시 살짝 진하게 */
-    background: #f7f7f7;
 }
 
 .menu-top {
@@ -143,31 +73,12 @@ a:active {
     justify-content: space-between;
 }
 
-.menu-user {
-    font-size: 14px;
-    color: #222;
-}
-
-.admin-badge {
-    margin-left: 8px;
-    padding: 3px 8px;
-    font-size: 12px;
-    color: #fff;
-    background: rgba(8, 73, 0, 0.66);
-    border-radius: 6px;
-    font-weight: 600;
-}
-
-.menu-bar {
-    padding: 120px 20px 20px;
-}
-
 .menu-header {
     text-align: right;
     position: absolute;
     top: 40px;
-    right: 30px;
-    width: calc(100% - 40px);
+    right: 16px;
+    width: calc(100% - 32px);
 }
 
 .menu-divider {
@@ -175,73 +86,45 @@ a:active {
     top: 80px;
     left: 20px;
     width: calc(100% - 40px);
-    border: none;
     height: 1px;
     background: #f4f4f4;
+    border: none;
 }
 
-/* 로그아웃 버튼 wrapper */
-.logout-btn {
-    margin-top: 70px;
-    text-align: right;
+a, a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+    color: inherit;
 }
 
-/* 로그아웃 텍스트 스타일 */
-.logout-title {
-    font-size: 13px;
-    color: #aaaaaa;
-    padding: 8px 4px;
-    transition: background 0.2s;
-    margin-right: 10px;
+.menu-title.active {
+    background: #ECE8DB;
+    color: #5a5136;
+    font-weight: 700;
 }
 
-/* hover 효과 - 메뉴와 동일하게 */
-.logout-title:hover {
-    color: #7c7c7c;
-    cursor: pointer;
-}
-
-/* 상단 토스트 전체 */
-.logout-toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    animation: slideDown 0.4s ease forwards;
-}
-
-/* 토스트 박스 */
-.logout-toast-content {
-    background: #ffffff;
-    padding: 14px 22px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
+.submenu-item.active {
+    background: #ECE8DB;
+    color: #5a5136;
     font-weight: 600;
-    color: #333;
-    min-width: 200px;
-    justify-content: center;
 }
 
-/* 체크 아이콘 */
-.toast-icon {
-    color: #28a745;  /* 예쁜 초록색 */
-    font-size: 18px;
+.menu-title.active:hover,
+.submenu-item.active:hover {
+    background: #e3dfd6;
 }
 
-/* 슬라이드 다운 애니메이션 */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -15px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+.logout-btn      { margin-top: 70px; text-align: right; }
+.logout-title    { font-size: 13px; color: #aaaaaa; padding: 8px 4px; margin-right: 10px; }
+.logout-title:hover { color: #7c7c7c; cursor: pointer; }
+
+/* 태블릿 only (아이패드 포함) */
+@media (min-device-width:600px) and (max-device-width:1024px) {
+    .menu-title { font-size: 18px; }
+    .submenu-item { font-size: 14px; }
 }
 
+/* 모바일 only */
+@media (max-device-width:599px) {
+    .menu-title { font-size: 16px; }
+    .submenu-item { font-size: 13px; }
+}

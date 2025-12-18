@@ -1,41 +1,58 @@
 .login-inputs {
-  width: 420px;
-  margin: 0 auto;
+    width: 100%;
+    margin: 0 auto;
 }
 
-/* 한 줄(라벨 + input) */
-.form-row {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 34px;
+/* 웹 기본: 라벨 + 인풋 같은 줄 */
+.login-form-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 34px;
 }
 
 /* 라벨 */
-.label {
-  width: 100px !important;
-  font-size: 16px;
-  color: #4a4a4a;
-  padding-top: 8px;
+.login-label {
+    width: 90px;
+    font-size: 15px;
+    color: #4a4a4a;
+    padding-top: 8px;
+    flex-shrink: 0;
 }
 
 /* input */
-.line-input {
-  /* flex: initial !important; */
-  width: 48%;
-  border: none;
-  border-bottom: 1.6px solid #d1d1d1;
-  padding: 10px 4px 6px;
-  font-size: 16px;
-  outline: none;
-  color: #333;
-  line-height: 22px;
-  height: 36px;
+.login-line-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.6px solid #d1d1d1;
+    padding: 10px 4px 6px;
+    font-size: 15px;
+    box-sizing: border-box;
 }
 
-.line-input::placeholder {
-  color: #c6c6c6;
+.login-line-input::placeholder {
+    color: #c6c6c6;
 }
 
-.line-input:focus {
-  border-bottom-color: #999;
+.login-line-input:focus {
+    border-bottom-color: #999;
+}
+
+@media (max-width: 600px) {
+    .login-form-row {
+        flex-direction: column; /* 줄 분리 */
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .login-label {
+        width: 100%;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .login-line-input {
+        width: 100%;
+        font-size: 15px;
+    }
 }
