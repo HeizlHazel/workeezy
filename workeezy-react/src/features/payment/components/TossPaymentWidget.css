@@ -1,4 +1,4 @@
-.overlay {
+.toss-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
@@ -8,7 +8,7 @@
     z-index: 9999;
 }
 
-.overlay-card {
+.toss-card {
     background: #fff;
     border-radius: 16px;
     padding: 32px 28px;
