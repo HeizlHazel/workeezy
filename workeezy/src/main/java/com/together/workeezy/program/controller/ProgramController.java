@@ -3,6 +3,7 @@ package com.together.workeezy.program.controller;
 import com.together.workeezy.program.dto.ProgramCardDto;
 import com.together.workeezy.program.dto.ProgramDetailResponseDto;
 import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.repository.ProgramRepository;
 import com.together.workeezy.program.service.ProgramService;
 import com.together.workeezy.program.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class ProgramController {
 
     private final ProgramService programService;
     private final ReviewService reviewService;
+    private final ProgramRepository  programRepository;
 
     /** 전체 프로그램 조회 */
     @GetMapping
@@ -27,8 +29,11 @@ public class ProgramController {
     /** 프로그램 카드 목록 조회 */
     @GetMapping("/cards")
     public List<ProgramCardDto> getProgramCards() {
-        return programService.getProgramCards();
+        return programRepository.findAllProgramCardsOrderByIdAsc(100).stream() // limit은 적당히
+                .map(v -> new ProgramCardDto(v.getId(), v.getTitle(), v.getPhoto(), v.getPrice(), v.getRegion()))
+                .toList();
     }
+
 
     /** 프로그램 상세 조회 (상세페이지 전용) */
     @GetMapping("/{id}")

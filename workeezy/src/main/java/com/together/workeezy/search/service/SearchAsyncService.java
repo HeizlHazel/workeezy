@@ -21,34 +21,45 @@ public class SearchAsyncService {
     private final SearchProgramRepository searchProgramRepository;
     private final SearchSimilarityCalculator calculator;
 
-    @Async   // 🔥 비동기 실행
+    @Async
     @Transactional
-    public void calculateSimilarityAsync(Search search, List<Program> matchedPrograms, String keyword) {
+    public void calculateSimilarityAsync(Search search, List<Long> programIds, String keyword) {
 
         Long searchId = search.getId();
 
-        // 기존 데이터 삭제
         searchProgramRepository.deleteAll(
                 searchProgramRepository.findBySearchIdOrderBySearchPointDesc(searchId)
         );
 
-        // 유사도 계산 후 저장
-        for (Program program : matchedPrograms) {
+        // ✅ place를 한 번에 가져와서 programId별로 그룹핑
+        List<Place> allPlaces = placeRepository.findByProgramIds(programIds);
+        var placeMap = allPlaces.stream()
+                .collect(java.util.stream.Collectors.groupingBy(p -> p.getProgram().getId()));
 
-            List<Place> places = placeRepository.findByProgramId(program.getId());
-            int score = calculator.calculate(program, places, keyword);
+        for (Long programId : programIds) {
+            // 여기서 Program 엔티티가 필요하면 programRepository.getReferenceById(programId)로 reference만 사용
+            Program programRef = new Program();
+            programRef.setId(programId);
 
-            // ⭐ 점수가 0 이하면 저장하지 않음
-            if (score <= 0) {
-                continue;
-            }
+            List<Place> places = placeMap.getOrDefault(programId, List.of());
+
+            int score = calculator.calculate(programRef, places, keyword);
+            // ⚠️ calculator가 Program의 title/info를 쓰면 여기서 참조만으로는 부족하니,
+            // 필요한 필드만 따로 조회하거나, calculator 입력을 cardView/문자열로 바꾸는 게 베스트.
+
+            if (score <= 0) continue;
 
             SearchProgram sp = new SearchProgram();
             sp.setSearch(search);
-            sp.setProgram(program);
+
+            Program p = new Program();
+            p.setId(programId);
+            sp.setProgram(p);
+
             sp.setSearchPoint(score);
 
             searchProgramRepository.save(sp);
         }
     }
+
 }

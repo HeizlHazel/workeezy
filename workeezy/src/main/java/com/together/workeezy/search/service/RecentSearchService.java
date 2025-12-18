@@ -1,7 +1,5 @@
 package com.together.workeezy.search.service;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,11 +10,12 @@ import java.util.List;
 @Service
 public class RecentSearchService {
 
+
     // RedisConfig에서 만든 String-String 템플릿
     private final RedisTemplate<String, String> redisTemplate;
 
     public RecentSearchService(
-            @Qualifier("stringRedisTemplate")
+            @Qualifier("loginRedisTemplate")
             RedisTemplate<String, String> redisTemplate
     ) {
         this.redisTemplate = redisTemplate;
@@ -53,6 +52,7 @@ public class RecentSearchService {
 
         // 4) TTL 설정 (예: 30일)
         redisTemplate.expire(key, Duration.ofDays(TTL_DAYS));
+        System.out.println("🧠 Redis LPUSH recent:search:" + userId + " -> " + keyword);
     }
 
     /**
@@ -75,4 +75,5 @@ public class RecentSearchService {
         if (userId == null) return;
         redisTemplate.delete(getKey(userId));
     }
+
 }

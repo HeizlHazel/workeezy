@@ -3,6 +3,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+  elasticsearch:
+    uris: http://localhost:9200
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -13,7 +15,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate  # create, update, validate, none 중 선택
-    show-sql: true  # SQL 쿼리 콘솔 출력
+    show-sql: false  # SQL 쿼리 콘솔 출력
     properties:
       hibernate:
         format_sql: true  # SQL 포맷팅

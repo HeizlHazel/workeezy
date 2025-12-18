@@ -32,9 +32,6 @@ public class SearchService {
     @Transactional
     public SearchResultDto search(String keyword, List<String> regions, Long userId) {
 
-        // -----------------------------
-        // 1) 검색 기록 저장
-        // -----------------------------
         Search search = null;
         if (userId != null && keyword != null && !keyword.isBlank()) {
             User user = new User();
@@ -44,79 +41,58 @@ public class SearchService {
             search.setUser(user);
             search.setSearchPhrase(keyword);
             searchRepository.save(search);
+
             recentSearchService.saveKeyword(userId, keyword);
-
         }
 
-        // -----------------------------
-        // 2) 키워드 기반 검색
-        // -----------------------------
-        List<Program> matched = programRepository.searchByKeyword(keyword);
+        // ✅ 1) 검색: programId만 1번 조회
+        List<Long> matchedIds = programRepository.searchProgramIdsByKeyword(keyword);
 
-        // -----------------------------
-        // 3) 지역 필터
-        // -----------------------------
-        if (regions != null && !regions.isEmpty()) {
-            matched = matched.stream()
-                    .filter(p -> p.getPlaces().stream()
-                            .anyMatch(pl -> regions.contains(pl.getPlaceRegion())))
+        // ✅ 2) 지역 필터는 일단 카드에서 처리(빠르게 적용) - 더 최적화하려면 SQL에서 IN 처리
+        List<ProgramCardDto> cards = List.of();
+        if (!matchedIds.isEmpty()) {
+            var views = programRepository.findProgramCardsByIds(matchedIds);
+
+            cards = views.stream()
+                    .map(v -> new ProgramCardDto(v.getId(), v.getTitle(), v.getPhoto(), v.getPrice(), v.getRegion()))
                     .toList();
+
+            if (regions != null && !regions.isEmpty()) {
+                cards = cards.stream()
+                        .filter(c -> c.getRegion() != null && regions.contains(c.getRegion()))
+                        .toList();
+            }
         }
 
-        // -----------------------------
-        // 4) 유사도 계산은 비동기로 처리
-        // -----------------------------
-        if (search != null) {
-            asyncService.calculateSimilarityAsync(search, matched, keyword);
+        // ✅ 3) 비동기 유사도 계산: Program 리스트 말고 ID 리스트로 넘김
+        if (search != null && !matchedIds.isEmpty()) {
+            asyncService.calculateSimilarityAsync(search, matchedIds, keyword);
         }
 
-        // -----------------------------
-        // 5) 추천은 "이전" 검색 기록 기준으로 제공됨
-        // -----------------------------
+        // ✅ 4) 추천: search_program에 저장된 programId들만 뽑아서 카드 한방 조회
         List<ProgramCardDto> recommended = List.of();
         if (search != null) {
-            recommended =
-                    searchProgramRepository
-                            .findBySearchIdOrderBySearchPointDesc(search.getId())
-                            .stream()
-                            .filter(sp -> sp.getSearchPoint() > 0)
-                            .map(SearchProgram::getProgram)
-                            .distinct()
-                            .limit(5)
-                            .map(this::convert)
-                            .toList();
+            List<Long> recIds = searchProgramRepository
+                    .findBySearchIdOrderBySearchPointDesc(search.getId())
+                    .stream()
+                    .filter(sp -> sp.getSearchPoint() > 0)
+                    .map(sp -> sp.getProgram().getId())  // 여기도 더 줄이려면 programId만 뽑는 쿼리로 변경 가능
+                    .distinct()
+                    .limit(5)
+                    .toList();
+
+            if (!recIds.isEmpty()) {
+                var recViews = programRepository.findProgramCardsByIds(recIds);
+                // IN절 순서 깨질 수 있으니 recIds 순서 복원
+                var map = recViews.stream().collect(java.util.stream.Collectors.toMap(v -> v.getId(), v -> v));
+                recommended = recIds.stream()
+                        .map(map::get)
+                        .filter(java.util.Objects::nonNull)
+                        .map(v -> new ProgramCardDto(v.getId(), v.getTitle(), v.getPhoto(), v.getPrice(), v.getRegion()))
+                        .toList();
+            }
         }
 
-        // -----------------------------
-        // 6) 검색 카드 변환
-        // -----------------------------
-        List<ProgramCardDto> cards = matched.stream()
-                .distinct()
-                .map(this::convert)
-                .toList();
-
         return new SearchResultDto(cards, recommended);
-    }
-
-    private ProgramCardDto convert(Program p) {
-        String region = p.getPlaces().stream()
-                .filter(pl -> pl.getPlaceType() == PlaceType.stay)
-                .map(Place::getPlaceRegion)
-                .findFirst()
-                .orElse(null);
-
-        String photo = p.getPlaces().stream()
-                .filter(pl -> pl.getPlacePhoto1() != null)
-                .map(Place::getPlacePhoto1)
-                .findFirst()
-                .orElse(null);
-
-        return new ProgramCardDto(
-                p.getId(),
-                p.getTitle(),
-                photo,
-                p.getProgramPrice(),
-                region
-        );
     }
 }
