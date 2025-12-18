@@ -81,3 +81,12 @@
 .reservation-table td {
   line-height: 1.4;
 }
+
+/* 행 선택시 */
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: #f9fafb;
+}

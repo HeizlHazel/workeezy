@@ -7,16 +7,17 @@ import LoginPage from "./features/auth/pages/LoginPage.jsx";
 import Home from "./features/home/pages/Home";
 import MyPage from "./features/profile/pages/MyPage.jsx";
 import ProfilePasswordCheck from "./features/profile/pages/ProfilePasswordCheck.jsx";
-import PaymentHistory from "./features/payment/pages/PaymentHistory.jsx";
 
 import ProgramDetailPage from "./features/program/pages/ProgramDetailPage.jsx";
 import ReviewPage from "./features/review/pages/ReviewPage.jsx";
 import SearchPage from "./features/search/pages/SearchPage.jsx";
+
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
 import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 import LikesPage from "./features/profile/pages/LikesPage.jsx";
-import AdminReservationListPage from "./features/reservation/pages/AdminReservationListPage.jsx";
+import AdminReservationPage from "./features/reservation/pages/AdminReservationPage.jsx";
 import ReservationListPage from "./features/reservation/pages/ReservationListPage.jsx";
+import EditReservationPage from "./features/reservation/pages/EditReservationPage.jsx";
 
 import Forbidden from "./shared/error/Forbidden.jsx";
 import ServerError from "./shared/error/ServerError.jsx";
@@ -93,24 +94,22 @@ export default function App() {
                 }
             />
             <Route path="/likes" element={<LikesPage/>}/>
-
             {/* 검색, 리뷰 */}
             <Route path="/program" element={<ProgramDetailPage/>}/>
             <Route path="/programs/:id" element={<ProgramDetailPage/>}/>
             <Route path="/reviews" element={<ReviewPage/>}/>
             <Route path="/search" element={<SearchPage/>}/>
-
             {/* 예약 */}
             <Route path="/reservation/list" element={<ReservationListPage/>}/>
             <Route path="/reservation/new" element={<NewReservationPage/>}/>
+            <Route path="/reservation/edit/:id" element={<EditReservationPage/>}/>
             <Route path="/modifyreservation" element={<ModifyReservationPage/>}/>
-            <Route
-                path="/admin/reservationlist"
-                element={<AdminReservationListPage/>}
-            />
 
-            {/* 결제 내역 */}
-            <Route path="/payments" element={<PaymentHistory/>}/>
+            <Route path="/admin/reservations" element={<AdminReservationPage/>}/>
+            <Route
+                path="/admin/reservations/:reservationId"
+                element={<AdminReservationPage/>}
+            />
 
             {/* 에러 페이지 */}
             <Route path="/403" element={<Forbidden/>}/>

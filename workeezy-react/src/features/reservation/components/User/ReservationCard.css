@@ -8,6 +8,7 @@
   gap: 20px;
   transition: all 0.3s ease;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .reservation-card:hover {
@@ -32,9 +33,9 @@
 
 .image-grid {
   display: flex;
-  justify-content: space-between;
   gap: 10px;
 }
+
 .image-grid img {
   flex: 1;
   height: 140px;
@@ -42,78 +43,88 @@
   object-fit: cover;
 }
 
-/* === 정보 === */
+/* === 정보 영역 === */
 .info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.status {
-  display: inline-block;
-  background: #e6f4ea;
-  color: #2b8a3e;
-  font-size: 0.8rem;
-  padding: 2px 8px;
-  border-radius: 6px;
-  margin-bottom: 6px;
+
+/* 상태 버튼 위치 */
+.info > .status-wrapper {
+  align-self: flex-end;
 }
-.status.대기 {
-  background: #fff8e1;
-  color: #f9a825;
-}
-.status.취소 {
-  background: #ffebee;
-  color: #c62828;
-}
+
+/* 제목 */
 .title {
   font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 1.2rem;
 }
-.details {
+
+/* === 기본 정보 / 상세 정보 공통 === */
+.details,
+.detail-extra {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 24px;
   font-size: 0.9rem;
-  color: #666;
+}
+
+/* dl 기본 여백 제거 */
+.details,
+.detail-extra,
+.details dl,
+.detail-extra dl {
+  margin: 0;
+  padding: 0;
+}
+
+/* 항목 한 줄 */
+.details div,
+.detail-extra div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 라벨 */
+dt {
+  min-width: 70px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* 값 */
+dd {
+  margin: 0;
+  color: #111;
+  word-break: keep-all;
+}
+
+/* 상세 정보 구분선 */
+.detail-extra {
+  padding-top: 15px;
+  border-top: 1px solid #eee;
 }
 
 /* === 버튼 === */
 .buttons {
-  margin-top: 10px;
+  margin-top: 16px;
   display: flex;
   gap: 10px;
 }
+
 .buttons button {
   border: 1px solid #ccc;
   background: #f8f8f8;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   cursor: pointer;
   font-size: 0.85rem;
   transition: 0.2s;
 }
+
 .buttons button:hover {
   background: #eee;
-}
-
-.status-btn {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  margin-bottom: 8px;
-}
-
-/* === 상태별 색상 === */
-.status-btn.waiting {
-  background-color: #fbbf24; /* 노랑: 결제 대기 */
-}
-
-.status-btn.confirmed {
-  background-color: #3b82f6; /* 파랑: 확정 */
-}
-
-.status-btn.cancelled {
-  background-color: #9ca3af; /* 회색: 취소 */
-}
-
-.status-btn.default {
-  background-color: #6b7280; /* 기본 회색 */
 }

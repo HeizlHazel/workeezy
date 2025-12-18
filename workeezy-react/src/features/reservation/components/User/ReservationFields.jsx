@@ -66,6 +66,7 @@ export default function ReservationFields({
             onChange={onChange}
             placeholder="이름을 입력하세요"
             className="value"
+            readOnly
           />
         </div>
       </div>
@@ -81,6 +82,7 @@ export default function ReservationFields({
             onChange={onChange}
             placeholder="소속을 입력하세요"
             className="value"
+            readOnly
           />
         </div>
       </div>
@@ -96,6 +98,7 @@ export default function ReservationFields({
             onChange={onChange}
             placeholder="010-0000-0000"
             className="value"
+            readOnly
           />
         </div>
       </div>
@@ -111,6 +114,7 @@ export default function ReservationFields({
             onChange={onChange}
             placeholder="example@email.com"
             className="value"
+            readOnly
           />
         </div>
       </div>

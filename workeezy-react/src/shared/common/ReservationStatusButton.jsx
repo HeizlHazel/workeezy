@@ -1,32 +1,48 @@
 import React from "react";
 import "./ReservationStatusButton.css";
 
-/**
- * 예약 상태 버튼
- * props:
- * - status: "PENDING" | "CONFIRMED" | "CANCELLED"
- */
 export default function ReservationStatusButton({ status }) {
   let label = "";
   let icon = "";
   let className = "reservation-status-btn";
 
   switch (status) {
-    case "PENDING":
-      label = "대기";
-      icon = "/reservationStatusIcons/pending.svg";
-      className += " pending";
+    case "waiting_payment":
+      label = "결제대기";
+      icon = "/reservationStatusIcons/waiting_payment.svg";
+      className += " waiting_payment";
       break;
-    case "CONFIRMED":
-      label = "확정";
+
+    case "approved":
+      label = "승인완료";
+      icon = "/reservationStatusIcons/approved.svg";
+      className += " approved";
+      break;
+
+    case "confirmed":
+      label = "예약확정";
       icon = "/reservationStatusIcons/confirmed.svg";
       className += " confirmed";
       break;
-    case "CANCELLED":
-      label = "취소";
+
+    case "cancel_requested":
+      label = "취소요청";
+      icon = "/reservationStatusIcons/cancel_requested.svg";
+      className += " cancel_requested";
+      break;
+
+    case "cancelled":
+      label = "취소완료";
       icon = "/reservationStatusIcons/cancelled.svg";
       className += " cancelled";
       break;
+
+    case "rejected":
+      label = "승인거절";
+      icon = "/reservationStatusIcons/rejected.svg";
+      className += " rejected";
+      break;
+
     default:
       label = "알 수 없음";
       className += " unknown";
@@ -35,7 +51,7 @@ export default function ReservationStatusButton({ status }) {
   return (
     <div className={className}>
       {icon && <img src={icon} alt={label} className="icon" />}
-      <div className="label">{label}</div>
+      <span className="label">{label}</span>
     </div>
   );
 }

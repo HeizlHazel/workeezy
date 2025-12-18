@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./DraftMenuBar.css";
-import axios from "../../../api/axios.js";
+import axios from "../../../../api/axios.js";
 import { useNavigate } from "react-router-dom";
 
 export default function DraftMenuBar({

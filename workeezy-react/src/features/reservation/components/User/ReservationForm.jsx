@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import ReservationFields from "./ReservationFields.jsx";
-import DraftButton from "./DraftButton.jsx";
-import SubmitButton from "./SubmitButton.jsx";
+import DraftButton from "../DraftButton.jsx";
+import SubmitButton from "../SubmitButton.jsx";
 import "./ReservationForm.css";
-import axios from "../../../api/axios.js";
-import DraftMenuBar from "./DraftMenuBar";
+import axios from "../../../../api/axios.js";
+import DraftMenuBar from "./DraftMenuBar.jsx";
 import { useNavigate } from "react-router-dom";
+
+// 생성 및 수정시 : null 안전 숫자 변환 유틸
+const parseNullableNumber = (value) =>
+  value === "" || value === null || value === undefined ? null : Number(value);
 
 export default function ReservationForm({
   initialData, // 사용자가 선택한 초기 데이터
   rooms = [], // 해당 워케이션 프로그램에서 선택 가능한 룸
   offices = [], // 해당 워케이션 프로그램에서 선택 가능한 오피스
+  mode = "create",
 }) {
+  const isEdit = mode === "edit";
+
   const navigate = useNavigate();
   // 초기 데이터에서 필요한 값만 꺼냄
   const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
@@ -38,8 +45,8 @@ export default function ReservationForm({
     roomType: selectedRoom?.roomType || "", // 화면 표시용 이름
     roomId: selectedRoom?.id || "",
     peopleCount: 1,
-    stayId: initialData.stayId || "",
-    stayName: initialData.stayName || "",
+    stayId: initialData?.stayId || "",
+    stayName: initialData?.stayName || "",
   });
 
   // -------------------------------------------------------------------
@@ -52,7 +59,6 @@ export default function ReservationForm({
   // 1. 초기데이터 반영
   // 2. state가 있으면 신규 예약 폼 초기화 : 기존 값 끼워넣기
   // -------------------------------------------------------------------
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (initialData) {
@@ -134,7 +140,7 @@ export default function ReservationForm({
     };
 
     fetchUser();
-  }, []); // 첫 마운트 때 한번
+  }, []);
 
   // -------------------------------------------------------------------
   // 입력 변경 핸들러 (Form의 모든 Field에 적용)
@@ -150,46 +156,50 @@ export default function ReservationForm({
   // 예약 신청 및 수정 처리
   // -------------------------------------------------------------------
   const handleSubmit = async (e) => {
-    e.preventDefault(); // 브라우저 자동 새로고침 막기
+    e.preventDefault();
     const token = localStorage.getItem("accessToken");
 
-    // Number 캐스팅
-    const formattedForm = {
-      ...form,
-      programId: Number(form.programId),
-      roomId: Number(form.roomId),
-      officeId: Number(form.officeId),
-      stayId: Number(form.stayId),
-    };
-
     try {
+      // id가 있으면 예약 수정
       if (initialData && initialData.id) {
-        // id가 있으면 예약 수정
-        // console.log("🧾 initialData:", initialData);
+        const updatePayload = {
+          startDate: form.startDate,
+          endDate: form.endDate,
+          roomId: Number(form.roomId),
+          officeId: parseNullableNumber(form.officeId),
+          peopleCount: form.peopleCount,
+        };
+
         await axios.put(
           `http://localhost:8080/api/reservations/${initialData.id}`,
-          formattedForm,
+          updatePayload,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }
         );
+
         alert("예약이 성공적으로 수정 되었습니다!");
         navigate("/reservation/list");
       } else {
         // 신규 예약 등록
+        const formattedForm = {
+          ...form,
+          programId: Number(form.programId),
+          roomId: Number(form.roomId),
+          officeId: parseNullableNumber(form.officeId),
+          stayId: Number(form.stayId),
+        };
+
         await axios.post(
           "http://localhost:8080/api/reservations",
           formattedForm,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }
         );
+
         alert("예약이 성공적으로 등록되었습니다!");
         navigate("/reservation/list");
       }
@@ -204,33 +214,28 @@ export default function ReservationForm({
   // -------------------------------------------------------------------
   const handleDraftSave = async () => {
     const token = localStorage.getItem("accessToken");
-    // 로그인 시 저장된 JWT 토큰
-
     if (!token) {
       alert("로그인이 필요합니다.");
       return;
     }
-    // 워케이션 명을 draft 제목으로 지정
+
     const draftData = {
       ...form,
       title: form.programTitle,
       rooms,
       offices,
     };
+
     try {
       const res = await axios.post(
         "http://localhost:8080/api/reservations/draft/me",
         draftData,
         {
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT 전달
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // 방금 저장된 draft ID 저장 (New! 표시용)
       setLatestDraftId(res.data.id || Date.now());
-      // 저장 후 메뉴 자동 열기
       setIsDraftMenuOpen(true);
 
       alert("임시저장 완료!");
@@ -240,28 +245,20 @@ export default function ReservationForm({
     }
   };
 
-  // 임시 저장 불러오기
-  // 불러오기 기능은 DraftMenuBar 내부에서 실행(props 통해 연결)
-
-  // UI 렌더링
   return (
     <div className="form">
       <form className="reservation-form" onSubmit={handleSubmit}>
-        {/* 입력 필드 그룹 */}
         <ReservationFields
           {...form}
           rooms={rooms}
           offices={offices}
           onChange={handleChange}
         />
-        {/* 예약 등록/수정 버튼 */}
         <SubmitButton />
-        {/* 임시저장 버튼 */}
-        <DraftButton onClick={handleDraftSave} />
+        {!isEdit && <DraftButton onClick={handleDraftSave} />}
       </form>
 
-      {/* 임시저장 메뉴바 */}
-      {isDraftMenuOpen && (
+      {!isEdit && isDraftMenuOpen && (
         <DraftMenuBar
           isOpen={isDraftMenuOpen}
           onClose={() => setIsDraftMenuOpen(false)}
