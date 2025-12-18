@@ -30,7 +30,9 @@
   color: #222;
   margin-bottom: 12px;
   border-bottom: 2px solid #eaeaea;
-  padding-bottom: 6px;
+  text-align: center;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 /* ========================= 카드형 리스트 ========================= */
@@ -172,4 +174,52 @@ a:hover,
 a:active {
   text-decoration: none;
   color: inherit;
+}
+
+/* ========================= 상단 액션 영역 ========================= */
+.draft-menu-header-actions {
+  margin-bottom: 16px;
+}
+
+/* ========================= 임시저장 버튼 ========================= */
+.draft-save-btn {
+  width: 100%;
+  background: #f4f7f5; /* 연한 그린 톤 */
+  border: 1px solid #c7d9cd;
+  border-radius: 8px;
+  padding: 10px 12px;
+
+  color: #35593d;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease, transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* hover: 살짝 떠오르는 느낌 */
+.draft-save-btn:hover {
+  background: #e9f1ec;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* active: 눌림 느낌 */
+.draft-save-btn:active {
+  background: #dfe9e3;
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* 키보드 접근성 */
+.draft-save-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(53, 89, 61, 0.25);
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./DraftMenuBar.css";
 import axios from "../../../../api/axios.js";
 import { useNavigate } from "react-router-dom";
@@ -7,11 +7,25 @@ export default function DraftMenuBar({
   isOpen = false, // 열림-닫힘 상태
   onClose, // 닫기 함수
   latestDraftId, // 최근 저장된 draft id
+
+  form,
+  rooms,
+  offices,
+  onSaved,
+  onSnapshotSaved,
+  lastSavedSnapshot,
 }) {
+  const menuRef = useRef(null);
   const [openItems, setOpenItems] = useState([]);
   const [draftList, setDraftList] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // 중복 검사
+  const isSameDraft = (a, b) => {
+    if (!a || !b) return false;
+    return JSON.stringify(a) === JSON.stringify(b);
+  };
 
   // 임시저장 리스트 메뉴 구성
   const userMenu = [
@@ -26,6 +40,21 @@ export default function DraftMenuBar({
     },
   ];
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        onClose(); // ⭐ 바깥 클릭 시 닫기
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
   // Redis 임시저장 목록 불러오기
   useEffect(() => {
     // 메뉴가 닫혀 있으면 불러오기 시도 x
@@ -45,20 +74,20 @@ export default function DraftMenuBar({
       .finally(() => setLoading(false));
   }, [isOpen]); //
 
-  // ✅ 임시저장 불러오기
+  // 임시저장 불러오기
   const handleLoadDraft = async (draftKey) => {
     const token = localStorage.getItem("accessToken");
     if (!token) return alert("로그인이 필요합니다.");
 
     try {
-      // 1️⃣ draft 데이터 불러오기
+      //  draft 데이터 불러오기
       const res = await axios.get(
         `http://localhost:8080/api/reservations/draft/${draftKey}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const draftData = res.data;
 
-      // 2️⃣ 필드 통일
+      // 필드 통일
       const normalizedDraft = {
         ...draftData,
         // 오피스명 / 장소명
@@ -74,17 +103,18 @@ export default function DraftMenuBar({
         stayName: draftData.stayName || draftData.hotelName || "",
       };
 
-      // ✅ 3️⃣ (수정) 더 이상 API 요청 안 함 — draft 안에 있는 rooms/offices 사용
+      // 더 이상 API 요청 안 함 — draft 안에 있는 rooms/offices 사용
       const rooms = draftData.rooms || [];
       const offices = draftData.offices || [];
 
-      // 4️⃣ ReservationForm으로 이동
+      // ReservationForm으로 이동
       alert("임시저장을 불러왔습니다!");
       navigate("/reservation/new", {
         state: {
           ...normalizedDraft,
           rooms,
           offices,
+          draftKey,
         },
       });
     } catch (err) {
@@ -96,6 +126,51 @@ export default function DraftMenuBar({
   // 하나만 선택되게
   const toggleItem = (id) => {
     setOpenItems((prev) => (prev[0] === id ? [] : [id]));
+  };
+
+  const handleDraftSave = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    const draftData = {
+      ...form,
+      title: form.programTitle,
+      rooms,
+      offices,
+    };
+
+    // ⭐ 변경 내용 없음 → 저장 차단
+    if (isSameDraft(lastSavedSnapshot, draftData)) {
+      alert("변경된 내용이 없습니다.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/api/reservations/draft/me",
+        draftData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // ⭐ 부모 snapshot 갱신
+      onSnapshotSaved(draftData);
+
+      onSaved?.(res.data.id || Date.now());
+      alert("임시저장 완료!");
+
+      // 목록 재조회
+      const listRes = await axios.get(
+        "http://localhost:8080/api/reservations/draft/me",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setDraftList(listRes.data || []);
+    } catch (err) {
+      console.error("임시저장 실패", err);
+      alert("임시저장 중 오류가 발생했습니다.");
+    }
   };
 
   // 임시저장 삭제
@@ -123,11 +198,19 @@ export default function DraftMenuBar({
   };
 
   return (
-    <div className={`draft-menu-bar ${isOpen ? "open" : "close"}`}>
+    <div
+      ref={menuRef}
+      className={`draft-menu-bar ${isOpen ? "open" : "close"}`}
+    >
       <button className="draft-menu-close-btn" onClick={onClose}>
         ✕
       </button>
 
+      <div className="draft-menu-header-actions">
+        <button className="draft-save-btn" onClick={handleDraftSave}>
+          현재 내용 임시저장
+        </button>
+      </div>
       {loading && <p>불러오는 중...</p>}
 
       {userMenu.map((item, idx) => (
@@ -176,6 +259,9 @@ export default function DraftMenuBar({
                     <div className="draft-card-body">
                       <p>숙소명 : {sub.data.stayName || sub.data.stayName}</p>
                       <p>룸타입 : {sub.data.roomType || sub.data.roomType}</p>
+                      <p>
+                        오피스 : {sub.data.officeName || sub.data.officeName}
+                      </p>
 
                       <p>
                         📅 {sub.data.startDate} ~ {sub.data.endDate}

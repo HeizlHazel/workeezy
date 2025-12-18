@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import ReservationFields from "./ReservationFields.jsx";
-import DraftButton from "../DraftButton.jsx";
-import SubmitButton from "../SubmitButton.jsx";
+// import DraftButton from "../DraftButton.jsx";
+// import SubmitButton from "../ReservationActions.jsx";
 import "./ReservationForm.css";
 import axios from "../../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import ReservationActions from "../ReservationActions.jsx";
 
 // 생성 및 수정시 : null 안전 숫자 변환 유틸
 const parseNullableNumber = (value) =>
@@ -27,6 +28,8 @@ export default function ReservationForm({
   // 사용자가 선택한 Id와 같은 Id를 가진 첫 번째 객체를 찾아서 반환한다.
   const selectedRoom = rooms.find((r) => r.id === Number(roomId));
   const selectedOffice = offices.find((o) => o.id === Number(officeId));
+  const location = useLocation();
+  const { draftKey } = location.state || {};
 
   // -------------------------------------------------------------------
   // * form 기본 상태 관리 (예약 폼 초기값)
@@ -54,6 +57,7 @@ export default function ReservationForm({
   // -------------------------------------------------------------------
   const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false); // 메뉴바 열림 - 닫힘
   const [latestDraftId, setLatestDraftId] = useState(null); // 최근 저장된 draft 식별용 (New!)
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(null);
 
   // -------------------------------------------------------------------
   // 1. 초기데이터 반영
@@ -189,6 +193,7 @@ export default function ReservationForm({
           roomId: Number(form.roomId),
           officeId: parseNullableNumber(form.officeId),
           stayId: Number(form.stayId),
+          draftKey,
         };
 
         await axios.post(
@@ -209,42 +214,6 @@ export default function ReservationForm({
     }
   };
 
-  // -------------------------------------------------------------------
-  // 임시 저장
-  // -------------------------------------------------------------------
-  const handleDraftSave = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-
-    const draftData = {
-      ...form,
-      title: form.programTitle,
-      rooms,
-      offices,
-    };
-
-    try {
-      const res = await axios.post(
-        "http://localhost:8080/api/reservations/draft/me",
-        draftData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setLatestDraftId(res.data.id || Date.now());
-      setIsDraftMenuOpen(true);
-
-      alert("임시저장 완료!");
-    } catch (error) {
-      console.error("임시저장 실패", error);
-      alert("임시저장 중 오류가 발생했습니다.");
-    }
-  };
-
   return (
     <div className="form">
       <form className="reservation-form" onSubmit={handleSubmit}>
@@ -254,8 +223,10 @@ export default function ReservationForm({
           offices={offices}
           onChange={handleChange}
         />
-        <SubmitButton />
-        {!isEdit && <DraftButton onClick={handleDraftSave} />}
+        <ReservationActions
+          isEdit={isEdit}
+          onOpenDraft={() => setIsDraftMenuOpen((prev) => !prev)}
+        />
       </form>
 
       {!isEdit && isDraftMenuOpen && (
@@ -263,6 +234,12 @@ export default function ReservationForm({
           isOpen={isDraftMenuOpen}
           onClose={() => setIsDraftMenuOpen(false)}
           latestDraftId={latestDraftId}
+          form={form}
+          rooms={rooms}
+          offices={offices}
+          onSaved={(id) => setLatestDraftId(id)}
+          onSnapshotSaved={setLastSavedSnapshot}
+          lastSavedSnapshot={lastSavedSnapshot}
         />
       )}
     </div>

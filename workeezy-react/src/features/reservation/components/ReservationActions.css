@@ -28,6 +28,23 @@
   transition: all 0.2s ease;
 }
 
+.button3 {
+  background-color: #f8f5e9; /* ✅ 진초록 배경 */
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 /* 텍스트 */
 .div2 {
   color: #f8f5e9; /* ✅ 아이보리 글씨 */
@@ -40,14 +57,40 @@
   letter-spacing: 0.3px;
 }
 
+/* 텍스트 */
+.div3 {
+  color: #35593d; /* ✅ 아이보리 글씨 */
+  text-align: center;
+  font-family: "AritaDotumKr-SemiBold", sans-serif;
+  font-size: 14px;
+  line-height: 100%;
+  font-weight: 600;
+  position: relative;
+  letter-spacing: 0.3px;
+}
+
 /* hover 효과 */
 .button2:hover {
   background-color: #2e4f36; /* 조금 어두운 진초록 */
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* 클릭 시 눌림 효과 */
 .button2:active {
   background-color: #27472f;
-  transform: translateY(0);
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+}
+
+.button3:hover {
+  background-color: #f1eedf;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.button3:active {
+  background-color: #e8e4d3;
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
 }
