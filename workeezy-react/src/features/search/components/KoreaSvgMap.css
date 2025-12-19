@@ -1,26 +1,104 @@
-.korea-map-wrap svg {
-    width: 100%;
-    height: auto;
+.korea-map-wrap {
+    position: absolute;
+    inset: 0;
+    contain: layout paint;
+    overflow-anchor: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ✅ SVG는 고정 크기(여기서 크기만 조절하면 됨) */
+.svg-host {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.svg-host svg {
+    width: 640px;     /* 고정 크기 유지 */
+    height: 720px;    /* 고정 크기 유지 */
     display: block;
+
+    margin: auto;     /* ✅ 추가: 확실한 중앙 */
 }
 
-/* 파일 기본 .land 스타일을 덮어쓰기 */
-.korea-map-wrap svg .land,
-.korea-map-wrap svg path {
-    fill: #ffd6d6 !important;
-    stroke: #ff4d4f !important;
-    stroke-width: 1.5 !important;
+/* 선택 강조(크기 변화 최소화) */
+svg path.active {
+    filter: brightness(0.92);
+    stroke: rgba(0, 0, 0, 0.18);
+    stroke-width: 1;
+}
+
+/* 말풍선 */
+.map-bubble {
+    position: absolute;
+    z-index: 10;
+
+    /* ✅ 중앙 기준으로 배치(너무 위로 뜨는 거 방지) */
+    transform: translate(-50%, -50%);
+
+    width: 320px;
+    max-height: 360px;
+    border: 1px solid #e9e9e9;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    padding: 10px;
+    overflow: hidden;
+}
+
+.map-bubble-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.map-bubble-title {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.map-bubble-close {
+    border: 0;
+    background: transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
+    font-size: 14px;
 }
 
-.korea-map-wrap svg .land:hover,
-.korea-map-wrap svg path:hover {
-    fill: #ffb3b3 !important;
-    stroke-width: 2.5 !important;
+.map-bubble-empty {
+    padding: 12px 4px;
+    font-size: 13px;
+    color: #666;
 }
 
-.korea-map-wrap svg .active {
-    fill: #ff8f8f !important;
-    stroke-width: 3 !important;
+.map-bubble-list {
+    margin-top: 8px;
+    display: grid;
+    gap: 8px;
+    max-height: 280px;
+    overflow: auto; /* 말풍선 내부만 스크롤 */
+    padding-right: 4px;
+}
+
+/* 꼬리(현재 transform이 -50,-50 이라 꼬리는 옵션. 원하면 아래 사용) */
+.map-bubble-tail {
+    display: none;
+}
+
+/* 로딩 */
+.map-loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #666;
+    font-size: 14px;
 }

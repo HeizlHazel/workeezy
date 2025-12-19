@@ -1,43 +1,35 @@
-.map-wrap{
-    margin-top: 10px;
-}
-.map-top-chips{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin: 10px 0 14px;
-}
-.map-top-chips .chip{
-    border:1px solid #e5e7eb;
-    background:#fff;
-    padding: 8px 12px;
-    border-radius: 999px;
-    cursor:pointer;
-    font-weight:600;
-}
-.map-stage{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding: 10px 0;
-}
-.map-hint{
-    text-align:center;
-    color:#6b7280;
-    font-size: 13px;
-    margin-top: 10px;
-}
-.map-stage { min-height: 540px; display:flex; justify-content:center; }
-
-.map-stage{
-    display:flex;
-    justify-content:center;
-    padding: 16px 0;
-}
-
-.map-frame{
+.map-wrap {
     width: 100%;
-    max-width: 720px;   /* ✅ 여기 숫자 줄이면 더 작아짐 (예: 640) */
-    transform: scale(0.92);  /* ✅ 미세 축소 */
-    transform-origin: top center;
+    display: flex;
+    justify-content: center;
+}
+
+.map-stage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* ✅ 레이아웃(프레임) 크게 잡기 */
+.map-frame {
+    position: relative;
+
+    width: 980px;
+    height: 760px;
+
+    max-width: 100%;
+    background: transparent;
+
+    /* ✅ 잘림/밀림 방지 */
+    overflow: visible;
+    overflow-anchor: none;
+}
+
+/* 반응형 */
+@media (max-width: 1100px) {
+    .map-frame {
+        width: 92vw;
+        height: 72vh;
+        min-height: 560px;
+    }
 }
