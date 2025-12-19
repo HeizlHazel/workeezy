@@ -14,7 +14,7 @@ export default function ReservationFields({
   onChange,
   rooms = [],
   roomId,
-  roomName,
+  roomType,
   offices = [],
   officeId,
   officeName,
@@ -29,7 +29,7 @@ export default function ReservationFields({
       const selected = rooms.find((r) => r.id === Number(value));
       onChange({ target: { name: "roomId", value } });
       onChange({
-        target: { name: "roomName", value: selected?.roomType || "" },
+        target: { name: "roomType", value: selected?.roomType || "" },
       });
     } else if (type === "office") {
       const selected = offices.find((o) => o.id === Number(value));
@@ -39,6 +39,7 @@ export default function ReservationFields({
       });
     }
   };
+  console.log("ReservationFields roomId =", roomId);
 
   const now = new Date();
 
@@ -215,7 +216,7 @@ export default function ReservationFields({
           >
             <option value="">룸 선택</option>
             {rooms.map((r) => (
-              <option key={r.id} value={r.id}>
+              <option key={r.id} value={String(r.id)}>
                 {r.roomType}
               </option>
             ))}
@@ -227,22 +228,12 @@ export default function ReservationFields({
       <div className="office">
         <div className="div">오피스</div>
         <div className="input">
-          <select
-            name="officeId"
-            value={officeId || ""}
-            onChange={(e) => handleSelectChange("office", e)}
+          <input
+            type="text"
+            value={officeName || ""}
+            readOnly
             className="value"
-            disabled={offices.length === 0}
-          >
-            <option value="">
-              {offices.length === 0 ? "선택할 오피스 없음" : "오피스 선택"}
-            </option>
-            {offices.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       </div>
 

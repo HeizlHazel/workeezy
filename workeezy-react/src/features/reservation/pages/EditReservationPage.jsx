@@ -18,6 +18,11 @@ export default function EditReservationPage() {
       });
 
       const reservation = res.data;
+      console.log("===== reservation raw =====");
+      console.log(reservation);
+      console.log("reservation.roomId =", reservation.roomId);
+      console.log("reservation.room =", reservation.room);
+      console.log("===========================");
 
       // 2️⃣ 프로그램 정보
       const programRes = await axios.get(
@@ -26,8 +31,8 @@ export default function EditReservationPage() {
 
       setData({
         ...reservation,
+        roomId: reservation.roomId,
         rooms: programRes.data.hotel?.rooms ?? [],
-        offices: programRes.data.offices ?? [],
         stayId: programRes.data.hotel?.id,
         stayName: programRes.data.hotel?.name,
       });
@@ -40,12 +45,7 @@ export default function EditReservationPage() {
 
   return (
     <PageLayout>
-      <ReservationForm
-        mode="edit"
-        initialData={data}
-        rooms={data.rooms}
-        offices={data.offices}
-      />
+      <ReservationForm mode="edit" initialData={data} rooms={data.rooms} />
     </PageLayout>
   );
 }

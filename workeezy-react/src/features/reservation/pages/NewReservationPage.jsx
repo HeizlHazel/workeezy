@@ -15,7 +15,7 @@ export default function NewReservationPage() {
         initialData={state}
         // 선택 목록 옵션
         rooms={state?.rooms || []}
-        offices={state?.offices || []}
+        // offices={state?.offices || []}
       />
     </PageLayout>
   );

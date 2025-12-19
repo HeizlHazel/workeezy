@@ -71,12 +71,12 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
             <dt>숙소</dt>
             <dd>{stayName}</dd>
           </div>
-          {officeName && (
-            <div>
-              <dt>오피스</dt>
-              <dd>{officeName}</dd>
-            </div>
-          )}
+
+          <div>
+            <dt>오피스</dt>
+            <dd>{officeName}</dd>
+          </div>
+
           <div>
             <dt>총 금액</dt>
             <dd>{totalPrice?.toLocaleString()}원</dd>

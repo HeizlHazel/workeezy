@@ -7,14 +7,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ReservationActions from "../ReservationActions.jsx";
 import { toLocalDateTimeString } from "../../../../utils/dateTime";
 
-// 생성 및 수정시 : null 안전 숫자 변환 유틸
-const parseNullableNumber = (value) =>
-  value === "" || value === null || value === undefined ? null : Number(value);
-
 export default function ReservationForm({
   initialData,
   rooms = [],
-  offices = [],
   mode = "create",
 }) {
   const isEdit = mode === "edit";
@@ -23,25 +18,23 @@ export default function ReservationForm({
   const { draftKey } = location.state || {};
 
   const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
-  const selectedRoom = rooms.find((r) => r.id === Number(roomId));
-  const selectedOffice = offices.find((o) => o.id === Number(officeId));
 
   /* =========================
      form 상태
   ========================= */
   const [form, setForm] = useState({
     programId: programId || "",
-    programTitle: "",
+    programTitle: initialData?.programTitle ?? "",
+    officeId: initialData?.officeId ?? "",
+    officeName: initialData?.officeName ?? "",
     userName: "",
     company: "",
     phone: "",
     email: "",
     startDate: checkIn ? new Date(checkIn) : null,
     endDate: checkOut ? new Date(checkOut) : null,
-    officeName: selectedOffice?.name || "",
-    officeId: selectedOffice?.id || "",
-    roomType: selectedRoom?.roomType || "",
-    roomId: selectedRoom?.id || "",
+    roomId: initialData?.roomId != null ? String(initialData.roomId) : "",
+    roomType: initialData?.roomType ?? "",
     peopleCount: 1,
     stayId: initialData?.stayId || "",
     stayName: initialData?.stayName || "",
@@ -59,6 +52,9 @@ export default function ReservationForm({
   ========================= */
   useEffect(() => {
     if (!initialData) return;
+    if (rooms.length === 0) return;
+
+    const room = rooms.find((r) => r.id === Number(initialData.roomId));
 
     setForm((prev) => ({
       ...prev,
@@ -78,12 +74,12 @@ export default function ReservationForm({
       stayId: initialData.stayId || prev.stayId,
       stayName: initialData.stayName || prev.stayName,
 
-      officeId: initialData.officeId || selectedOffice?.id || prev.officeId,
-      officeName:
-        initialData.officeName || selectedOffice?.name || prev.officeName,
+      officeId: initialData.officeId || prev.officeId,
+      officeName: initialData.officeName || prev.officeName,
 
-      roomId: initialData.roomId || selectedRoom?.id || prev.roomId,
-      roomType: initialData.roomType || selectedRoom?.roomType || prev.roomType,
+      roomId:
+        initialData.roomId != null ? String(initialData.roomId) : prev.roomId,
+      roomType: room?.roomType || "",
 
       userName: initialData.userName || prev.userName,
       company: initialData.company || prev.company,
@@ -92,7 +88,12 @@ export default function ReservationForm({
 
       peopleCount: initialData.peopleCount || prev.peopleCount,
     }));
-  }, [initialData, selectedRoom, selectedOffice]);
+    console.log("initialData.roomId =", initialData?.roomId);
+    console.log(
+      "rooms ids =",
+      rooms.map((r) => r.id)
+    );
+  }, [initialData, rooms]);
 
   /* =========================
      유저 정보 자동 채우기
@@ -144,7 +145,6 @@ export default function ReservationForm({
             startDate: toLocalDateTimeString(form.startDate),
             endDate: toLocalDateTimeString(form.endDate),
             roomId: Number(form.roomId),
-            officeId: parseNullableNumber(form.officeId),
             peopleCount: form.peopleCount,
           },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -158,8 +158,8 @@ export default function ReservationForm({
             endDate: toLocalDateTimeString(form.endDate),
             programId: Number(form.programId),
             roomId: Number(form.roomId),
-            officeId: parseNullableNumber(form.officeId),
-            stayId: Number(form.stayId),
+            // officeId: parseNullableNumber(form.officeId),
+            // stayId: Number(form.stayId),
             draftKey,
           },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -180,7 +180,7 @@ export default function ReservationForm({
         <ReservationFields
           {...form}
           rooms={rooms}
-          offices={offices}
+          // offices={offices}
           onChange={handleChange}
         />
         <ReservationActions
@@ -196,7 +196,7 @@ export default function ReservationForm({
           latestDraftId={latestDraftId}
           form={form}
           rooms={rooms}
-          offices={offices}
+          // offices={offices}
           onSaved={setLatestDraftId}
           onSnapshotSaved={setLastSavedSnapshot}
           lastSavedSnapshot={lastSavedSnapshot}
