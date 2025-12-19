@@ -6,6 +6,9 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
 
+  jackson:
+    time-zone: Asia/Seoul
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://workeezy.iptime.org:3306/workeezy

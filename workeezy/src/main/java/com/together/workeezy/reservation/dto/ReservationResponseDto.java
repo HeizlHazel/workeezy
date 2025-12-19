@@ -1,9 +1,11 @@
 package com.together.workeezy.reservation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -17,8 +19,10 @@ public class ReservationResponseDto {
     private String company;
     private String phone;
 
-    private LocalDate startDate;       // 시작일
-    private LocalDate endDate;         // 종료일
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startDate;       // 시작일
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endDate;         // 종료일
 
     private String programTitle;       // 워케이션 프로그램명
     private long programId;

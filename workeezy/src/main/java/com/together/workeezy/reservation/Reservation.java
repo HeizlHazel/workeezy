@@ -58,11 +58,11 @@ public class Reservation {
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime  startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime  endDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -106,8 +106,9 @@ public class Reservation {
     }
 
     public int daysUntilStart() {
-        return Math.toIntExact(
-                ChronoUnit.DAYS.between(LocalDate.now(), this.startDate)
+        return (int) ChronoUnit.DAYS.between(
+                LocalDate.now(),
+                this.startDate.toLocalDate()
         );
     }
 
@@ -119,7 +120,7 @@ public class Reservation {
     }
 
     // 시작일보다 종료일이 빨라야 함
-    public void validateDate(LocalDate start, LocalDate end) {
+    public void validateDate(LocalDateTime start, LocalDateTime end) {
         if (start.isAfter(end)) {
             throw new IllegalStateException("시작일은 종료일보다 늦을 수 없습니다.");
         }
@@ -127,7 +128,7 @@ public class Reservation {
 
     // 수정
 
-    public void changePeriod(LocalDate start, LocalDate end) {
+    public void changePeriod(LocalDateTime  start, LocalDateTime  end) {
         this.startDate = start;
         this.endDate = end;
     }

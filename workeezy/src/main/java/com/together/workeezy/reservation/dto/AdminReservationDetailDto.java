@@ -1,10 +1,12 @@
 package com.together.workeezy.reservation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.together.workeezy.reservation.ReservationStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,8 +27,10 @@ public class AdminReservationDetailDto {
     private String email;
 
     /* ===== 예약 정보 ===== */
-    private LocalDate startDate;
-    private LocalDate endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime  endDate;
     private int peopleCount;
 
     /* ===== 숙소 / 룸 ===== */
