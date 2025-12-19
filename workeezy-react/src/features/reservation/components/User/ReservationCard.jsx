@@ -85,10 +85,15 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
 
         {isSelected && (
           <dl className="detail-extra">
-            <dt>룸타입</dt>
-            <dd>{roomType}</dd>
-            <dt>인원</dt>
-            <dd>{peopleCount}명</dd>
+            <h4 className="detail-title">예약 상세</h4>
+            <div>
+              <dt>룸타입</dt>
+              <dd>{roomType}</dd>
+            </div>
+            <div>
+              <dt>인원</dt>
+              <dd>{peopleCount}명</dd>
+            </div>
           </dl>
         )}
       </div>
