@@ -10,14 +10,15 @@ import java.util.List;
 @Service
 public class RecentSearchService {
 
+
     // RedisConfig에서 만든 String-String 템플릿
-    private final RedisTemplate<String, String> searchRedisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public RecentSearchService(
-            @Qualifier("stringRedisTemplate")
-            RedisTemplate<String, String> searchRedisTemplate
+            @Qualifier("loginRedisTemplate")
+            RedisTemplate<String, String> redisTemplate
     ) {
-        this.searchRedisTemplate = searchRedisTemplate;
+        this.redisTemplate = redisTemplate;
     }
 
     // 최근 검색어 최대 개수
@@ -41,16 +42,17 @@ public class RecentSearchService {
         String key = getKey(userId);
 
         // 1) 기존 리스트에서 같은 키워드 제거 (중복 방지)
-        searchRedisTemplate.opsForList().remove(key, 0, keyword);
+        redisTemplate.opsForList().remove(key, 0, keyword);
 
         // 2) 맨 앞에 추가 (가장 최근 검색)
-        searchRedisTemplate.opsForList().leftPush(key, keyword);
+        redisTemplate.opsForList().leftPush(key, keyword);
 
         // 3) 최대 개수 유지
-        searchRedisTemplate.opsForList().trim(key, 0, MAX_RECENT_KEYWORDS - 1);
+        redisTemplate.opsForList().trim(key, 0, MAX_RECENT_KEYWORDS - 1);
 
         // 4) TTL 설정 (예: 30일)
-        searchRedisTemplate.expire(key, Duration.ofDays(TTL_DAYS));
+        redisTemplate.expire(key, Duration.ofDays(TTL_DAYS));
+        System.out.println("🧠 Redis LPUSH recent:search:" + userId + " -> " + keyword);
     }
 
     /**
@@ -62,7 +64,7 @@ public class RecentSearchService {
         String key = getKey(userId);
         long endIndex = limit - 1L;
 
-        List<String> result = searchRedisTemplate.opsForList().range(key, 0, endIndex);
+        List<String> result = redisTemplate.opsForList().range(key, 0, endIndex);
         return result != null ? result : List.of();
     }
 
@@ -71,6 +73,6 @@ public class RecentSearchService {
      */
     public void clear(Long userId) {
         if (userId == null) return;
-        searchRedisTemplate.delete(getKey(userId));
+        redisTemplate.delete(getKey(userId));
     }
 }

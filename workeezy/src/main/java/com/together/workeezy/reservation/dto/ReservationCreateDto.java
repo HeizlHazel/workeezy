@@ -30,4 +30,6 @@ public class ReservationCreateDto {
     private Long stayId;
     private String stayName; // 조회용
 
+    private String draftKey;
+
 }

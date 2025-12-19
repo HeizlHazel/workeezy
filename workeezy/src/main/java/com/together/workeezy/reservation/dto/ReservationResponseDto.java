@@ -9,14 +9,19 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ReservationResponseDto {
-    private Long reservationId;     // PK
+    private long id;
     private String reservationNo;  // 예약번호 (ex: 20251212-000001)
     private String status;             // 예약상태
+
+    private String userName;
+    private String company;
+    private String phone;
 
     private LocalDate startDate;       // 시작일
     private LocalDate endDate;         // 종료일
 
     private String programTitle;       // 워케이션 프로그램명
+    private long programId;
     private String stayName;           // 숙소명
     private String officeName;         // 오피스명 (null 가능)
     private String roomType;           // 룸타입

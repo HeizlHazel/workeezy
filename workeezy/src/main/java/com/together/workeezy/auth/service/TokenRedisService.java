@@ -1,6 +1,7 @@
 package com.together.workeezy.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TokenRedisService {
 
+    @Qualifier("loginRedisTemplate")
     private final RedisTemplate<String, String> loginRedisTemplate;
 
     private static final String REFRESH_PREFIX = "refresh:";

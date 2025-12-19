@@ -1,6 +1,8 @@
 package com.together.workeezy.reservation.controller;
 
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
+import com.together.workeezy.reservation.dto.ReservationResponseDto;
+import com.together.workeezy.reservation.dto.ReservationUpdateDto;
 import com.together.workeezy.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -16,12 +18,11 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    /** 🧾 예약 생성 */
+    /* 예약 생성 */
     @PostMapping
     public ResponseEntity<?> createReservation(
             @RequestBody ReservationCreateDto dto,
             Authentication authentication) {
-
 
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 //        System.out.println("🔥 현재 인증 정보: " + auth);
@@ -64,7 +65,41 @@ public class ReservationController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("예약 조회 실패: " + e.getMessage());
         }
+    }
 
+    // 예약 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getMyReservation(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
 
+        ReservationResponseDto dto =
+                reservationService.getMyReservation(id, email);
+
+        return ResponseEntity.ok(dto);
+    }
+        
+    // 예약 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMyReservation(
+            @PathVariable Long id,
+            @RequestBody ReservationUpdateDto dto,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        reservationService.updateMyReservation(id, dto, email);
+        return ResponseEntity.ok("예약 수정 성공");
+    }
+
+    // 예약 취소
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelMyReservation(@PathVariable Long id,
+                                               Authentication authentication
+    ) {
+        reservationService.cancelMyReservation(id, authentication.getName());
+        return ResponseEntity.ok("예약 취소 완료");
     }
 }
