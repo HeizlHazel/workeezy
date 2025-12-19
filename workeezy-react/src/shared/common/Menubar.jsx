@@ -42,7 +42,7 @@ export default function MenuBar({isAdmin = false, onClose}) {
             icon: "success",
             title: "로그아웃 완료! 다시 만나요. 😥",
         });
-        window.location.href = "/login";
+        window.location.href = "/";
     };
 
 // 보호된 메뉴 클릭 처리
