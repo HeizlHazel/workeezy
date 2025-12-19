@@ -79,7 +79,7 @@ export default function CheckoutPage() {
                     style={{
                         marginTop: "20px",
                         padding: "14px",
-                        width: "100%",
+                        width: "20%",
                         backgroundColor: "#007aff",
                         color: "white",
                         border: "none",
@@ -93,7 +93,7 @@ export default function CheckoutPage() {
                             await widgets.requestPayment({
                                 orderId: reservation.reservationNo,
                                 orderName: reservation.programTitle,
-                                successUrl: `${window.location.origin}/payment/result?status=success&orderId=${reservation.reservationNo}&amount=${reservation.totalPrice}`,
+                                successUrl: `${window.location.origin}/payment/result`,
                                 failUrl: `${window.location.origin}/payment/result?status=fail&orderId=${reservation.reservationNo}`,
                             });
                         } catch (err) {
