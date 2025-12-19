@@ -29,7 +29,6 @@ export default function SearchPage() {
 
     const [viewMode, setViewMode] = useState("list"); // "list" | "map"
 
-    // ✅ region map (카테고리 & 지도 공용)
     const regionMap = useMemo(
         () => ({
             수도권: ["서울", "경기", "인천"],
@@ -50,7 +49,6 @@ export default function SearchPage() {
         return "전체";
     };
 
-    // ✅ (선택) 새로고침해도 캐러셀 유지
     const PERSIST_RECOMMENDED = true;
     const STORAGE_KEY = "workeezy_recommended_v1";
 
@@ -73,12 +71,10 @@ export default function SearchPage() {
         }
     }, [recommended]);
 
-    // URL 변경 시 검색창 동기화
     useEffect(() => {
         setSearch(urlKeyword);
     }, [urlKeyword]);
 
-    // 검색 실행 후: 결과 로드 + 추천 1개 추가
     useEffect(() => {
         if (!urlKeyword || urlKeyword.trim() === "") {
             api.get("/api/programs/cards").then((res) => setAllPrograms(res.data));
@@ -112,7 +108,6 @@ export default function SearchPage() {
             .catch((err) => console.error("search error", err));
     }, [urlKeyword]);
 
-    // 검색 버튼
     const handleSearch = () => {
         const trimmed = search.trim();
         if (trimmed === "") {
@@ -127,27 +122,22 @@ export default function SearchPage() {
         setViewMode("list");
     };
 
-    // URL 바뀌면 페이지 1로
     useEffect(() => {
         setCurrentPage(1);
     }, [urlKeyword]);
 
-    // ✅ CategoryFilter 변경은 무조건 리스트로 전환 (요구사항)
     const applyBigRegion = (r) => {
         setBigRegion(r);
         setSmallRegions([]);
         setCurrentPage(1);
-        setViewMode("list");
+        setViewMode("list"); // 기존 요구사항 유지(카테고리 바꾸면 리스트)
     };
 
     const applySmallRegions = (updaterOrList) => {
         setSmallRegions((prev) => {
             const next =
-                typeof updaterOrList === "function"
-                    ? updaterOrList(prev)
-                    : updaterOrList;
+                typeof updaterOrList === "function" ? updaterOrList(prev) : updaterOrList;
 
-            // small 선택이 있으면 bigRegion도 맞춰줌(안전장치)
             if (next?.length > 0) {
                 const big = findBigRegionBySmall(next[0]);
                 setBigRegion(big);
@@ -156,10 +146,9 @@ export default function SearchPage() {
         });
 
         setCurrentPage(1);
-        setViewMode("list");
+        setViewMode("list"); // 기존 요구사항 유지
     };
 
-    // 필터링
     const filteredPrograms = useMemo(() => {
         return allPrograms.filter((p) => {
             if (bigRegion !== "전체") {
@@ -177,29 +166,6 @@ export default function SearchPage() {
     const start = (currentPage - 1) * pageSize;
     const paginatedPrograms = filteredPrograms.slice(start, start + pageSize);
     const isEmpty = paginatedPrograms.length === 0;
-
-    const resetFilters = () => {
-        setBigRegion("전체");
-        setSmallRegions([]);
-        setCurrentPage(1);
-    };
-
-    const showAll = () => {
-        navigate("/search");
-        setSearch("");
-        resetFilters();
-    };
-
-    // ✅ 지도에서 지역 클릭 시: 기존 카테고리 메커니즘(큰/작은)으로 세팅
-    const applyFromMapPick = (pickedSmallRegion) => {
-        if (!pickedSmallRegion) return;
-
-        const big = findBigRegionBySmall(pickedSmallRegion);
-        setBigRegion(big);
-        setSmallRegions([pickedSmallRegion]);
-        setCurrentPage(1);
-        setViewMode("list"); // ✅ 클릭하면 리스트로 보여주기
-    };
 
     return (
         <PageLayout>
@@ -234,9 +200,6 @@ export default function SearchPage() {
                     programs={filteredPrograms}
                     bigRegion={bigRegion}
                     smallRegions={smallRegions}
-                    // ✅ 지도 클릭 → 카테고리 로직으로 반영
-                    onPickRegion={applyFromMapPick}
-                    // ✅ 지도에서 칩/버튼으로 bigRegion 바꾸는 경우도 리스트로
                     onChangeBigRegion={(r) => applyBigRegion(r)}
                 />
             ) : (

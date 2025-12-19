@@ -50,6 +50,27 @@ export default function ProgramReserveBar({
     return () => placeholder && observer.unobserve(placeholder);
   }, []);
 
+  // ✅ 체크인 시간 제한: "선택한 체크인 날짜" 기준으로 min/max 계산
+  const inDay = checkIn ?? now;
+  const inMinTime =
+    startOfDay(inDay).getTime() === startOfDay(now).getTime()
+      ? now
+      : startOfDay(inDay);
+  const inMaxTime = endOfDay(inDay);
+
+  // ✅ 체크아웃 시간 제한:
+  // - 체크아웃 날짜가 체크인과 같은 날이면 minTime = checkIn (체크인 이전 시간 막기)
+  // - 다른 날이면 minTime = 00:00
+  // - maxTime은 "선택된 체크아웃 날짜"의 23:59
+  const outDay = checkOut ?? checkIn ?? now;
+  const outSameDay =
+    !!checkIn &&
+    !!outDay &&
+    startOfDay(outDay).getTime() === startOfDay(checkIn).getTime();
+
+  const outMinTime = checkIn && outSameDay ? checkIn : startOfDay(outDay);
+  const outMaxTime = endOfDay(outDay);
+
   const onReserve = () => {
     if (!roomId || !checkIn || !checkOut) {
       alert("필수 항목을 입력해주세요!");
@@ -96,6 +117,7 @@ export default function ProgramReserveBar({
           </select>
         </div>
 
+        {/* 체크인 */}
         <div className="pd-reserve-item">
           <label>체크인</label>
           <div className="pd-input-wrap">
@@ -104,42 +126,55 @@ export default function ProgramReserveBar({
               selected={checkIn}
               onChange={(date) => {
                 setCheckIn(date);
-                // ✅ 체크인을 바꾸면, 체크아웃이 체크인보다 이전이면 초기화
-                if (checkOut && date && checkOut < date) setCheckOut(null);
+
+                // ✅ 체크인 변경 시 체크아웃이 더 이르면 초기화(보정)
+                setCheckOut((prevOut) => {
+                  if (!date) return prevOut;
+                  if (prevOut && prevOut < date) return null;
+                  return prevOut;
+                });
               }}
               showTimeSelect
               dateFormat="MM/dd (eee) HH:mm"
               placeholderText="날짜 선택"
               className="pd-datepicker"
-              // ✅ 과거 날짜 막기(오늘부터)
               minDate={startOfDay(now)}
-              // ✅ "오늘"을 고르면 과거 시간도 막기
-              minTime={
-                checkIn &&
-                startOfDay(checkIn).getTime() === startOfDay(now).getTime()
-                  ? now
-                  : startOfDay(now)
-              }
-              maxTime={endOfDay(now)}
+              minTime={inMinTime}
+              maxTime={inMaxTime}
             />
           </div>
         </div>
 
+        {/* 체크아웃 */}
         <div className="pd-reserve-item">
           <label>체크아웃</label>
           <div className="pd-input-wrap">
             <i className="fa-regular fa-calendar calendar-icon"></i>
             <DatePicker
               selected={checkOut}
-              onChange={(date) => setCheckOut(date)}
+              onChange={(date) => {
+                if (!date) return;
+
+                // ✅ 같은 날이면 체크인 이전 시간 막기
+                if (
+                  checkIn &&
+                  startOfDay(date).getTime() ===
+                    startOfDay(checkIn).getTime() &&
+                  date < checkIn
+                ) {
+                  setCheckOut(checkIn);
+                  return;
+                }
+
+                setCheckOut(date);
+              }}
               showTimeSelect
               dateFormat="MM/dd (eee) HH:mm"
               placeholderText="날짜 선택"
               className="pd-datepicker"
-              // ✅ 체크아웃은 체크인 이후부터(체크인 없으면 오늘부터)
               minDate={checkIn ? startOfDay(checkIn) : startOfDay(now)}
-              minTime={checkIn ? checkIn : now}
-              maxTime={checkIn ? endOfDay(checkIn) : endOfDay(now)}
+              minTime={outMinTime}
+              maxTime={outMaxTime}
             />
           </div>
         </div>
