@@ -10,87 +10,112 @@
   cursor: pointer;
 }
 
-/* 버튼 본체 */
+/* ========================= */
+/* 신청하기 버튼 (Primary) */
+/* ========================= */
+
 .button2 {
-  background-color: #35593d; /* ✅ 진초록 배경 */
-  border: none;
-  border-radius: 8px;
+  background: #35593d; /* 맑은 딥그린 */
+  border: 1px solid #2f5137;
+  border-radius: 10px;
   padding: 12px;
+
   display: flex;
-  flex-direction: row;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   width: 85px;
+
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
+
+/* 신청하기 텍스트 */
+.div2 {
+  color: #f8f5e9; /* 아이보리 */
+  text-align: center;
+  font-family: "ArittaDodum", sans-serif;
+  font-size: 14px;
+  line-height: 100%;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+
+/* hover */
+.button2:hover {
+  background: #2f5137;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* active */
+.button2:active {
+  background: #28452f;
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* ========================= */
+/* 임시저장함 버튼 (Secondary) */
+/* ========================= */
 
 .button3 {
-  background-color: #f8f5e9; /* ✅ 진초록 배경 */
-  border: none;
-  border-radius: 8px;
+  background: #f4f7f5; /* DraftMenuBar와 동일 계열 */
+  border: 1px solid #c7d9cd;
+  border-radius: 10px;
   padding: 12px;
+
   display: flex;
-  flex-direction: row;
-  gap: 10px;
   align-items: center;
   justify-content: center;
-  width: 90px;
+  width: 100px;
+
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease, transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
-/* 텍스트 */
-.div2 {
-  color: #f8f5e9; /* ✅ 아이보리 글씨 */
-  text-align: center;
-  font-family: "AritaDotumKr-SemiBold", sans-serif;
-  font-size: 14px;
-  line-height: 100%;
-  font-weight: 600;
-  position: relative;
-  letter-spacing: 0.3px;
-}
-
-/* 텍스트 */
+/* 임시저장함 텍스트 */
 .div3 {
-  color: #35593d; /* ✅ 아이보리 글씨 */
+  color: #35593d; /* 딥그린 텍스트 */
   text-align: center;
-  font-family: "AritaDotumKr-SemiBold", sans-serif;
+  font-family: "ArittaDodum", sans-serif;
   font-size: 14px;
   line-height: 100%;
   font-weight: 600;
-  position: relative;
   letter-spacing: 0.3px;
+  position: relative;
 }
 
-/* hover 효과 */
-.button2:hover {
-  background-color: #2e4f36; /* 조금 어두운 진초록 */
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* 클릭 시 눌림 효과 */
-.button2:active {
-  background-color: #27472f;
-  transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
-}
-
+/* hover */
 .button3:hover {
-  background-color: #f1eedf;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background: #e9f1ec;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* active */
 .button3:active {
-  background-color: #e8e4d3;
+  background: #dfe9e3;
   transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* ========================= */
+/* 키보드 접근성 (공통) */
+/* ========================= */
+
+.button2:focus-visible,
+.button3:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(53, 89, 61, 0.25);
 }

@@ -1,4 +1,6 @@
 import "./ReservationFields.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function ReservationFields({
   programTitle,
@@ -37,6 +39,27 @@ export default function ReservationFields({
       });
     }
   };
+
+  const now = new Date();
+
+  const startOfDay = (d) => {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  };
+
+  const endOfDay = (d) => {
+    const x = new Date(d);
+    x.setHours(23, 59, 59, 999);
+    return x;
+  };
+
+  const isSameDay = (a, b) =>
+    a &&
+    b &&
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
 
   return (
     <>
@@ -124,25 +147,46 @@ export default function ReservationFields({
         <div className="div">예약 날짜</div>
         <div className="date">
           <div className="started-at">
-            <input
-              type="date"
-              name="startDate"
-              value={startDate}
-              onChange={onChange}
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                onChange({ target: { name: "startDate", value: date } })
+              }
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm"
               className="input-text"
+              minDate={startOfDay(now)}
+              minTime={
+                startDate &&
+                startOfDay(startDate).getTime() === startOfDay(now).getTime()
+                  ? now
+                  : startOfDay(now)
+              }
+              maxTime={endOfDay(now)}
             />
           </div>
+
           <div className="ended-at">
-            <input
-              type="date"
-              name="endDate"
-              value={endDate}
-              onChange={onChange}
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                onChange({ target: { name: "endDate", value: date } })
+              }
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm"
               className="input-text"
+              minDate={startDate ? startOfDay(startDate) : startOfDay(now)}
+              minTime={
+                startDate && isSameDay(startDate, endDate)
+                  ? startDate // 같은 날 → 시작시간 이후만
+                  : startOfDay(endDate || now) // 다른 날 → 00:00부터
+              }
+              maxTime={endOfDay(endDate || now)}
             />
           </div>
         </div>
       </div>
+
       {/* 숙소명 */}
       <div className="stay-name">
         <div className="div">숙소명</div>
@@ -178,6 +222,7 @@ export default function ReservationFields({
           </select>
         </div>
       </div>
+
       {/* 오피스 */}
       <div className="office">
         <div className="div">오피스</div>

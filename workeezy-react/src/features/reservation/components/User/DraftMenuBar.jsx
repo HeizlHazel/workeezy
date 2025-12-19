@@ -89,6 +89,9 @@ export default function DraftMenuBar({
 
       // 필드 통일
       const normalizedDraft = {
+        // 날짜 복원
+        startDate: draftData.startDate ? new Date(draftData.startDate) : null,
+        endDate: draftData.endDate ? new Date(draftData.endDate) : null,
         ...draftData,
         // 오피스명 / 장소명
         officeName: draftData.officeName || draftData.placeName || "",
@@ -128,6 +131,7 @@ export default function DraftMenuBar({
     setOpenItems((prev) => (prev[0] === id ? [] : [id]));
   };
 
+  // 저장
   const handleDraftSave = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -137,6 +141,9 @@ export default function DraftMenuBar({
 
     const draftData = {
       ...form,
+      // 문자열로 안정적으로 저장
+      startDate: form.startDate ? form.startDate.toISOString() : null,
+      endDate: form.endDate ? form.endDate.toISOString() : null,
       title: form.programTitle,
       rooms,
       offices,
@@ -196,6 +203,17 @@ export default function DraftMenuBar({
       alert("삭제 중 오류가 발생했습니다.");
     }
   };
+
+  const formatDateTime = (value) =>
+    value
+      ? new Date(value).toLocaleString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "-";
 
   return (
     <div
@@ -257,16 +275,37 @@ export default function DraftMenuBar({
                   {/* 상세정보 (토글 시 표시) */}
                   {openItems.includes(sub.key) && (
                     <div className="draft-card-body">
-                      <p>숙소명 : {sub.data.stayName || sub.data.stayName}</p>
-                      <p>룸타입 : {sub.data.roomType || sub.data.roomType}</p>
-                      <p>
-                        오피스 : {sub.data.officeName || sub.data.officeName}
-                      </p>
+                      <dl className="draft-info">
+                        <div className="draft-info-row">
+                          <dt>숙소명</dt>
+                          <dd>{sub.data.stayName || "-"}</dd>
+                        </div>
 
-                      <p>
-                        📅 {sub.data.startDate} ~ {sub.data.endDate}
-                      </p>
-                      <p>👥 인원: {sub.data.peopleCount}명</p>
+                        <div className="draft-info-row">
+                          <dt>룸타입</dt>
+                          <dd>{sub.data.roomType || "-"}</dd>
+                        </div>
+
+                        <div className="draft-info-row">
+                          <dt>오피스</dt>
+                          <dd>{sub.data.officeName || "-"}</dd>
+                        </div>
+
+                        <div className="draft-info-row">
+                          <dt>예약일</dt>
+                          <dd>
+                            {formatDateTime(sub.data.startDate)}
+                            {" ~ "}
+                            {formatDateTime(sub.data.endDate)}
+                          </dd>
+                        </div>
+
+                        <div className="draft-info-row">
+                          <dt>인원</dt>
+                          <dd>{sub.data.peopleCount}명</dd>
+                        </div>
+                      </dl>
+
                       <button
                         className="draft-load-btn"
                         onClick={(e) => {
