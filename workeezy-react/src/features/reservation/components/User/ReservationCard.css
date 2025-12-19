@@ -61,6 +61,18 @@
   font-weight: 600;
   font-size: 1.2rem;
 }
+.reservation-no {
+  font-size: 13px;
+  color: #888;
+}
+
+.detail-title {
+  grid-column: 1 / -1; /* 🔥 핵심 */
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 8px;
+  color: #333;
+}
 
 /* === 기본 정보 / 상세 정보 공통 === */
 .details,

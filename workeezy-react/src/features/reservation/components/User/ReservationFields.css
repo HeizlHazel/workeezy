@@ -145,4 +145,35 @@ textarea::placeholder {
 input[type="date"] {
   font-family: inherit;
   color: #1e1e1e;
+} /* DatePicker 전체 wrapper */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+/* input 영역 (기존 input-text 유지) */
+.react-datepicker__input-container input.input-text {
+  width: 100%;
+  height: 40px; /* 기존 input 높이 맞추기 */
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd; /* 기존 input 테두리와 통일 */
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* 포커스 시 */
+.react-datepicker__input-container input.input-text:focus {
+  outline: none;
+  border-color: #666; /* 기존 포커스 컬러 쓰면 그걸로 */
+}
+
+/* 날짜 두 칸 정렬 유지 */
+.res-date .date {
+  display: flex;
+  gap: 8px;
+}
+
+.started-at,
+.ended-at {
+  flex: 1;
 }

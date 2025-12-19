@@ -1,39 +1,34 @@
 import { useEffect, useState } from "react";
 import ReservationFields from "./ReservationFields.jsx";
-// import DraftButton from "../DraftButton.jsx";
-// import SubmitButton from "../ReservationActions.jsx";
 import "./ReservationForm.css";
 import axios from "../../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReservationActions from "../ReservationActions.jsx";
+import { toLocalDateTimeString } from "../../../../utils/dateTime";
 
 // 생성 및 수정시 : null 안전 숫자 변환 유틸
 const parseNullableNumber = (value) =>
   value === "" || value === null || value === undefined ? null : Number(value);
 
 export default function ReservationForm({
-  initialData, // 사용자가 선택한 초기 데이터
-  rooms = [], // 해당 워케이션 프로그램에서 선택 가능한 룸
-  offices = [], // 해당 워케이션 프로그램에서 선택 가능한 오피스
+  initialData,
+  rooms = [],
+  offices = [],
   mode = "create",
 }) {
   const isEdit = mode === "edit";
-
   const navigate = useNavigate();
-  // 초기 데이터에서 필요한 값만 꺼냄
-  const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
-
-  // 각 배열에서 find 메소드를 이용해 각 요소(객체)를 순회하면서
-  // 사용자가 선택한 Id와 같은 Id를 가진 첫 번째 객체를 찾아서 반환한다.
-  const selectedRoom = rooms.find((r) => r.id === Number(roomId));
-  const selectedOffice = offices.find((o) => o.id === Number(officeId));
   const location = useLocation();
   const { draftKey } = location.state || {};
 
-  // -------------------------------------------------------------------
-  // * form 기본 상태 관리 (예약 폼 초기값)
-  // -------------------------------------------------------------------
+  const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
+  const selectedRoom = rooms.find((r) => r.id === Number(roomId));
+  const selectedOffice = offices.find((o) => o.id === Number(officeId));
+
+  /* =========================
+     form 상태
+  ========================= */
   const [form, setForm] = useState({
     programId: programId || "",
     programTitle: "",
@@ -41,175 +36,140 @@ export default function ReservationForm({
     company: "",
     phone: "",
     email: "",
-    startDate: checkIn ? new Date(checkIn).toISOString().slice(0, 10) : "",
-    endDate: checkOut ? new Date(checkOut).toISOString().slice(0, 10) : "",
-    officeName: selectedOffice?.name || "", // 화면 표시용 이름
+    startDate: checkIn ? new Date(checkIn) : null,
+    endDate: checkOut ? new Date(checkOut) : null,
+    officeName: selectedOffice?.name || "",
     officeId: selectedOffice?.id || "",
-    roomType: selectedRoom?.roomType || "", // 화면 표시용 이름
+    roomType: selectedRoom?.roomType || "",
     roomId: selectedRoom?.id || "",
     peopleCount: 1,
     stayId: initialData?.stayId || "",
     stayName: initialData?.stayName || "",
   });
 
-  // -------------------------------------------------------------------
-  // * 임시저장 관련 (Draft) *
-  // -------------------------------------------------------------------
-  const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false); // 메뉴바 열림 - 닫힘
-  const [latestDraftId, setLatestDraftId] = useState(null); // 최근 저장된 draft 식별용 (New!)
+  /* =========================
+     임시저장
+  ========================= */
+  const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false);
+  const [latestDraftId, setLatestDraftId] = useState(null);
   const [lastSavedSnapshot, setLastSavedSnapshot] = useState(null);
 
-  // -------------------------------------------------------------------
-  // 1. 초기데이터 반영
-  // 2. state가 있으면 신규 예약 폼 초기화 : 기존 값 끼워넣기
-  // -------------------------------------------------------------------
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  /* =========================
+     초기 데이터 반영
+  ========================= */
   useEffect(() => {
-    if (initialData) {
-      setForm((prev) => ({
-        ...prev, // 기존 form을 베이스로 하고 아래 필드로 덮어쓰기
+    if (!initialData) return;
 
-        // 초기값 우선, 초기값 없으면 기존 prev 값
-        programId: initialData.programId || prev.programId,
-        programTitle: initialData.programTitle || prev.programTitle,
+    setForm((prev) => ({
+      ...prev,
+      programId: initialData.programId || prev.programId,
+      programTitle: initialData.programTitle || prev.programTitle,
 
-        // DraftData 및 ReservationData Data 동시 처리
-        // checkIn - 예약바 / startDate - 임시저장 및 수정 데이터
-        startDate:
-          initialData.checkIn || initialData.startDate
-            ? new Date(initialData.checkIn || initialData.startDate)
-                .toISOString()
-                .slice(0, 10)
-            : prev.startDate,
+      startDate:
+        initialData.checkIn || initialData.startDate
+          ? new Date(initialData.checkIn || initialData.startDate)
+          : prev.startDate,
 
-        endDate:
-          initialData.checkOut || initialData.endDate
-            ? new Date(initialData.checkOut || initialData.endDate)
-                .toISOString()
-                .slice(0, 10)
-            : prev.endDate,
+      endDate:
+        initialData.checkOut || initialData.endDate
+          ? new Date(initialData.checkOut || initialData.endDate)
+          : prev.endDate,
 
-        // 숙소 정보 반영
-        stayId: initialData.stayId || prev.stayId,
-        stayName: initialData.stayName || prev.stayName,
+      stayId: initialData.stayId || prev.stayId,
+      stayName: initialData.stayName || prev.stayName,
 
-        // 장소, 방 타입
-        officeId: initialData.officeId || selectedOffice?.id || prev.officeId,
-        officeName:
-          initialData.officeName || selectedOffice?.name || prev.officeName,
+      officeId: initialData.officeId || selectedOffice?.id || prev.officeId,
+      officeName:
+        initialData.officeName || selectedOffice?.name || prev.officeName,
 
-        roomId: initialData.roomId || selectedRoom?.id || prev.roomId,
-        roomType:
-          initialData.roomType || selectedRoom?.roomType || prev.roomType,
+      roomId: initialData.roomId || selectedRoom?.id || prev.roomId,
+      roomType: initialData.roomType || selectedRoom?.roomType || prev.roomType,
 
-        // 사용자 정보
-        userName: initialData.userName || prev.userName,
-        company: initialData.company || prev.company,
-        email: initialData.email || prev.email,
-        phone: initialData.phone || prev.phone,
+      userName: initialData.userName || prev.userName,
+      company: initialData.company || prev.company,
+      email: initialData.email || prev.email,
+      phone: initialData.phone || prev.phone,
 
-        peopleCount: initialData.peopleCount || prev.peopleCount,
-      }));
-    }
+      peopleCount: initialData.peopleCount || prev.peopleCount,
+    }));
   }, [initialData, selectedRoom, selectedOffice]);
 
-  // -------------------------------------------------------------------
-  // 사용자 정보 자동 채우기 (localStorage에서 가져오기)
-  // -------------------------------------------------------------------
+  /* =========================
+     유저 정보 자동 채우기
+  ========================= */
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
-      try {
-        const res = await axios.get("http://localhost:8080/api/user/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      const res = await axios.get("http://localhost:8080/api/user/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const userData = res.data;
-        // localStorage에 저장 (다음번 자동 완성용)
-        localStorage.setItem("user", JSON.stringify(userData));
+      const userData = res.data;
+      localStorage.setItem("user", JSON.stringify(userData));
 
-        // form 자동 채우기(프로그램 정보가 기본으로 세팅된 prev)
-        setForm((prev) => ({
-          ...prev,
-          userName: userData.name || userData.userName || prev.userName,
-          company: userData.company || prev.company,
-          email: userData.email || prev.email,
-          phone: userData.phone || prev.phone,
-        }));
-      } catch (err) {
-        console.error("유저 정보 불러오기 실패:", err);
-      }
+      setForm((prev) => ({
+        ...prev,
+        userName: userData.name || prev.userName,
+        company: userData.company || prev.company,
+        email: userData.email || prev.email,
+        phone: userData.phone || prev.phone,
+      }));
     };
 
     fetchUser();
   }, []);
 
-  // -------------------------------------------------------------------
-  // 입력 변경 핸들러 (Form의 모든 Field에 적용)
-  // -------------------------------------------------------------------
+  /* =========================
+     입력 변경
+  ========================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log("📤 전송할 form 데이터:", form);
-
-  // -------------------------------------------------------------------
-  // 예약 신청 및 수정 처리
-  // -------------------------------------------------------------------
+  /* =========================
+     제출
+  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("accessToken");
 
     try {
-      // id가 있으면 예약 수정
-      if (initialData && initialData.id) {
-        const updatePayload = {
-          startDate: form.startDate,
-          endDate: form.endDate,
-          roomId: Number(form.roomId),
-          officeId: parseNullableNumber(form.officeId),
-          peopleCount: form.peopleCount,
-        };
-
+      if (initialData?.id) {
         await axios.put(
           `http://localhost:8080/api/reservations/${initialData.id}`,
-          updatePayload,
           {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
+            startDate: toLocalDateTimeString(form.startDate),
+            endDate: toLocalDateTimeString(form.endDate),
+            roomId: Number(form.roomId),
+            officeId: parseNullableNumber(form.officeId),
+            peopleCount: form.peopleCount,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        alert("예약이 성공적으로 수정 되었습니다!");
-        navigate("/reservation/list");
       } else {
-        // 신규 예약 등록
-        const formattedForm = {
-          ...form,
-          programId: Number(form.programId),
-          roomId: Number(form.roomId),
-          officeId: parseNullableNumber(form.officeId),
-          stayId: Number(form.stayId),
-          draftKey,
-        };
-
         await axios.post(
           "http://localhost:8080/api/reservations",
-          formattedForm,
           {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
+            ...form,
+            startDate: toLocalDateTimeString(form.startDate),
+            endDate: toLocalDateTimeString(form.endDate),
+            programId: Number(form.programId),
+            roomId: Number(form.roomId),
+            officeId: parseNullableNumber(form.officeId),
+            stayId: Number(form.stayId),
+            draftKey,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        alert("예약이 성공적으로 등록되었습니다!");
-        navigate("/reservation/list");
       }
-    } catch (error) {
-      console.error("예약 전송 실패", error);
+
+      alert("예약이 성공적으로 처리되었습니다.");
+      navigate("/reservation/list");
+    } catch (e) {
+      console.error(e);
       alert("예약 처리 중 오류가 발생했습니다.");
     }
   };
@@ -225,7 +185,7 @@ export default function ReservationForm({
         />
         <ReservationActions
           isEdit={isEdit}
-          onOpenDraft={() => setIsDraftMenuOpen((prev) => !prev)}
+          onOpenDraft={() => setIsDraftMenuOpen((p) => !p)}
         />
       </form>
 
@@ -237,7 +197,7 @@ export default function ReservationForm({
           form={form}
           rooms={rooms}
           offices={offices}
-          onSaved={(id) => setLatestDraftId(id)}
+          onSaved={setLatestDraftId}
           onSnapshotSaved={setLastSavedSnapshot}
           lastSavedSnapshot={lastSavedSnapshot}
         />
