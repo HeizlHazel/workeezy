@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class PaymentConfirmResponse {
 
+    private Long paymentId;
     private String paymentKey;
     private String orderId;
     private Long amount;
@@ -20,6 +21,7 @@ public class PaymentConfirmResponse {
 
     public static PaymentConfirmResponse of(Payment payment, Reservation reservation) {
         PaymentConfirmResponse res = new PaymentConfirmResponse();
+        res.setPaymentId(payment.getId());
         res.paymentKey = payment.getPaymentKey();
         res.orderId = payment.getOrderId();
         res.amount = payment.getAmount();

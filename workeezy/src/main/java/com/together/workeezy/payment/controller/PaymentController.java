@@ -7,10 +7,9 @@ import com.together.workeezy.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
@@ -32,9 +31,12 @@ public class PaymentController {
     }
 
     @GetMapping("/{reservationId}")
-    public ResponseEntity<PaymentConfirmResponse> getPayment() {}
+    public ResponseEntity<PaymentConfirmResponse> getPayment(@PathVariable Long reservationId) {
+        return ResponseEntity.ok(paymentService.getPayment(reservationId));
+    }
 
 //    @GetMapping("/receipt/{reservationId}")
-//    public ResponseEntity<PaymentConfirmResponse> getPayment(@PathVariable("reservationId") String reservationId) {}
+//    public ResponseEntity<PaymentConfirmResponse> getPayment(@PathVariable("reservationId") String reservationId) {
+//    }
 
 }

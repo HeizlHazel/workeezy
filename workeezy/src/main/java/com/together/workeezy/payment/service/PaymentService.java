@@ -68,7 +68,11 @@ public class PaymentService {
         // Payment 엔티티 조회 (1:1 관계)
         Payment payment = reservation.getPayment();
         if(payment == null) {
+            payment = new Payment();
             payment.setReservation(reservation);
+            payment.setStatus(PaymentStatus.ready);
+            payment.setPaymentMethod("INIT");
+            reservation.setPayment(payment);
         }
 
         // 승인 성공 → Payment 엔티티 업데이트
@@ -83,6 +87,7 @@ public class PaymentService {
 
         // Reservation 상태 CONFIRMED 변경
         reservation.setStatus(ReservationStatus.confirmed);
+        reservationRepository.save(reservation);
 
         // DB 저장 & 응답 반환
         return PaymentConfirmResponse.of(payment, reservation);
@@ -98,5 +103,16 @@ public class PaymentService {
         if(request.getAmount() == null || request.getAmount() <= 0) {
             throw new CustomException(AMOUNT_INVALID);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentConfirmResponse getPayment(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
+
+        if(reservation.getPayment() == null)
+            throw new CustomException(PAYMENT_NOT_FOUND);
+
+        return PaymentConfirmResponse.of(reservation.getPayment(), reservation);
     }
 }

@@ -65,10 +65,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
                         .requestMatchers("/api/recommendations/**").authenticated()
 
-
-
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
+
+                        .requestMatchers(("api/payments/**")).authenticated()
 
                         // CORS Preflight 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
