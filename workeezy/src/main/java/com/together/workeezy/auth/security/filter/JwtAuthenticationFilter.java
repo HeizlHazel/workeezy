@@ -7,7 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+<<<<<<< HEAD
 import org.springframework.data.redis.core.RedisTemplate;
+=======
+>>>>>>> feat/payment-create
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,10 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/programs/**",
-            "/api/reviews/**",
-            "/api/recommendations/**"
+            "/api/reviews/**"
     );
-    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     protected void doFilterInternal(

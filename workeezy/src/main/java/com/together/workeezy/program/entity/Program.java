@@ -52,4 +52,5 @@ public class Program {
     @Column(name = "attraction_id3")
     private Long attractionId3;
 
+
 }

@@ -13,11 +13,16 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class DraftRedisService {
 
-    @Qualifier("draftRedisTemplate")
-    private final RedisTemplate<String, Object> draftRedisTemplate;
+    public final RedisTemplate draftRedisTemplate;
+
+    public DraftRedisService(
+            @Qualifier("draftRedisTemplate")
+            RedisTemplate<String, Object> draftRedisTemplate
+    ) {
+        this.draftRedisTemplate = draftRedisTemplate;
+    }
 
     private static final String DRAFT_PREFIX = "draft:";
 
@@ -33,7 +38,7 @@ public class DraftRedisService {
 
         // 저장 시각 추가
         dataWithTime.put("savedAt", new Date().toString());
-        
+
         // redis 키 생성
         String key = DRAFT_PREFIX + userId + ":" + System.currentTimeMillis(); // draft:hong@naver.com:1733301234567
         draftRedisTemplate.opsForValue().set(key, dataWithTime, 14, TimeUnit.DAYS);

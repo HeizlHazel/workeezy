@@ -64,18 +64,30 @@ public class SecurityConfig {
 
                         // 공개 데이터 API
                         .requestMatchers("/api/programs/**").permitAll()
+<<<<<<< HEAD
                         .requestMatchers("/api/search/**").permitAll()
 
                         // review POST permitAll은 추후 꼭 수정 요망
                         .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()   // ⭐ 추가
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
                         .requestMatchers("/api/recommendations/**").permitAll()
+=======
+                        .requestMatchers("/api/search").authenticated()
+                        .requestMatchers("/api/search/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                        .requestMatchers("/api/recommendations/**").authenticated()
+>>>>>>> feat/payment-create
 
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
 
+<<<<<<< HEAD
                         // 에러 페이지
                         .requestMatchers("/error").permitAll()
+=======
+                        .requestMatchers(("api/payments/**")).authenticated()
+>>>>>>> feat/payment-create
 
                         // CORS Preflight 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -95,6 +107,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+<<<<<<< HEAD
 
         // 허용 Origin
         config.setAllowedOrigins(List.of(
@@ -110,6 +123,15 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
 
         // 프론트에서 Authorization 헤더 접근 허용
+=======
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:4173");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // refreshToken 쿠키 허용
+>>>>>>> feat/payment-create
         config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
