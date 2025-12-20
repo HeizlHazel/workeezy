@@ -2,8 +2,8 @@ package com.together.workeezy.auth.controller;
 
 import com.together.workeezy.auth.dto.request.LoginRequest;
 import com.together.workeezy.auth.dto.response.LoginResponse;
-import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.TokenRedisService;
+import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.service.TokenRedisService;
 import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;

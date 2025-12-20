@@ -1,7 +1,7 @@
 package com.together.workeezy.auth.security.filter;
 
-import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.TokenRedisService;
+import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.service.TokenRedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

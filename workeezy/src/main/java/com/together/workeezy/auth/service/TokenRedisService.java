@@ -1,4 +1,4 @@
-package com.together.workeezy.auth.redis;
+package com.together.workeezy.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
