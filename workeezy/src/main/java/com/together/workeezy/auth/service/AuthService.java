@@ -1,7 +1,6 @@
 package com.together.workeezy.auth.service;
 
-import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.TokenRedisService;
+import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.user.entity.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;

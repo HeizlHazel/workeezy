@@ -1,6 +1,6 @@
 package com.together.workeezy.reservation.controller;
 
-import com.together.workeezy.auth.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.reservation.service.DraftRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
