@@ -1,7 +1,7 @@
 package com.together.workeezy.auth.service;
 
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.RedisService;
+import com.together.workeezy.auth.redis.TokenRedisService;
 import com.together.workeezy.user.entity.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisService redisService;
+    private final TokenRedisService tokenRedisService;
     private final PasswordEncoder passwordEncoder;
 
     // 로그인 성공 시 RefreshToken 저장
     public void saveRefreshToken(String email, String refreshToken) {
-        redisService.saveRefreshToken(
+        tokenRedisService.saveRefreshToken(
                 email,
                 refreshToken,
                 jwtTokenProvider.getRefreshExpiration()
@@ -37,7 +37,7 @@ public class AuthService {
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
         // Redis에 저장된 refreshToken 가져오기
-        String savedToken = redisService.getRefreshToken(email);
+        String savedToken = tokenRedisService.getRefreshToken(email);
 
         if(savedToken == null) {
             throw new RuntimeException("서버에 Refresh Token 없음(로그아웃된 사용자)");
@@ -65,7 +65,7 @@ public class AuthService {
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
         // Redis에서 refreshToken 삭제
-        redisService.deleteRefreshToken(email);
+        tokenRedisService.deleteRefreshToken(email);
     }
 
     // 비밀번호 검증

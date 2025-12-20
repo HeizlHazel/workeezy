@@ -1,4 +1,4 @@
-package com.together.workeezy.auth.dto;
+package com.together.workeezy.auth.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

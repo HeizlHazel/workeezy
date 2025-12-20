@@ -1,9 +1,10 @@
 package com.together.workeezy.auth.controller;
 
-import com.together.workeezy.auth.dto.*;
+import com.together.workeezy.auth.dto.request.LoginRequest;
+import com.together.workeezy.auth.dto.response.LoginResponse;
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.RedisService;
-import com.together.workeezy.auth.security.CustomUserDetails;
+import com.together.workeezy.auth.redis.TokenRedisService;
+import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtProvider;
     private final AuthService authService;
-    private final RedisService redisService;
+    private final TokenRedisService tokenRedisService;
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request,
@@ -116,7 +117,7 @@ public class AuthController {
             System.out.println("TTL 남은 시간(ms) = " + ttl);
 
             // 남은 ttl만큼 블랙리스트에 저장
-            redisService.blacklistAccessToken(accessToken, ttl);
+            tokenRedisService.blacklistAccessToken(accessToken, ttl);
             System.out.println("블랙리스트 저장 시도 완료");
         }
 
@@ -124,7 +125,7 @@ public class AuthController {
         String refreshToken = extractRefreshToken(request);
         if (refreshToken != null) {
             String email = jwtProvider.getEmailFromToken(refreshToken);
-            redisService.deleteRefreshToken(email);
+            tokenRedisService.deleteRefreshToken(email);
         }
 
         return ResponseEntity.ok("로그아웃 성공");

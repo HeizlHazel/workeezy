@@ -1,6 +1,6 @@
 package com.together.workeezy.search.controller;
 
-import com.together.workeezy.auth.security.CustomUserDetails;
+import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.search.dto.SearchResultDto;
 import com.together.workeezy.search.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;

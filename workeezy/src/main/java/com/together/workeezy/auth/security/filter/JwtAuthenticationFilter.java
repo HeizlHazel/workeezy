@@ -1,17 +1,15 @@
-package com.together.workeezy.auth.security;
+package com.together.workeezy.auth.security.filter;
 
 import com.together.workeezy.auth.jwt.JwtTokenProvider;
-import com.together.workeezy.auth.redis.RedisService;
+import com.together.workeezy.auth.redis.TokenRedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,7 +22,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisService redisService;
+    private final TokenRedisService tokenRedisService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     // 토큰 검증 제외할 URL (화이트리스트)
@@ -67,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
 
             // 블랙리스트 체크
-            if (redisService.isBlacklisted(token)) {
+            if (tokenRedisService.isBlacklisted(token)) {
                 System.out.println("🚫 블랙리스트 토큰 → 인증 차단");
                 // 바로 인증 세팅하지 않고 통과만(익명 사용자로 처리)
                 filterChain.doFilter(request, response);

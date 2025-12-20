@@ -1,6 +1,6 @@
 package com.together.workeezy.user.controller;
 
-import com.together.workeezy.auth.security.CustomUserDetails;
+import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.user.dto.UserMeResponse;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.dto.UserUpdateRequest;
