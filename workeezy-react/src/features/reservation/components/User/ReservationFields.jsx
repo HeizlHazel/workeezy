@@ -12,8 +12,8 @@ export default function ReservationFields({
   endDate,
   peopleCount,
   onChange,
-  rooms = [],
-  roomId,
+  rooms = [], // 해당 워케이션의 룸들
+  roomId, // 사용자가 선택한 roomId
   roomType,
   offices = [],
   officeId,
@@ -21,21 +21,20 @@ export default function ReservationFields({
   stayName,
   stayId,
 }) {
-  // 공용 select 핸들러
+  // 사용자가 select에서 옵션 바꿀 때마다 form에 roomId, roomType
   const handleSelectChange = (type, e) => {
+    // 사용자가 선택한 option의 value(roomId) 객체 구조 분해 할당
     const { value } = e.target;
 
     if (type === "room") {
-      const selected = rooms.find((r) => r.id === Number(value));
+      // rooms 배열 안에서 사용자가 선택한 id와 일치하는 객체를 찾아서 selected에 저장
+      const selected = rooms.find((r) => r.roomId === Number(value));
+
+      // form에 roomId = value 저장
       onChange({ target: { name: "roomId", value } });
+      // roomType = 룸타입 저장
       onChange({
         target: { name: "roomType", value: selected?.roomType || "" },
-      });
-    } else if (type === "office") {
-      const selected = offices.find((o) => o.id === Number(value));
-      onChange({ target: { name: "officeId", value } });
-      onChange({
-        target: { name: "officeName", value: selected?.name || "" },
       });
     }
   };
@@ -216,7 +215,7 @@ export default function ReservationFields({
           >
             <option value="">룸 선택</option>
             {rooms.map((r) => (
-              <option key={r.id} value={String(r.id)}>
+              <option key={r.roomId} value={String(r.roomId)}>
                 {r.roomType}
               </option>
             ))}

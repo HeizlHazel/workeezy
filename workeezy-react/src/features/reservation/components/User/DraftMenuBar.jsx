@@ -45,16 +45,15 @@ export default function DraftMenuBar({
 
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
-        onClose(); // ⭐ 바깥 클릭 시 닫기
+        onClose(); // 바깥 클릭 시 닫기
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
+
   // Redis 임시저장 목록 불러오기
   useEffect(() => {
     // 메뉴가 닫혀 있으면 불러오기 시도 x
@@ -131,7 +130,7 @@ export default function DraftMenuBar({
     setOpenItems((prev) => (prev[0] === id ? [] : [id]));
   };
 
-  // 저장
+  // 임시저장
   const handleDraftSave = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -148,6 +147,7 @@ export default function DraftMenuBar({
       rooms,
       offices,
     };
+    console.log("임시저장 form : ", form);
 
     // ⭐ 변경 내용 없음 → 저장 차단
     if (isSameDraft(lastSavedSnapshot, draftData)) {

@@ -6,12 +6,12 @@ import "./ProgramReserveBar.css";
 
 export default function ProgramReserveBar({
   rooms = [],
-  office,
+  // office,
   programId,
-  programPrice,
-  programTitle,
-  stayId,
-  stayName,
+  // programPrice,
+  // programTitle,
+  // stayId,
+  // stayName,
 }) {
   const navigate = useNavigate();
 
@@ -79,21 +79,17 @@ export default function ProgramReserveBar({
     navigate("/reservation/new", {
       state: {
         programId,
-        programTitle,
-        programPrice,
-
+        // programTitle,
+        // programPrice,
         roomId,
-
-        officeId: office.id,
-        officeName: office.name,
-
+        // officeId: office.id,
+        // officeName: office.name,
         checkIn,
         checkOut,
-
-        rooms,
-        office: office,
-        stayId,
-        stayName,
+        // rooms,
+        // office: office,
+        // stayId,
+        // stayName,
       },
     });
   };
@@ -179,14 +175,14 @@ export default function ProgramReserveBar({
           </div>
         </div>
 
-        <div className="pd-reserve-item">
+        {/* <div className="pd-reserve-item">
           <label>오피스</label>
           <input
             value={office?.name ?? ""}
             readOnly
             className="pd-input-readonly"
           />
-        </div>
+        </div> */}
 
         <button className="pd-reserve-btn" onClick={onReserve}>
           예약하기

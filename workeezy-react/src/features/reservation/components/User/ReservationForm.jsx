@@ -6,94 +6,113 @@ import DraftMenuBar from "./DraftMenuBar.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReservationActions from "../ReservationActions.jsx";
 import { toLocalDateTimeString } from "../../../../utils/dateTime";
+import Swal from "sweetalert2";
 
 export default function ReservationForm({
-  initialData,
-  rooms = [],
+  initialData, // 프로그램 아이디, 룸id, 체크인-체크아웃
+  // rooms = [],
   mode = "create",
 }) {
+  // 초기 데이터 객체 구조 분해 할당
+  const { programId, roomId, checkIn, checkOut } = initialData || {};
   const isEdit = mode === "edit";
   const navigate = useNavigate();
   const location = useLocation();
   const { draftKey } = location.state || {};
-
-  const { programId, roomId, officeId, checkIn, checkOut } = initialData || {};
+  // 예약용 프로그램 조회 결과로 얻은 rooms
+  const [rooms, setRooms] = useState([]);
 
   /* =========================
-     form 상태
+     form 초기 상태
   ========================= */
   const [form, setForm] = useState({
-    programId: programId || "",
-    programTitle: initialData?.programTitle ?? "",
-    officeId: initialData?.officeId ?? "",
-    officeName: initialData?.officeName ?? "",
-    userName: "",
-    company: "",
-    phone: "",
-    email: "",
+    programId: "",
+    programTitle: "",
+    programPrice: 0,
+
+    stayId: "",
+    stayName: "",
+
+    officeId: "",
+    officeName: "",
+
+    roomId: "",
+    roomType: "",
+
     startDate: checkIn ? new Date(checkIn) : null,
     endDate: checkOut ? new Date(checkOut) : null,
-    roomId: initialData?.roomId != null ? String(initialData.roomId) : "",
-    roomType: initialData?.roomType ?? "",
+
     peopleCount: 1,
-    stayId: initialData?.stayId || "",
-    stayName: initialData?.stayName || "",
+
+    userName: "",
+    company: "",
+    email: "",
+    phone: "",
   });
 
   /* =========================
-     임시저장
+     임시저장 관련 useState
   ========================= */
   const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false);
   const [latestDraftId, setLatestDraftId] = useState(null);
   const [lastSavedSnapshot, setLastSavedSnapshot] = useState(null);
 
   /* =========================
-     초기 데이터 반영
+   해당 프로그램 예약시 프로그램 데이터 재조회 (예약 전용)
   ========================= */
   useEffect(() => {
-    if (!initialData) return;
-    if (rooms.length === 0) return;
+    if (!programId) return;
 
-    const room = rooms.find((r) => r.id === Number(initialData.roomId));
+    const fetchProgramForReservation = async () => {
+      Swal.fire({
+        title: "예약 정보를 불러오는 중이에요",
+        text: "잠시만 기다려주세요",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      try {
+        const res = await axios.get(`/api/programs/${programId}/reservation`);
+        const data = res.data;
 
-    setForm((prev) => ({
-      ...prev,
-      programId: initialData.programId || prev.programId,
-      programTitle: initialData.programTitle || prev.programTitle,
+        // 사용자가 선택한 room 객체
+        const selectedRoom = data.rooms.find(
+          (r) => r.roomId === Number(roomId)
+        );
 
-      startDate:
-        initialData.checkIn || initialData.startDate
-          ? new Date(initialData.checkIn || initialData.startDate)
-          : prev.startDate,
+        // 해당 프로그램의 rooms
+        setRooms(data.rooms);
 
-      endDate:
-        initialData.checkOut || initialData.endDate
-          ? new Date(initialData.checkOut || initialData.endDate)
-          : prev.endDate,
+        // 사용자에게 보여줄 초기 폼 세팅
+        setForm((prev) => ({
+          ...prev,
+          programId: data.programId,
+          programTitle: data.programTitle, // 사용자 ux
+          programPrice: data.programPrice, // 사용자 UX
 
-      stayId: initialData.stayId || prev.stayId,
-      stayName: initialData.stayName || prev.stayName,
+          stayId: data.stayId,
+          stayName: data.stayName, // 사용자 UX
 
-      officeId: initialData.officeId || prev.officeId,
-      officeName: initialData.officeName || prev.officeName,
+          officeId: data.officeId,
+          officeName: data.officeName, // 사용자 UX
 
-      roomId:
-        initialData.roomId != null ? String(initialData.roomId) : prev.roomId,
-      roomType: room?.roomType || "",
+          roomId: roomId ? String(roomId) : "",
+          roomType: selectedRoom?.roomType ?? "", // 사용자 UX
 
-      userName: initialData.userName || prev.userName,
-      company: initialData.company || prev.company,
-      email: initialData.email || prev.email,
-      phone: initialData.phone || prev.phone,
+          startDate: checkIn ? new Date(checkIn) : prev.startDate,
+          endDate: checkOut ? new Date(checkOut) : prev.endDate,
+        }));
+      } catch (e) {
+        console.error("예약용 프로그램 조회 실패", e);
+      } finally {
+        Swal.close();
+      }
+    };
 
-      peopleCount: initialData.peopleCount || prev.peopleCount,
-    }));
-    console.log("initialData.roomId =", initialData?.roomId);
-    console.log(
-      "rooms ids =",
-      rooms.map((r) => r.id)
-    );
-  }, [initialData, rooms]);
+    fetchProgramForReservation();
+  }, [programId, roomId, checkIn, checkOut]);
 
   /* =========================
      유저 정보 자동 채우기
@@ -131,7 +150,7 @@ export default function ReservationForm({
   };
 
   /* =========================
-     제출
+     입력 폼 제출
   ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -191,14 +210,12 @@ export default function ReservationForm({
 
       {!isEdit && isDraftMenuOpen && (
         <DraftMenuBar
-          isOpen={isDraftMenuOpen}
+          form={form} // 임시저장 데이터
+          isOpen={isDraftMenuOpen} // 열림-닫힘 상태
           onClose={() => setIsDraftMenuOpen(false)}
-          latestDraftId={latestDraftId}
-          form={form}
-          rooms={rooms}
-          // offices={offices}
+          latestDraftId={latestDraftId} // 최근 임시저장 데이터 식별
           onSaved={setLatestDraftId}
-          onSnapshotSaved={setLastSavedSnapshot}
+          onSnapshotSaved={setLastSavedSnapshot} // 마지막 스냅샷
           lastSavedSnapshot={lastSavedSnapshot}
         />
       )}
