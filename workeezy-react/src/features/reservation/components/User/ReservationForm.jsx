@@ -51,6 +51,20 @@ export default function ReservationForm({
   });
 
   /* =========================
+   initialData 기반 form 동기화 (edit + draft)
+========================= */
+  useEffect(() => {
+    if (!initialData) return;
+
+    setForm((prev) => ({
+      ...prev,
+      ...initialData,
+      startDate: initialData.startDate ? new Date(initialData.startDate) : null,
+      endDate: initialData.endDate ? new Date(initialData.endDate) : null,
+    }));
+  }, [initialData]);
+
+  /* =========================
      임시저장 관련 useState
   ========================= */
   const [isDraftMenuOpen, setIsDraftMenuOpen] = useState(false);
@@ -177,19 +191,29 @@ export default function ReservationForm({
             endDate: toLocalDateTimeString(form.endDate),
             programId: Number(form.programId),
             roomId: Number(form.roomId),
-            // officeId: parseNullableNumber(form.officeId),
-            // stayId: Number(form.stayId),
             draftKey,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
+      const isEdit = Boolean(initialData?.id);
 
-      alert("예약이 성공적으로 처리되었습니다.");
+      await Swal.fire({
+        icon: "success",
+        title: isEdit ? "예약 수정 완료 ✏️" : "예약 신청 완료 🎉",
+        text: isEdit
+          ? "예약 정보가 성공적으로 수정되었습니다."
+          : "예약이 성공적으로 신청되었습니다.",
+        confirmButtonText: "확인",
+      });
       navigate("/reservation/list");
     } catch (e) {
       console.error(e);
-      alert("예약 처리 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: "error",
+        title: "예약 신청 실패",
+        text: "예약 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+      });
     }
   };
 

@@ -162,7 +162,7 @@ export default function ReservationFields({
                   ? now
                   : startOfDay(now)
               }
-              maxTime={endOfDay(now)}
+              maxTime={endOfDay(startDate || now)}
             />
           </div>
 
