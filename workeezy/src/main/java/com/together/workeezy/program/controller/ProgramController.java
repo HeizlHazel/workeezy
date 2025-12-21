@@ -2,6 +2,7 @@ package com.together.workeezy.program.controller;
 
 import com.together.workeezy.program.dto.ProgramCardDto;
 import com.together.workeezy.program.dto.ProgramDetailResponseDto;
+import com.together.workeezy.program.dto.ProgramReservationInfoDto;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.repository.ProgramRepository;
 import com.together.workeezy.program.service.ProgramService;
@@ -48,4 +49,11 @@ public class ProgramController {
         return dto;
     }
 
+    /** 예약용 프로그램 정보 조회 */
+    @GetMapping("/{id}/reservation")
+    public ProgramReservationInfoDto getProgramForReservation(
+            @PathVariable Long id
+    ) {
+        return programService.getProgramForReservation(id);
+    }
 }

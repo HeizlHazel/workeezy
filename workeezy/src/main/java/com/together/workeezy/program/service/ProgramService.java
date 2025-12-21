@@ -1,18 +1,16 @@
 package com.together.workeezy.program.service;
 
-import com.together.workeezy.program.dto.PlaceDto;
-import com.together.workeezy.program.dto.ProgramCardDto;
-import com.together.workeezy.program.dto.ProgramDetailResponseDto;
-import com.together.workeezy.program.dto.RoomDto;
+import com.together.workeezy.program.dto.*;
 import com.together.workeezy.program.entity.Place;
 import com.together.workeezy.program.entity.PlaceType;
 import com.together.workeezy.program.entity.Program;
 import com.together.workeezy.program.repository.PlaceRepository;
 import com.together.workeezy.program.repository.ProgramRepository;
 import com.together.workeezy.search.repository.RoomRepository;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,4 +171,44 @@ public class ProgramService {
                 .toList();
     }
 
+
+
+//    @Transactional(readOnly = true)
+    public ProgramReservationInfoDto getProgramForReservation(Long programId) {
+
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new IllegalArgumentException("프로그램 없음"));
+
+        // 숙소
+        Place stay = program.getPlaces().stream()
+                .filter(p -> p.getPlaceType() == PlaceType.stay)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("숙소(STAY) 없음"));
+
+        // 오피스
+        Place office = program.getPlaces().stream()
+                .filter(p -> p.getPlaceType() == PlaceType.office)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("오피스(OFFICE) 없음"));
+
+
+        List<RoomSimpleDto> rooms = roomRepository.findByPlaceId(stay.getId())
+                .stream()
+                .map(room -> new RoomSimpleDto(
+                        room.getId(),
+                        room.getRoomType().name()   // economy / standard / superior
+                ))
+                .toList();
+
+        return new ProgramReservationInfoDto(
+                program.getId(),
+                program.getTitle(),
+                program.getProgramPrice(),
+                stay.getId(),
+                stay.getName(),
+                office.getId(),
+                office.getName(),
+                rooms
+        );
+    }
 }
