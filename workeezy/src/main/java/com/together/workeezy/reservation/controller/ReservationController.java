@@ -7,8 +7,6 @@ import com.together.workeezy.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -59,7 +57,6 @@ public class ReservationController {
     public ResponseEntity<?> getMyReservations(Authentication authentication) {
         String email = authentication.getName();
         try {
-            System.out.println("📥 예약 목록 조회 요청 by " + email);
             return ResponseEntity.ok(reservationService.getMyReservations(email));
         } catch (Exception e) {
             e.printStackTrace();

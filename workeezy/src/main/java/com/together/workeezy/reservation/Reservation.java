@@ -44,10 +44,12 @@ public class Reservation {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @NotNull
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "stay_id")
     private Place stay;
 
+    @NotNull
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "office_id")
     private Place office;
@@ -88,7 +90,7 @@ public class Reservation {
     @Column(name = "people_count", nullable = false)
     private int peopleCount;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation",  fetch = LAZY)
     private Payment payment;
 
     @OneToMany(mappedBy = "reservation")
