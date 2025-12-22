@@ -1,7 +1,7 @@
 package com.together.workeezy.payment.client;
 
 import com.together.workeezy.payment.config.TossPaymentProperties;
-import com.together.workeezy.payment.dto.TossConfirmResponseDto;
+import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class TossPaymentClient {
     private final WebClient webClient;
     private final TossPaymentProperties props;
 
-    public TossConfirmResponseDto confirm(String paymentKey,
+    public TossConfirmResponse confirm(String paymentKey,
                                           String orderId,
                                           long amount) {
 
@@ -40,7 +40,7 @@ public class TossPaymentClient {
                 .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth)
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(TossConfirmResponseDto.class)
+                .bodyToMono(TossConfirmResponse.class)
                 .block(); // 동기식으로 결과 받기
     }
 }

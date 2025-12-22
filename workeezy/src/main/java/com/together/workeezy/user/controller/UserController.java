@@ -1,7 +1,7 @@
 package com.together.workeezy.user.controller;
 
 import com.together.workeezy.auth.security.user.CustomUserDetails;
-import com.together.workeezy.user.dto.UserMeResponseDto;
+import com.together.workeezy.user.dto.UserMeResponse;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.dto.UserUpdateRequest;
 import com.together.workeezy.user.entity.User;
@@ -21,13 +21,13 @@ public class UserController {
 
     // 개인 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<UserMeResponseDto> getMyInfo(Authentication authentication) {
+    public ResponseEntity<UserMeResponse> getMyInfo(Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         User user = userDetails.getUser();
 
-        UserMeResponseDto response = new UserMeResponseDto(
+        UserMeResponse response = new UserMeResponse(
                 user.getEmail(),
                 user.getUserName(),
                 user.getBirth(),

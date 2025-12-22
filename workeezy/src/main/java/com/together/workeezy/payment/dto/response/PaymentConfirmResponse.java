@@ -1,4 +1,4 @@
-package com.together.workeezy.payment.dto;
+package com.together.workeezy.payment.dto.response;
 
 import com.together.workeezy.payment.entity.Payment;
 import com.together.workeezy.reservation.Reservation;

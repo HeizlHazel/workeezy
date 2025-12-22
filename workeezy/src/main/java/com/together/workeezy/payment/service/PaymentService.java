@@ -2,9 +2,9 @@ package com.together.workeezy.payment.service;
 
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.payment.client.TossPaymentClient;
-import com.together.workeezy.payment.dto.PaymentConfirmRequest;
-import com.together.workeezy.payment.dto.PaymentConfirmResponse;
-import com.together.workeezy.payment.dto.TossConfirmResponseDto;
+import com.together.workeezy.payment.dto.request.PaymentConfirmRequest;
+import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
+import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import com.together.workeezy.payment.entity.Payment;
 import com.together.workeezy.payment.enums.PaymentStatus;
 import com.together.workeezy.payment.repository.PaymentRepository;
@@ -58,7 +58,7 @@ public class PaymentService {
 
         // Toss API로 결제 승인 요청
         // tossPaymentClient.confirm(...) 호출
-        TossConfirmResponseDto tossResponse =
+        TossConfirmResponse tossResponse =
                 tossPaymentClient.confirm(
                         request.getPaymentKey(),
                         request.getOrderId(),       // reservation_no 보냄
