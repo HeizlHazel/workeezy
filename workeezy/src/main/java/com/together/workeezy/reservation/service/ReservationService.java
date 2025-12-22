@@ -215,23 +215,26 @@ public class ReservationService {
 
         Reservation reservation = getMyReservationOrThrow(id, email);
 
-        int diffDays =  reservation.daysUntilStart();
+        reservation.cancel();
 
-        if (!reservation.getStatus().canDirectCancel(diffDays)) {
-            throw new IllegalStateException("이 상태에서는 취소 불가");
-        }
-        if (diffDays < 0) {
-            throw new IllegalStateException("이미 시작된 예약은 취소 불가");
-        }
-
-        reservation.setStatus(ReservationStatus.cancelled);
+        // 이전
+//        int diffDays =  reservation.daysUntilStart();
+//
+//        if (!reservation.getStatus().canDirectCancel(diffDays)) {
+//            throw new IllegalStateException("이 상태에서는 취소 불가");
+//        }
+//        if (diffDays < 0) {
+//            throw new IllegalStateException("이미 시작된 예약은 취소 불가");
+//        }
+//
+//        reservation.setStatus(ReservationStatus.cancelled);
     }
 
 
     // ============================================================================
 
 
-    // 도메인 검증 + 조회 유틸 메서드 (가드 메서드)
+    // 도메인 검증 + 예약 조회 유틸 메서드 (가드 메서드)
     private Reservation getMyReservationOrThrow(Long reservationId, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));

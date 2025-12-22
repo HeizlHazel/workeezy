@@ -100,7 +100,15 @@ public class Reservation {
     private List<ReservationPdf> reservationPdfs = new ArrayList<>();
 
 
-    // 상태판단 메소드
+    // 예약 취소
+    public void cancel() {
+        // 남은 날짜
+        int diffDays = daysUntilStart();
+        status.validateCancelable(diffDays); // 취소 가능한 상태인지 검증
+        this.status = ReservationStatus.cancelled; // 취소 가능하면 바꿈
+    }
+
+
 
     // 사용자 예약이 맞는지
     public boolean isOwnedBy(User user) {
@@ -129,7 +137,6 @@ public class Reservation {
     }
 
     // 수정
-
     public void changePeriod(LocalDateTime  start, LocalDateTime  end) {
         this.startDate = start;
         this.endDate = end;
@@ -147,5 +154,7 @@ public class Reservation {
     public void recalculateTotalPrice() {
         this.totalPrice = (long) this.program.getProgramPrice() * this.peopleCount;
     }
+
+
 
 }

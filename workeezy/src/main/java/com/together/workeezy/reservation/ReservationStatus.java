@@ -24,9 +24,14 @@ public enum ReservationStatus {
 
     // 취소 요청 가능 여부
     public boolean canRequestCancel(int diffDays){
-//        if(this == approved) return true;
         if(this == confirmed &&diffDays >=1 && diffDays <3) return true;
         return false;
+    }
+
+    public void validateCancelable(int diffDays) {
+        if (!canDirectCancel(diffDays)) {
+            throw new IllegalStateException("취소할 수 없습니다.");
+        }
     }
 
 }
