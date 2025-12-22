@@ -29,6 +29,7 @@ export default function ReservationListContainer({
         );
         setReservations(res.data);
         // console.log("서버 응답 데이터:", res.data);
+        console.log("서버 응답:", res.data);
       } catch (err) {
         setError("예약 목록 불러오기 실패");
         console.error(err);

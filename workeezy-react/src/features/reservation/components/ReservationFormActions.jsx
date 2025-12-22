@@ -1,6 +1,9 @@
-import "./ReservationActions.css";
+import "./ReservationFormActions.css";
 
-export default function ReservationActions({ onOpenDraft, isEdit = false }) {
+export default function ReservationFormActions({
+  onOpenDraft,
+  isEdit = false,
+}) {
   return (
     //  form의 onSubmit을 자동으로 실행
     <div className="submit-button">

@@ -1,11 +1,9 @@
 import "./ReservationCard.css";
 import ReservationStatusButton from "../../../../shared/common/ReservationStatusButton";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { formatLocalDateTime } from "../../../../utils/dateTime";
+import ReservationCardActions from "./../ReservationCardActions";
 
 export default function ReservationCard({ data, isSelected, onSelect }) {
-  const navigate = useNavigate();
   const {
     programTitle,
     stayName,
@@ -20,20 +18,6 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
     officeName,
   } = data;
 
-  const handleCancel = async () => {
-    if (!window.confirm("예약을 취소하시겠습니까?")) return;
-    const token = localStorage.getItem("accessToken");
-
-    await axios.patch(
-      `/api/reservations/${data.id}/cancel`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    alert("예약이 취소되었습니다.");
-    window.location.reload();
-  };
-
   return (
     <div
       className={`reservation-card ${isSelected ? "selected" : ""}`}
@@ -42,6 +26,7 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
         onSelect();
       }}
     >
+      {/* 이미지 섹션 */}
       {isSelected ? (
         <div className="image-grid">
           {images.slice(0, 3).map((src, i) => (
@@ -52,6 +37,7 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
         <img className="thumbnail" src={images[0]} alt="" />
       )}
 
+      {/* 정보 섹션 */}
       <div className="info">
         <ReservationStatusButton status={status} />
         <div className="title">{programTitle}</div>
@@ -71,12 +57,10 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
             <dt>숙소</dt>
             <dd>{stayName}</dd>
           </div>
-
           <div>
             <dt>오피스</dt>
             <dd>{officeName}</dd>
           </div>
-
           <div>
             <dt>총 금액</dt>
             <dd>{totalPrice?.toLocaleString()}원</dd>
@@ -98,12 +82,10 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
         )}
       </div>
 
+      {/* 버튼 */}
       {isSelected && (
         <div className="buttons">
-          <button onClick={() => navigate(`/reservation/edit/${data.id}`)}>
-            예약 변경
-          </button>
-          <button onClick={handleCancel}>예약 취소</button>
+          <ReservationCardActions reservation={data} />
         </div>
       )}
     </div>

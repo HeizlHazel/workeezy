@@ -4,7 +4,7 @@ import "./ReservationForm.css";
 import axios from "../../../../api/axios.js";
 import DraftMenuBar from "./DraftMenuBar.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
-import ReservationActions from "../ReservationActions.jsx";
+import ReservationFormActions from "../ReservationFormActions.jsx";
 import { toLocalDateTimeString } from "../../../../utils/dateTime";
 import Swal from "sweetalert2";
 
@@ -226,7 +226,7 @@ export default function ReservationForm({
           // offices={offices}
           onChange={handleChange}
         />
-        <ReservationActions
+        <ReservationFormActions
           isEdit={isEdit}
           onOpenDraft={() => setIsDraftMenuOpen((p) => !p)}
         />
