@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useMemo, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ProgramReserveBar.css";
@@ -46,7 +46,7 @@ export default function ProgramReserveBar({
                 const isVisible = entries[0].isIntersecting;
                 setBottomFixed(!isVisible);
             },
-            { threshold: 0 }
+            {threshold: 0}
         );
 
         if (placeholder) observer.observe(placeholder);
@@ -114,7 +114,7 @@ export default function ProgramReserveBar({
 
     return (
         <>
-            <div id="reserve-bar-placeholder" style={{ height: "1px" }}></div>
+            <div id="reserve-bar-placeholder" style={{height: "1px"}}></div>
 
             <div className={`pd-reserve ${bottomFixed ? "bottom-fixed" : ""}`}>
                 {/* 룸 타입 */}
