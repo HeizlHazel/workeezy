@@ -1,17 +1,17 @@
 package com.together.workeezy.reservation.service;
 
-import com.together.workeezy.program.entity.PlaceType;
-import com.together.workeezy.program.entity.Program;
-import com.together.workeezy.program.entity.Room;
-import com.together.workeezy.program.repository.PlaceRepository;
-import com.together.workeezy.program.repository.ProgramRepository;
+import com.together.workeezy.program.program.domain.model.entity.PlaceType;
+import com.together.workeezy.program.program.domain.model.entity.Program;
+import com.together.workeezy.program.program.domain.model.entity.Room;
+import com.together.workeezy.program.program.domain.repository.PlaceRepository;
+import com.together.workeezy.program.program.domain.repository.ProgramRepository;
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationStatus;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
 import com.together.workeezy.reservation.repository.ReservationRepository;
-import com.together.workeezy.search.repository.RoomRepository;
+import com.together.workeezy.search.domain.model.repository.RoomRepository;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
-import com.together.workeezy.program.entity.Place;
+import com.together.workeezy.program.program.domain.model.entity.Place;
 
 @Service
 @RequiredArgsConstructor
