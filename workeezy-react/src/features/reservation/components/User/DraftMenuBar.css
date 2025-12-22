@@ -1,3 +1,4 @@
+/* ========================= DraftMenuBar ========================= */
 .draft-menu-bar {
   position: fixed;
   top: 0;
@@ -9,141 +10,23 @@
   padding: 80px 20px 20px;
   overflow-y: auto;
   z-index: 900;
+
   transform: translateX(100%);
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
+/* 열림 */
 .draft-menu-bar.open {
   transform: translateX(0);
-  transition: 0.3s;
 }
 
-.draft-menu-bar.close {
-  transform: translateX(100%);
-  transition: 0.3s;
-}
-
-/* 제목 */
-.draft-menu-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 12px;
-  border-bottom: 2px solid #eaeaea;
-  text-align: center;
-  padding-bottom: 10px;
-  margin-bottom: 16px;
-}
-
-/* ========================= 카드형 리스트 ========================= */
-.draft-card {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.draft-card:hover {
-  background: #fafafa;
-  transform: translateY(-2px);
-}
-
-.draft-card.selected {
-  background: #ffffff;
-  border-color: #b4d1ba;
-}
-
-/* ========================= 카드 헤더 ========================= */
-.draft-card-header {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.draft-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #222;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.draft-card-date {
-  font-size: 12px;
-  color: #777;
-}
-
-/* ========================= 카드 내용 ========================= */
-.draft-card-body {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed #e0e0e0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #444;
-  animation: fadeIn 0.25s ease forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ========================= 불러오기 버튼 ========================= */
-.draft-load-btn {
-  margin-top: 8px;
-  background: #35593d;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.draft-load-btn:hover {
-  background: #35593dad;
-}
-
-/* ========================= 삭제 버튼 ========================= */
-.draft-delete-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 15px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s ease, color 0.2s ease;
-}
-
-.draft-card:hover .draft-delete-btn {
-  opacity: 1;
-}
-
-.draft-delete-btn:hover {
-  color: #ff4d4f;
-}
-
-/* ========================= 닫기 버튼 ========================= */
-.draft-menu-close-btn {
+/* ========================= 상단 버튼 ========================= */
+/* ❌ class 안 쓰고 있으니까 태그 기준으로 맞춤 */
+.draft-menu-bar > button:first-of-type {
   position: absolute;
   top: 20px;
   right: 20px;
+
   font-size: 22px;
   background: none;
   border: none;
@@ -152,39 +35,16 @@
   transition: color 0.2s;
 }
 
-.draft-menu-close-btn:hover {
+.draft-menu-bar > button:first-of-type:hover {
   color: #000;
 }
 
-/* ========================= NEW 태그 ========================= */
-.draft-new-tag {
-  color: #ff4d4f;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 4px;
-  border-radius: 4px;
-  background: #ffecec;
-}
-
-/* ========================= 링크 초기화 ========================= */
-a,
-a:link,
-a:visited,
-a:hover,
-a:active {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* ========================= 상단 액션 영역 ========================= */
-.draft-menu-header-actions {
-  margin-bottom: 16px;
-}
-
 /* ========================= 임시저장 버튼 ========================= */
-.draft-save-btn {
+.draft-menu-bar > button:nth-of-type(2) {
   width: 100%;
-  background: #f4f7f5; /* 연한 그린 톤 */
+  margin-bottom: 16px;
+
+  background: #f4f7f5;
   border: 1px solid #c7d9cd;
   border-radius: 8px;
   padding: 10px 12px;
@@ -192,7 +52,6 @@ a:active {
   color: #35593d;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.2px;
 
   cursor: pointer;
   display: flex;
@@ -204,49 +63,14 @@ a:active {
     box-shadow 0.12s ease;
 }
 
-/* hover: 살짝 떠오르는 느낌 */
-.draft-save-btn:hover {
+.draft-menu-bar > button:nth-of-type(2):hover {
   background: #e9f1ec;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* active: 눌림 느낌 */
-.draft-save-btn:active {
+.draft-menu-bar > button:nth-of-type(2):active {
   background: #dfe9e3;
   transform: translateY(1px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-}
-
-/* 키보드 접근성 */
-.draft-save-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(53, 89, 61, 0.25);
-}
-
-.draft-info {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.draft-info-row {
-  display: flex;
-  align-items: flex-start;
-  font-size: 13px; /* 기존 draft-card-body와 동일 */
-  line-height: 1.5;
-}
-
-.draft-info-row dt {
-  width: 56px; /* 라벨 고정 폭 (정렬 핵심) */
-  flex-shrink: 0;
-  color: #666;
-  font-weight: 600;
-}
-
-.draft-info-row dd {
-  margin: 0;
-  color: #444;
-  word-break: break-word;
 }

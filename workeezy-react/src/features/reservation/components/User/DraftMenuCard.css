@@ -1,0 +1,141 @@
+/* ========================= 카드형 리스트 ========================= */
+.draft-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.draft-card:hover {
+  background: #fafafa;
+  transform: translateY(-2px);
+}
+
+.draft-card.selected {
+  background: #ffffff;
+  border-color: #b4d1ba;
+}
+
+/* 카드 헤더 */
+.draft-card-header {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.draft-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.draft-card-date {
+  font-size: 12px;
+  color: #777;
+}
+
+/* 카드 내용 */
+.draft-card-body {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e0e0e0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #444;
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 불러오기 버튼 */
+.draft-load-btn {
+  margin-top: 8px;
+  background: #35593d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.draft-load-btn:hover {
+  background: #35593dad;
+}
+
+/* 삭제 버튼 */
+.draft-delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 15px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.draft-card:hover .draft-delete-btn {
+  opacity: 1;
+}
+
+.draft-delete-btn:hover {
+  color: #ff4d4f;
+}
+
+/* NEW 태그 */
+.draft-new-tag {
+  color: #ff4d4f;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #ffecec;
+}
+
+/* dt / dd 정보 영역 */
+.draft-info {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.draft-info-row {
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.draft-info-row dt {
+  width: 56px;
+  flex-shrink: 0;
+  color: #666;
+  font-weight: 600;
+}
+
+.draft-info-row dd {
+  margin: 0;
+  color: #444;
+  word-break: break-word;
+}
