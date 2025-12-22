@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     end_date   DATETIME(6) NOT NULL COMMENT '예약 종료 날짜',
     status ENUM('waiting_payment', 'approved', 'rejected', 'confirmed', 'cancel_requested', 'cancelled') NOT NULL DEFAULT 'waiting_payment' COMMENT '예약 상태(결제전/ 관리자승인/ 관리자거절 / 결제완료(확정)/ 취소요청/ 취소)',
     reject_reason VARCHAR(500) NULL COMMENT '관리자 거절 사유',
+	confirm_pdf_key VARCHAR(255) NULL COMMENT '예약 확정서 PDF S3 key',
 	created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '예약 생성일',
     updated_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '예약 수정일',
     total_price BIGINT NOT NULL COMMENT '워케이션 총 금액',
