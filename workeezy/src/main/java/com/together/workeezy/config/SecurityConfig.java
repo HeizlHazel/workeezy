@@ -104,7 +104,6 @@ public class SecurityConfig {
                 "https://www.workeezy.cloud",
                 "https://workeezy.cloud",
                 "https://workeezy-react.vercel.app",
-                "https://api.workeezy.cloud/health",
                 "http://localhost:5173"
         ));
 
