@@ -3,7 +3,7 @@ import api from "./axios.js";
 // 로그인 API
 export const loginApi = async (email, password, autoLogin) => {
     return api.post(
-        "/api/auth/login",
+        "/auth/login",
         {email, password, autoLogin},
         {
             withCredentials: true,
