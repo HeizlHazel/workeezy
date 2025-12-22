@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {useEffect} from "react";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
-export function SuccessPage() {
+export function Success() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -15,7 +15,7 @@ export function SuccessPage() {
         };
 
         async function confirm() {
-            const response = await fetch("/confirm", {
+            const response = await fetch("/api/payments/confirm", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -33,6 +33,7 @@ export function SuccessPage() {
 
             // 결제 성공 비즈니스 로직을 구현하세요.
         }
+
         confirm();
     }, []);
 
@@ -46,8 +47,10 @@ export function SuccessPage() {
                 <p>{`결제 금액: ${Number(
                     searchParams.get("amount")
                 ).toLocaleString()}원`}</p>
-                <p>{`paymentKey: ${searchParams.get("paymentKey")}`}</p>
             </div>
+            <button onClick={() => navigate("/reservation/list")}>예약 현황 조회</button>
+            <button onClick={() => navigate("/")}>Home</button>
         </div>
+
     );
 }
