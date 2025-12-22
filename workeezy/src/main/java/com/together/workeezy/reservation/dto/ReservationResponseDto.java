@@ -28,6 +28,7 @@ public class ReservationResponseDto {
     private long programId;
     private String stayName;           // 숙소명
     private String officeName;         // 오피스명 (null 가능)
+    private Long roomId;
     private String roomType;           // 룸타입
 
     private Long totalPrice;        // 총 가격
@@ -35,5 +36,7 @@ public class ReservationResponseDto {
 
     //private String mainImage;           // 대표 이미지 (썸네일용)
     //private List<String> subImages;     // 관련 이미지 (선택 시 표시)
+
+    private String rejectReason;
 
 }

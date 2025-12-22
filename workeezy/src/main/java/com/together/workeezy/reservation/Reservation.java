@@ -142,10 +142,6 @@ public class Reservation {
         this.stay = room.getPlace(); // stay 자동 동기화
     }
 
-    public void changeOffice(Place office) {
-        this.office = office; // null 허용
-    }
-
     public void recalculateTotalPrice() {
         this.totalPrice = (long) this.program.getProgramPrice() * this.peopleCount;
     }

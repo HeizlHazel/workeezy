@@ -157,9 +157,11 @@ public class ReservationService {
                 p != null ? p.getId() : null,
                 stayName,
                 officeName,
+                r.getRoom().getId(),
                 (r.getRoom() != null && r.getRoom().getRoomType() != null) ? r.getRoom().getRoomType().name() : null,
                 r.getTotalPrice(),
-                r.getPeopleCount()
+                r.getPeopleCount(),
+                r.getRejectReason()
         );
     }
 
@@ -172,10 +174,19 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약 없음"));
 
+
         // ⭐ 핵심: 내 예약인지 검증
         if (!reservation.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("본인 예약 아님");
         }
+
+        System.out.println("===== Reservation Entity =====");
+        System.out.println("reservation.id = " + reservation.getId());
+        System.out.println("reservation.room = " + reservation.getRoom());
+        System.out.println("reservation.room.id = " + reservation.getRoom().getId());
+        System.out.println("reservation.room.type = " + reservation.getRoom().getRoomType());
+        System.out.println("==============================");
+
 
         return mapToResponseDto(reservation);
     }
@@ -198,10 +209,6 @@ public class ReservationService {
         // 룸 + 숙소 변경 (Service에서 조합 검증)
         Room room = getValidRoom(dto.getRoomId(), reservation.getProgram());
         reservation.changeRoom(room);
-
-        // 오피스 변경 (선택)
-        Place office = getValidOffice(dto.getOfficeId(), reservation.getProgram());
-        reservation.changeOffice(office);
 
         // 금액 재계산
         reservation.recalculateTotalPrice();
@@ -261,6 +268,7 @@ public class ReservationService {
         return room;
     }
 
+    /*
     // 오피스 검증
     private Place getValidOffice(Long officeId, Program program) {
         if (officeId == null) {
@@ -279,7 +287,7 @@ public class ReservationService {
         }
 
         return office;
-    }
+    }*/
 
 
 
