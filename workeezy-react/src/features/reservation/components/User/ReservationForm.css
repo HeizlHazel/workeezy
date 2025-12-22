@@ -12,7 +12,7 @@
 .reservation-form {
   background: var(--var-sds-color-background-default-default, #ffffff);
   border-radius: var(--var-sds-size-radius-200, 8px);
-  padding: var(--var-sds-size-space-600, 40px 50px 24px 50px);
+  padding: var(--var-sds-size-space-600, 25px 50px 24px 50px);
   display: flex;
   flex-direction: column;
   gap: var(--var-sds-size-space-600, 24px);

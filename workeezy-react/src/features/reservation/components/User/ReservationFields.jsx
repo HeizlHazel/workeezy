@@ -1,4 +1,6 @@
 import "./ReservationFields.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function ReservationFields({
   programTitle,
@@ -10,33 +12,54 @@ export default function ReservationFields({
   endDate,
   peopleCount,
   onChange,
-  rooms = [],
-  roomId,
-  roomName,
+  rooms = [], // 해당 워케이션의 룸들
+  roomId, // 사용자가 선택한 roomId
+  roomType,
   offices = [],
   officeId,
   officeName,
   stayName,
   stayId,
 }) {
-  // 공용 select 핸들러
+  // 사용자가 select에서 옵션 바꿀 때마다 form에 roomId, roomType
   const handleSelectChange = (type, e) => {
+    // 사용자가 선택한 option의 value(roomId) 객체 구조 분해 할당
     const { value } = e.target;
 
     if (type === "room") {
-      const selected = rooms.find((r) => r.id === Number(value));
+      // rooms 배열 안에서 사용자가 선택한 id와 일치하는 객체를 찾아서 selected에 저장
+      const selected = rooms.find((r) => r.roomId === Number(value));
+
+      // form에 roomId = value 저장
       onChange({ target: { name: "roomId", value } });
+      // roomType = 룸타입 저장
       onChange({
-        target: { name: "roomName", value: selected?.roomType || "" },
-      });
-    } else if (type === "office") {
-      const selected = offices.find((o) => o.id === Number(value));
-      onChange({ target: { name: "officeId", value } });
-      onChange({
-        target: { name: "officeName", value: selected?.name || "" },
+        target: { name: "roomType", value: selected?.roomType || "" },
       });
     }
   };
+  console.log("ReservationFields roomId =", roomId);
+
+  const now = new Date();
+
+  const startOfDay = (d) => {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  };
+
+  const endOfDay = (d) => {
+    const x = new Date(d);
+    x.setHours(23, 59, 59, 999);
+    return x;
+  };
+
+  const isSameDay = (a, b) =>
+    a &&
+    b &&
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
 
   return (
     <>
@@ -124,25 +147,46 @@ export default function ReservationFields({
         <div className="div">예약 날짜</div>
         <div className="date">
           <div className="started-at">
-            <input
-              type="date"
-              name="startDate"
-              value={startDate}
-              onChange={onChange}
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                onChange({ target: { name: "startDate", value: date } })
+              }
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm"
               className="input-text"
+              minDate={startOfDay(now)}
+              minTime={
+                startDate &&
+                startOfDay(startDate).getTime() === startOfDay(now).getTime()
+                  ? now
+                  : startOfDay(now)
+              }
+              maxTime={endOfDay(startDate || now)}
             />
           </div>
+
           <div className="ended-at">
-            <input
-              type="date"
-              name="endDate"
-              value={endDate}
-              onChange={onChange}
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                onChange({ target: { name: "endDate", value: date } })
+              }
+              showTimeSelect
+              dateFormat="yyyy-MM-dd HH:mm"
               className="input-text"
+              minDate={startDate ? startOfDay(startDate) : startOfDay(now)}
+              minTime={
+                startDate && isSameDay(startDate, endDate)
+                  ? startDate // 같은 날 → 시작시간 이후만
+                  : startOfDay(endDate || now) // 다른 날 → 00:00부터
+              }
+              maxTime={endOfDay(endDate || now)}
             />
           </div>
         </div>
       </div>
+
       {/* 숙소명 */}
       <div className="stay-name">
         <div className="div">숙소명</div>
@@ -171,33 +215,24 @@ export default function ReservationFields({
           >
             <option value="">룸 선택</option>
             {rooms.map((r) => (
-              <option key={r.id} value={r.id}>
+              <option key={r.roomId} value={String(r.roomId)}>
                 {r.roomType}
               </option>
             ))}
           </select>
         </div>
       </div>
+
       {/* 오피스 */}
       <div className="office">
         <div className="div">오피스</div>
         <div className="input">
-          <select
-            name="officeId"
-            value={officeId || ""}
-            onChange={(e) => handleSelectChange("office", e)}
+          <input
+            type="text"
+            value={officeName || ""}
+            readOnly
             className="value"
-            disabled={offices.length === 0}
-          >
-            <option value="">
-              {offices.length === 0 ? "선택할 오피스 없음" : "오피스 선택"}
-            </option>
-            {offices.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       </div>
 

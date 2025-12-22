@@ -1,202 +1,194 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./DraftMenuBar.css";
-import axios from "../../../../api/axios.js";
+import DraftMenuCard from "./DraftMenuCard";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import {
+  fetchDraftList,
+  fetchDraft,
+  saveDraft,
+  deleteDraft,
+} from "../../api/draft.api";
+
+import { isSameDraft } from "../../utils/draftCompare.js";
+import { normalizeDraftToForm } from "../../utils/draftNormalize";
 
 export default function DraftMenuBar({
-  isOpen = false, // 열림-닫힘 상태
-  onClose, // 닫기 함수
-  latestDraftId, // 최근 저장된 draft id
+  isOpen,
+  onClose,
+  latestDraftId,
+  form,
+  onSaved,
+  onSnapshotSaved,
+  lastSavedSnapshot,
 }) {
-  const [openItems, setOpenItems] = useState([]);
-  const [draftList, setDraftList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // 임시저장 리스트 메뉴 구성
-  const userMenu = [
-    {
-      title: "임시저장 리스트",
-      // useEffect-setDraftList
-      sub: draftList.map((draft) => ({
-        key: draft.key,
-        data: draft.data,
-        savedAt: draft.data?.savedAt,
-      })),
-    },
-  ];
+  const [draftList, setDraftList] = useState([]);
+  const [openKey, setOpenKey] = useState(null);
 
-  // Redis 임시저장 목록 불러오기
+  /* ===========
+  바깥 클릭 닫기 
+  ==============*/
   useEffect(() => {
-    // 메뉴가 닫혀 있으면 불러오기 시도 x
+    if (!isOpen) return;
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen, onClose]);
+
+  /* ==========
+  목록 불러오기
+  =============*/
+  useEffect(() => {
     if (!isOpen) return;
     const token = localStorage.getItem("accessToken");
-    // 토큰이 없으면 불러오기 시도 x
     if (!token) return;
-    setLoading(true);
-    // 실제 걸리는 시간동안 Loading 화면
 
-    axios
-      .get("http://localhost:8080/api/reservations/draft/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setDraftList(res.data || []))
-      .catch((err) => console.error("임시저장 목록 불러오기 실패", err))
-      .finally(() => setLoading(false));
-  }, [isOpen]); //
+    fetchDraftList(token).then((res) => {
+      setDraftList(res.data || []);
+    });
+  }, [isOpen]);
 
-  // ✅ 임시저장 불러오기
-  const handleLoadDraft = async (draftKey) => {
+  /* ===========
+    임시 저장
+    ==============*/
+  const handleSave = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) return alert("로그인이 필요합니다.");
 
-    try {
-      // 1️⃣ draft 데이터 불러오기
-      const res = await axios.get(
-        `http://localhost:8080/api/reservations/draft/${draftKey}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const draftData = res.data;
+    const payload = {
+      ...form,
+      startDate: form.startDate?.toISOString(),
+      endDate: form.endDate?.toISOString(),
+    };
 
-      // 2️⃣ 필드 통일
-      const normalizedDraft = {
-        ...draftData,
-        // 오피스명 / 장소명
-        officeName: draftData.officeName || draftData.placeName || "",
-        // 룸타입 / 룸이름
-        roomType: draftData.roomType || draftData.roomName || "",
-        // 오피스 ID (placeId가 있을 수도 있음)
-        officeId: draftData.officeId || draftData.placeId || "",
-        // 룸 ID
-        roomId: draftData.roomId || "",
-        // 숙소
-        stayId: draftData.stayId || "",
-        stayName: draftData.stayName || draftData.hotelName || "",
-      };
-
-      // ✅ 3️⃣ (수정) 더 이상 API 요청 안 함 — draft 안에 있는 rooms/offices 사용
-      const rooms = draftData.rooms || [];
-      const offices = draftData.offices || [];
-
-      // 4️⃣ ReservationForm으로 이동
-      alert("임시저장을 불러왔습니다!");
-      navigate("/reservation/new", {
-        state: {
-          ...normalizedDraft,
-          rooms,
-          offices,
-        },
+    if (isSameDraft(lastSavedSnapshot, payload)) {
+      await Swal.fire({
+        icon: "info",
+        title: "변경된 내용이 없습니다.",
+        text: "저장할 새로운 변경사항이 없습니다.",
       });
-    } catch (err) {
-      console.error("임시저장 불러오기 실패:", err);
-      alert("불러오기 중 오류가 발생했습니다.");
+      return;
     }
+    Swal.fire({
+      title: "임시저장 중...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    const res = await saveDraft(payload, token);
+    Swal.close();
+
+    // 스냅샷 + latest id
+    onSnapshotSaved(payload);
+    onSaved?.(res.data.id);
+
+    const listRes = await fetchDraftList(token);
+    setDraftList(listRes.data || []);
+    Swal.fire({
+      icon: "success",
+      title: "임시저장 완료!",
+      timer: 1200,
+      showConfirmButton: false,
+    });
   };
 
-  // 하나만 선택되게
-  const toggleItem = (id) => {
-    setOpenItems((prev) => (prev[0] === id ? [] : [id]));
-  };
-
-  // 임시저장 삭제
-  const handleDelete = async (draftKey) => {
-    if (!window.confirm("이 임시저장을 삭제하시겠습니까?")) return;
-
+  /* 불러오기 */
+  const handleLoad = async (key) => {
     const token = localStorage.getItem("accessToken");
+    // 확인
+    const confirm = await Swal.fire({
+      icon: "question",
+      title: "임시저장을 불러올까요?",
+      text: "현재 작성 중인 내용은 사라집니다.",
+      showCancelButton: true,
+      confirmButtonText: "불러오기",
+      cancelButtonText: "취소",
+    });
+    if (!confirm.isConfirmed) return;
+
+    // 로딩 (await ❌)
+    Swal.fire({
+      title: "임시저장 불러오는 중...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
     try {
-      await axios.delete(
-        `http://localhost:8080/api/reservations/draft/${encodeURIComponent(
-          draftKey
-        )}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setDraftList((prev) =>
-        prev.filter((d) => d.key !== decodeURIComponent(draftKey))
-      );
-      alert("삭제 완료!");
-    } catch (err) {
-      console.error("임시저장 삭제 실패:", err);
-      alert("삭제 중 오류가 발생했습니다.");
+      const res = await fetchDraft(key, token);
+      const normalized = normalizeDraftToForm(res.data);
+
+      Swal.close();
+
+      // 이동
+      navigate("/reservation/new", {
+        state: { ...normalized, draftKey: key },
+      });
+    } catch (e) {
+      Swal.close();
+      await Swal.fire({
+        icon: "error",
+        title: "불러오기 실패",
+        text: "임시저장을 불러오는 중 오류가 발생했습니다.",
+      });
     }
   };
+
+  /* 삭제 */
+  const handleDelete = async (key) => {
+    const token = localStorage.getItem("accessToken");
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "임시저장을 삭제할까요?",
+      text: "삭제한 임시저장은 복구할 수 없습니다.",
+      showCancelButton: true,
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (!result.isConfirmed) return;
+
+    await deleteDraft(key, token);
+    setDraftList((prev) => prev.filter((d) => d.key !== key));
+    Swal.fire({
+      icon: "success",
+      title: "삭제되었습니다",
+      timer: 1000,
+      showConfirmButton: false,
+    });
+  };
+
+  const formatDateTime = (value) =>
+    value
+      ? new Date(value).toLocaleString("ko-KR", {
+          year: "numeric", // 2025
+          month: "2-digit", // 01~02
+          day: "2-digit", // 01~31
+          hour: "2-digit", // 00~23
+          minute: "2-digit", // 00~59
+        })
+      : "-";
 
   return (
-    <div className={`draft-menu-bar ${isOpen ? "open" : "close"}`}>
-      <button className="draft-menu-close-btn" onClick={onClose}>
-        ✕
-      </button>
+    <div ref={menuRef} className={`draft-menu-bar ${isOpen ? "open" : ""}`}>
+      <button onClick={onClose}>✕</button>
+      <button onClick={handleSave}>현재 내용 임시저장</button>
 
-      {loading && <p>불러오는 중...</p>}
-
-      {userMenu.map((item, idx) => (
-        <div key={idx} className="draft-menu-item">
-          <div className="draft-menu-title">{item.title}</div>
-
-          {item.sub && (
-            <div className="draft-submenu">
-              {item.sub.map((sub) => (
-                <div
-                  key={sub.key}
-                  className={`draft-card ${
-                    openItems.includes(sub.key) ? "selected" : ""
-                  }`}
-                  onClick={() => toggleItem(sub.key)}
-                >
-                  <div className="draft-card-header">
-                    <div className="draft-card-title">
-                      <strong>{sub.data.programTitle || "제목 없음"}</strong>
-                      {sub.key === latestDraftId && (
-                        <span className="draft-new-tag">NEW</span>
-                      )}
-                    </div>
-                    <span className="draft-card-date">
-                      {sub.data.savedAt
-                        ? new Date(
-                            Date.parse(
-                              sub.data.savedAt.replace("KST", "GMT+0900")
-                            )
-                          ).toLocaleString()
-                        : "날짜 없음"}
-                    </span>
-                    <button
-                      className="draft-delete-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(sub.key);
-                      }}
-                    >
-                      <i className="fa-solid fa-xmark"></i>
-                    </button>
-                  </div>
-
-                  {/* 상세정보 (토글 시 표시) */}
-                  {openItems.includes(sub.key) && (
-                    <div className="draft-card-body">
-                      <p>숙소명 : {sub.data.stayName || sub.data.stayName}</p>
-                      <p>룸타입 : {sub.data.roomType || sub.data.roomType}</p>
-
-                      <p>
-                        📅 {sub.data.startDate} ~ {sub.data.endDate}
-                      </p>
-                      <p>👥 인원: {sub.data.peopleCount}명</p>
-                      <button
-                        className="draft-load-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLoadDraft(sub.key);
-                        }}
-                      >
-                        불러오기 →
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      {draftList.map((draft) => (
+        <DraftMenuCard
+          key={draft.key}
+          draft={draft}
+          isOpen={openKey === draft.key}
+          isNew={draft.key === latestDraftId}
+          onToggle={() => setOpenKey(openKey === draft.key ? null : draft.key)}
+          onLoad={() => handleLoad(draft.key)}
+          onDelete={() => handleDelete(draft.key)}
+          formatDateTime={formatDateTime}
+        />
       ))}
     </div>
   );

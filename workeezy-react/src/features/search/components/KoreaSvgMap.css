@@ -1,0 +1,34 @@
+.korea-map-wrap {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: flex-start;   /* 🔥 위 */
+    justify-content: center;
+}
+
+.svg-host {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: flex-start;   /* 🔥 위 */
+    justify-content: center;
+
+    padding-top: 0;            /* 🔥 여백 제거 */
+}
+
+
+.svg-host.ready {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.svg-host svg {
+    width: 100%;
+    height: 100%;
+    max-width: 640px;
+    max-height: 720px;
+    display: block;
+    margin: 0 auto;            /* ✅ 위쪽 붙이니까 auto 대신 0 */
+}

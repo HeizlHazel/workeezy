@@ -1,120 +1,77 @@
-import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
-import { useEffect, useState } from "react";
+import {loadTossPayments} from "@tosspayments/tosspayments-sdk";
+import {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 
-const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
-const customerKey = "Um80kmzhfkS_17JxBHT4l";
 
-export function CheckoutPage() {
-    const [amount, setAmount] = useState({
-        currency: "KRW",
-        value: 50_000,
-    });
-    const [ready, setReady] = useState(false);
+export default function CheckoutPage() {
+    const {reservationId} = useParams();
+
     const [widgets, setWidgets] = useState(null);
+    const [reservation, setReservation] = useState({
+        reservationNo: "TEST-ORDER-0001",
+        totalPrice: 50000,
+        programTitle: "Workation 테스트 상품"
+    });
 
     useEffect(() => {
-        async function fetchPaymentWidgets() {
-            // ------  결제위젯 초기화 ------
-            const tossPayments = await loadTossPayments(clientKey);
-            // 회원 결제
-            const widgets = tossPayments.widgets({
-                customerKey,
-            });
-            // 비회원 결제
-            // const widgets = tossPayments.widgets({ customerKey: ANONYMOUS });
+        async function init() {
+            const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+            const customerKey = "Um80kmzhfkS_17JxBHT4l";
 
-            setWidgets(widgets);
+            const toss = await loadTossPayments(clientKey);
+            const w = toss.widgets({customerKey});
+            setWidgets(w);
         }
 
-        fetchPaymentWidgets();
-    }, [clientKey, customerKey]);
+        init();
+    }, []);
 
     useEffect(() => {
-        async function renderPaymentWidgets() {
-            if (widgets == null) {
-                return;
-            }
-            // ------ 주문의 결제 금액 설정 ------
-            await widgets.setAmount(amount);
+        if (!widgets) return;
 
-            await Promise.all([
-                // ------  결제 UI 렌더링 ------
-                widgets.renderPaymentMethods({
-                    selector: "#payment-method",
-                    variantKey: "DEFAULT",
-                }),
-                // ------  이용약관 UI 렌더링 ------
-                widgets.renderAgreement({
-                    selector: "#agreement",
-                    variantKey: "AGREEMENT",
-                }),
-            ]);
+        widgets.setAmount({
+            currency: "KRW",
+            value: 50000,   // 임시 값
+            // value: reservation.totalPrice,
+        });
 
-            setReady(true);
-        }
+        widgets.renderPaymentMethods({
+            selector: "#payment-method",
+            variantKey: "DEFAULT",
+        });
 
-        renderPaymentWidgets();
+        widgets.renderAgreement({
+            selector: "#agreement",
+            variantKey: "AGREEMENT",
+        });
     }, [widgets]);
 
-    useEffect(() => {
-        if (widgets == null) {
-            return;
-        }
+    // useEffect(() => {
+    //     async function load() {
+    //         const res = await fetch(`/api/reservations/${reservationId}`);
+    //         const json = await res.json();
+    //         setReservation(json);
+    //     }
+    //
+    //     load();
+    // }, [])
 
-        widgets.setAmount(amount);
-    }, [widgets, amount]);
+    // useEffect(() => {
+    //     if (!widgets || !reservation) return;
+    //
+    //     widgets.setAmount({
+    //         currency: "KRW",
+    //         value: reservation.totalPrice,
+    //     });
+    // }, [widgets, reservation]);
 
     return (
-        <div className="wrapper">
-            <div className="box_section">
-                {/* 결제 UI */}
-                <div id="payment-method" />
-                {/* 이용약관 UI */}
-                <div id="agreement" />
-                {/* 쿠폰 체크박스 */}
-                <div>
-                    <div>
-                        <label htmlFor="coupon-box">
-                            <input
-                                id="coupon-box"
-                                type="checkbox"
-                                aria-checked="true"
-                                disabled={!ready}
-                                onChange={(event) => {
-                                    // ------  주문서의 결제 금액이 변경되었을 경우 결제 금액 업데이트 ------
-                                    setAmount(event.target.checked ? amount - 5_000 : amount + 5_000);
-                                }}
-                            />
-                            <span>5,000원 쿠폰 적용</span>
-                        </label>
-                    </div>
-                </div>
-
-                {/* 결제하기 버튼 */}
-                <button
-                    className="button"
-                    disabled={!ready}
-                    onClick={async () => {
-                        try {
-                            // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
-                            // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
-                            // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
-                            await widgets.requestPayment({
-                                // amount: reservation.totalPrice,
-                                // orderId: reservation.reservationNo,
-                                // orderName: reservation.programTitle,
-                                successUrl: "http://localhost:5173/payment/success",
-                                failUrl: "http://localhost:5173/payment/fail"
-                            });
-                        } catch (error) {
-                            // 에러 처리하기
-                            console.error(error);
-                        }
-                    }}
-                >
-                    결제하기
-                </button>
-            </div>
+        <div style={{maxWidth: 480, margin: "100px auto"}}>
+            <h2>결제 진행</h2>
+            <p>주문번호: {reservation.reservationNo}</p>
+            <p>금액: {reservation.totalPrice}원</p>
+            <div id="payment-method"></div>
+            <div id="agreement"></div>
         </div>
     );
 }
