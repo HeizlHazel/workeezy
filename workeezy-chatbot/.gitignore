@@ -19,6 +19,7 @@ build/
 .env
 .env.local
 .env.*.local
+.venv
 
 # logs
 logs
