@@ -1,12 +1,11 @@
 package com.together.workeezy.user.controller;
 
-import com.together.workeezy.auth.security.user.CustomUserDetails;
-import com.together.workeezy.user.dto.UserMeResponseDto;
+import com.together.workeezy.common.dto.ApiResponse;
+import com.together.workeezy.user.dto.UserMeResponse;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.dto.UserUpdateRequest;
-import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.service.UserService;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,51 +20,34 @@ public class UserController {
 
     // 개인 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<UserMeResponseDto> getMyInfo(Authentication authentication) {
+    public ResponseEntity<UserMeResponse> getMyInfo(Authentication authentication) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = authentication.getName();
 
-        User user = userDetails.getUser();
-
-        UserMeResponseDto response = new UserMeResponseDto(
-                user.getEmail(),
-                user.getUserName(),
-                user.getBirth(),
-                user.getPhone(),
-                user.getCompany(),
-                user.getRole().name()
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.getMyInfo(email));
     }
 
     // 연락처 수정
     @PutMapping("/phone")
     public ResponseEntity<?> updatePhone(
-            @RequestBody UserUpdateRequest request, Authentication authentication) {
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
-        userService.updatePhone(email, request.phone());
-
-        return ResponseEntity.ok("회원 정보 수정 완료");
-    }
-
-    @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$",
-            message = "연락처는 010-1234-5678 형식(하이픈 포함 13자리)으로 입력해주세요.")
-    private String phone;
-
-    @PutMapping("/password")
-    public ResponseEntity<?> updatePassword(
-            @RequestBody UserPasswordUpdateRequest request, Authentication authentication) {
+            @Valid @RequestBody UserUpdateRequest request, Authentication authentication) {
 
         String email = authentication.getName();
 
-        System.out.println(request);
+        userService.updatePhone(email, request.phone());
+
+        return ResponseEntity.ok(new ApiResponse("회원 정보 수정 완료"));
+    }
+
+    // 비밀번호 수정
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(
+            @Valid @RequestBody UserPasswordUpdateRequest request, Authentication authentication) {
+
+        String email = authentication.getName();
 
         userService.updatePassword(email, request);
 
-
-        return ResponseEntity.ok("비밀번호 변경 완료");
+        return ResponseEntity.ok(new ApiResponse("비밀번호 변경 완료"));
     }
 }

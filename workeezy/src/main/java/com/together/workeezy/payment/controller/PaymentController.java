@@ -1,8 +1,8 @@
 package com.together.workeezy.payment.controller;
 
 import com.together.workeezy.auth.security.user.CustomUserDetails;
-import com.together.workeezy.payment.dto.PaymentConfirmRequest;
-import com.together.workeezy.payment.dto.PaymentConfirmResponse;
+import com.together.workeezy.payment.dto.request.PaymentConfirmRequest;
+import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
 import com.together.workeezy.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -36,4 +36,8 @@ public class Search {
     @Column(name = "search_phrase", length = 100)
     private String searchPhrase;
 
+    public Search(User user, String searchPhrase) {
+        this.user = user;
+        this.searchPhrase = searchPhrase;
+    }
 }

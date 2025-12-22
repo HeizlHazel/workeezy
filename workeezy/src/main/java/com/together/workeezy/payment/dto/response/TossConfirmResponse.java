@@ -1,6 +1,5 @@
-package com.together.workeezy.payment.dto;
+package com.together.workeezy.payment.dto.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class TossConfirmResponseDto {
+public class TossConfirmResponse {
 
     private String paymentKey;
     private String orderId;

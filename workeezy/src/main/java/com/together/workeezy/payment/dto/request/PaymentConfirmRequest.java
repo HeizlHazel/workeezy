@@ -1,4 +1,4 @@
-package com.together.workeezy.payment.dto;
+package com.together.workeezy.payment.dto.request;
 
 import lombok.Getter;
 
