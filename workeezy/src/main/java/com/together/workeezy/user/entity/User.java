@@ -1,23 +1,28 @@
 package com.together.workeezy.user.entity;
 
+import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationModify;
 import com.together.workeezy.user.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.together.workeezy.common.exception.ErrorCode.*;
+
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_users")
 public class User {
 
@@ -72,4 +77,60 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<ReservationModify> reservationModifys = new ArrayList<>();
 
+    public static User reference(Long id) {
+        User user = new User();
+        user.id = id;
+        return user;
+    }
+
+    // ======== 도메인 동작 ========
+    public void changePhone(String newPhone) {
+//        validatePhone(newPhone);
+        this.phone = newPhone;
+    }
+
+    public void changePassword(String rawPassword, PasswordEncoder encoder) {
+        validatePasswordRule(rawPassword);
+        this.password = encoder.encode(rawPassword);
+    }
+
+    // ======== 검증 로직 =========
+//    private static final Pattern PHONE_REGEX =
+//            Pattern.compile("^010-\\d{4}-\\d{4}$");
+//
+//    private void validatePhone(String phone) {
+//        if (phone == null || phone.isBlank()) {
+//            throw new IllegalArgumentException("Phone number required");
+//        }
+//
+//        if (!PHONE_REGEX.matcher(phone).matches()) {
+//            throw new IllegalArgumentException("Invalid phone format. (010-XXXX-XXXX)");
+//        }
+//    }
+
+    private void validatePasswordRule(String password) {
+//        if (password == null || password.isBlank()) {
+//            throw new IllegalArgumentException("비밀번호가 비어있습니다.");
+//        }
+
+        if (password.length() < 8 || password.length() > 16) {
+            throw new CustomException(INVALID_PASSWORD_LENGTH);
+        }
+
+        if (!password.matches(".*[0-9].*")) {
+            throw new CustomException(INVALID_PASSWORD_NUMBER);
+        }
+
+        if (!password.matches(".*[A-Z].*")) {
+            throw new CustomException(INVALID_PASSWORD_UPPER);
+        }
+
+        if (!password.matches(".*[a-z].*")) {
+            throw new CustomException(INVALID_PASSWORD_LOWER);
+        }
+
+        if (!password.matches(".*[!@#$%^&*].*")) {
+            throw new CustomException(INVALID_PASSWORD_SPECIAL);
+        }
+    }
 }

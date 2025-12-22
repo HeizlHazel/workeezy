@@ -1,19 +1,27 @@
 package com.together.workeezy.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.together.workeezy.user.entity.User;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
-public class UserMeResponseDto {
+public record UserMeResponseDto(
 
-    private String email;
-    private String name;
-    private LocalDate birth;
-    private String phone;
-    private String company;
-    private String role;
+        String email,
+        String name,
+        LocalDate birth,
+        String phone,
+        String company,
+        String role
 
+) {
+    public static UserMeResponseDto from(User user) {
+        return new UserMeResponseDto(
+                user.getEmail(),
+                user.getUserName(),
+                user.getBirth(),
+                user.getPhone(),
+                user.getCompany(),
+                user.getRole().name()
+        );
+    }
 }

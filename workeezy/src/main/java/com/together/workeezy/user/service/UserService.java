@@ -1,5 +1,8 @@
 package com.together.workeezy.user.service;
 
+import com.together.workeezy.common.exception.CustomException;
+import com.together.workeezy.common.exception.ErrorCode;
+import com.together.workeezy.user.dto.UserMeResponseDto;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
@@ -7,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.together.workeezy.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,55 +23,36 @@ public class UserService {
     @Transactional
     public void updatePhone(String email, String newPhone) {
         User user = getUser(email);
-
-        user.setPhone(newPhone);
+        user.changePhone(newPhone);
     }
 
     @Transactional
     public void updatePassword(String email, UserPasswordUpdateRequest request) {
         User user = getUser(email);
 
-        // 현재 비밀번호 검증
+        // 현재 비밀번호 검증(서비스 책임)
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(PASSWORD_NOT_MATCH);
         }
 
-        // 새 비밀번호 규칙 확인
+        // 새 비밀번호 규칙 확인(DTO 책임)
         if (!request.newPassword().equals(request.newPasswordCheck())) {
-            throw new IllegalArgumentException("새 비밀번호가 서로 일치하지 않습니다.");
+            throw new CustomException(PASSWORD_CONFIRM_NOT_MATCH);
         }
 
-        validatePasswordRule(request.newPasswordCheck());
-
-        // 암호화하여 저장
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        // 엔티티에 위임(도메인 책임)
+        user.changePassword(request.newPassword(), passwordEncoder);
     }
 
-    private void validatePasswordRule(String password) {
-        if (password.length() < 8 || password.length() > 16) {
-            throw new IllegalArgumentException("비밀번호는 8~16자여야 합니다.");
-        }
+    @Transactional(readOnly = true)
+    public UserMeResponseDto getMyInfo(String email) {
+        User user = getUser(email);
 
-        if (!password.matches(".*[0-9].*")) {
-            throw new IllegalArgumentException("비밀번호에는 숫자가 1개 이상 포함되어야 합니다.");
-        }
-
-        if (!password.matches(".*[A-Z].*")) {
-            throw new IllegalArgumentException("비밀번호에는 영어 대문자가 1개 이상 포함되어야 합니다.");
-        }
-
-        if (!password.matches(".*[a-z].*")) {
-            throw new IllegalArgumentException("비밀번호에는 영어 소문자가 1개 이상 포함되어야 합니다.");
-        }
-
-        if (!password.matches(".*[!@#$%^&*].*")) {
-            throw new IllegalArgumentException("비밀번호에는 특수문자가 1개 이상 포함되어야 합니다.(가능 문자: !@#$%^&*)");
-        }
+        return UserMeResponseDto.from(user);
     }
 
     private User getUser(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-        return user;
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

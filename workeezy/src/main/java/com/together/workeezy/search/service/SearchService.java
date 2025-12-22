@@ -28,18 +28,16 @@ public class SearchService {
     private final ProgramRepository programRepository;
     private final SearchAsyncService asyncService;
     private final RecentSearchService recentSearchService;
+    private final UserRepository userRepository;
 
     @Transactional
     public SearchResultDto search(String keyword, List<String> regions, Long userId) {
 
         Search search = null;
         if (userId != null && keyword != null && !keyword.isBlank()) {
-            User user = new User();
-            user.setId(userId);
+            User user = User.reference(userId);
 
-            search = new Search();
-            search.setUser(user);
-            search.setSearchPhrase(keyword);
+            search = new Search(user, keyword);
             searchRepository.save(search);
 
             recentSearchService.saveKeyword(userId, keyword);

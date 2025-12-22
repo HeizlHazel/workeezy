@@ -1,11 +1,14 @@
 package com.together.workeezy.auth.service;
 
 import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
+import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.user.entity.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import static com.together.workeezy.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class AuthService {
 
         // 토큰 만료 여부 확인
         if(!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token 만료 또는 위조");
+            throw new CustomException(AUTH_REFRESH_TOKEN_EXPIRED);
         }
 
         // refreshToken에서 이메일 추출
@@ -39,11 +42,11 @@ public class AuthService {
         String savedToken = tokenRedisService.getRefreshToken(email);
 
         if(savedToken == null) {
-            throw new RuntimeException("서버에 Refresh Token 없음(로그아웃된 사용자)");
+            throw new CustomException(AUTH_REFRESH_TOKEN_NOT_SAVED);
         }
 
         if(!savedToken.equals(refreshToken)) {
-            throw new RuntimeException("Refresh Token 불일치(탈취/중복 로그인 가능)");
+            throw new CustomException(AUTH_REFRESH_TOKEN_MISMATCH);
         }
 
         // role 꺼내기
