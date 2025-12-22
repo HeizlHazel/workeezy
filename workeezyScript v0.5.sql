@@ -1014,4 +1014,7 @@ VALUES
 delete from tb_room 
 where place_id = 3;
 
+update tb_program
+set attraction_id1 = null , attraction_id2 = null;
+
 commit;
