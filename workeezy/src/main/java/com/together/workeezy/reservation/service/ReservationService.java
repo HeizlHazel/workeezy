@@ -160,7 +160,8 @@ public class ReservationService {
                 r.getRoom().getId(),
                 (r.getRoom() != null && r.getRoom().getRoomType() != null) ? r.getRoom().getRoomType().name() : null,
                 r.getTotalPrice(),
-                r.getPeopleCount()
+                r.getPeopleCount(),
+                r.getRejectReason()
         );
     }
 

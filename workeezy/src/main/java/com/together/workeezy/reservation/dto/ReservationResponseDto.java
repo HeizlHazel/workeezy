@@ -37,4 +37,6 @@ public class ReservationResponseDto {
     //private String mainImage;           // 대표 이미지 (썸네일용)
     //private List<String> subImages;     // 관련 이미지 (선택 시 표시)
 
+    private String rejectReason;
+
 }
