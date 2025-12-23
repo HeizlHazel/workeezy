@@ -23,7 +23,7 @@ public class PaymentConfirmResponse {
         res.paymentKey = payment.getPaymentKey();
         res.orderId = payment.getOrderId();
         res.amount = payment.getAmount();
-        res.method = payment.getPaymentMethod();
+        res.method = payment.getMethod();
         res.approvedAt = payment.getApprovedAt();
         res.reservationNo = reservation.getReservationNo();
         return res;

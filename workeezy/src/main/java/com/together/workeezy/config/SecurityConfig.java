@@ -61,14 +61,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/programs/**").permitAll()
                         .requestMatchers("/api/search").authenticated()
                         .requestMatchers("/api/search/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()   // ⭐ 추가
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()    // ⭐ 추가
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews", "/api/reviews/**").permitAll()
                         .requestMatchers("/api/recommendations/**").authenticated()
-
-
 
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
+                        
+                        .requestMatchers("/api/**").authenticated()
 
                         // CORS Preflight 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -92,6 +92,9 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://localhost:4173");
+        config.addAllowedOrigin("https://workeezy.cloud");
+        config.addAllowedOrigin("https://www.workeezy.cloud");
+        config.addAllowedOrigin("https://api.workeezy.cloud");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true); // refreshToken 쿠키 허용
