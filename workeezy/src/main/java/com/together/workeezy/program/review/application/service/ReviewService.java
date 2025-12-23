@@ -42,22 +42,21 @@ public class ReviewService {
         );
     }
 
-
     /** 리뷰 작성 */
     @Transactional
     public void createReview(ReviewCreateRequest dto) {
 
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Program program = programRepository.findById(dto.getProgramId())
+        Program program = programRepository.findById(dto.programId())
                 .orElseThrow(() -> new RuntimeException("Program not found"));
 
         Review review = Review.create(
                 program,
                 user,
-                dto.getReviewText(),
-                dto.getRating()
+                dto.reviewText(),
+                dto.rating()
         );
 
         reviewRepository.save(review);
@@ -70,44 +69,35 @@ public class ReviewService {
 
         if (reviews.isEmpty()) return reviews;
 
-        // 1. 리뷰에 등장하는 programId 수집
+        // 1) 리뷰에 등장하는 programId 수집
         List<Long> programIds = reviews.stream()
-                .map(ReviewDto::getProgramId)
+                .map(ReviewDto::programId)      // ✅ record accessor
                 .distinct()
                 .toList();
 
-        // 2. place를 한 번에 조회 (🔥 N+1 제거 핵심)
+        // 2) place를 한 번에 조회 (N+1 제거)
         List<Place> places = placeRepository.findByProgramIds(programIds);
 
-        // 3. programId → region / image 맵 구성
+        // 3) programId → region / image 맵 구성
         Map<Long, String> regionMap = new HashMap<>();
         Map<Long, String> imageMap = new HashMap<>();
 
         for (Place place : places) {
             Long pid = place.getProgram().getId();
 
-            // region: 처음 나온 값 사용
             regionMap.putIfAbsent(pid, place.getPlaceRegion());
 
-            // image: stay 타입의 첫 사진
             if (place.getPlaceType() == PlaceType.stay) {
                 imageMap.putIfAbsent(pid, place.getPlacePhoto1());
             }
         }
 
-        // 4. 불변 DTO 조립
-        List<ReviewDto> result = new ArrayList<>();
-        for (ReviewDto dto : reviews) {
-            result.add(
-                    dto.withRegionAndImage(
-                            regionMap.get(dto.getProgramId()),
-                            imageMap.get(dto.getProgramId())
-                    )
-            );
-        }
-
-        return result;
+        // 4) 불변 DTO 조립
+        return reviews.stream()
+                .map(dto -> dto.withRegionAndImage(
+                        regionMap.get(dto.programId()),   // ✅ record accessor
+                        imageMap.get(dto.programId())
+                ))
+                .toList();
     }
-
-
 }

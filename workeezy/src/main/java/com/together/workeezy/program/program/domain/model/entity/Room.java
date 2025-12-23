@@ -1,26 +1,19 @@
 package com.together.workeezy.program.program.domain.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "tb_room")
 public class Room {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_id", nullable = false)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
@@ -30,13 +23,35 @@ public class Room {
     @Column(name = "room_people")
     private Integer roomPeople;
 
-    @Size(max = 1000)
     @Column(name = "room_service", length = 1000)
     private String roomService;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "room_type")
+    @Column(name = "room_type", nullable = false)
     private RoomType roomType;
 
+    protected Room() {
+        // JPA
+    }
 
+    public Room(Place place, RoomType roomType, Integer roomNo, Integer roomPeople, String roomService) {
+        this.place = place;
+        this.roomType = roomType;
+        this.roomNo = roomNo;
+        this.roomPeople = roomPeople;
+        this.roomService = roomService;
+    }
+
+    // 도메인 행위(의미 있는 변경만)
+    public void changeCapacity(Integer roomPeople) {
+        this.roomPeople = roomPeople;
+    }
+
+    public void changeService(String roomService) {
+        this.roomService = roomService;
+    }
+
+    public void changeRoomType(RoomType roomType) {
+        this.roomType = roomType;
+    }
 }

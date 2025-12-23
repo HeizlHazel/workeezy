@@ -3,17 +3,18 @@ package com.together.workeezy.program.program.application.service;
 import com.together.workeezy.program.program.domain.model.entity.Place;
 import com.together.workeezy.program.program.domain.model.entity.PlaceType;
 import com.together.workeezy.program.program.domain.model.entity.Program;
-import com.together.workeezy.program.program.interfaces.dto.*;
+import com.together.workeezy.program.program.domain.model.entity.Room;
 import com.together.workeezy.program.program.domain.repository.PlaceRepository;
 import com.together.workeezy.program.program.domain.repository.ProgramRepository;
+import com.together.workeezy.program.program.interfaces.dto.*;
+import com.together.workeezy.program.review.application.service.ReviewService;
 import com.together.workeezy.search.domain.model.repository.RoomRepository;
-//import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +24,7 @@ public class ProgramService {
     private final ProgramRepository programRepository;
     private final PlaceRepository placeRepository;
     private final RoomRepository roomRepository;
+    private final ReviewService reviewService;
 
     /**
      * 🔍 검색 기능 — 기존 코드 유지
@@ -53,20 +55,44 @@ public class ProgramService {
                 .toList();
     }
 
-
-
     /**
-     * ⭐ 상세 조회 기능
+     * ⭐ 상세 조회 기능 (✅ N+1 제거) - 동작 그대로, 조립만 분리
      */
     public ProgramDetailResponseDto getProgramDetail(Long programId) {
 
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
 
-        // 장소 조회
+        // 장소 조회 (1번)
         List<Place> places = placeRepository.findByProgramId(programId);
 
-        // stay / office 찾기
+        // ✅ rooms를 placeIds로 한 번에 조회 (너 코드 그대로)
+        List<Long> placeIds = places.stream()
+                .map(Place::getId)
+                .toList();
+
+        Map<Long, List<RoomDto>> roomsByPlaceId = Collections.emptyMap();
+
+        if (!placeIds.isEmpty()) {
+            List<Room> rooms = roomRepository.findByPlaceIdIn(placeIds); // (1번)
+
+            roomsByPlaceId = rooms.stream()
+                    .collect(Collectors.groupingBy(
+                            r -> r.getPlace().getId(),
+                            Collectors.mapping(
+                                    r -> new RoomDto(
+                                            r.getId(),
+                                            r.getRoomNo(),
+                                            r.getRoomPeople(),
+                                            r.getRoomService(),
+                                            r.getRoomType()
+                                    ),
+                                    Collectors.toList()
+                            )
+                    ));
+        }
+
+        // stay / office 찾기 (너 코드 그대로)
         Place stay = places.stream()
                 .filter(p -> p.getPlaceType() == PlaceType.stay)
                 .findFirst()
@@ -77,56 +103,15 @@ public class ProgramService {
                 .findFirst()
                 .orElse(null);
 
-        // ⭐ 메인 이미지 (숙소 1번 사진)
+        // ⭐ 메인 이미지 (숙소 1번 사진) - 그대로
         String mainImage = (stay != null) ? stay.getPlacePhoto1() : null;
 
-        // ⭐ 서브 이미지 구성
-        List<String> subImages = new ArrayList<>();
-        if (stay != null) {
-            if (stay.getPlacePhoto2() != null) subImages.add(stay.getPlacePhoto2());
-            if (stay.getPlacePhoto3() != null) subImages.add(stay.getPlacePhoto3());
-        }
-        if (office != null) {
-            if (office.getPlacePhoto1() != null) subImages.add(office.getPlacePhoto1());
-            if (office.getPlacePhoto2() != null) subImages.add(office.getPlacePhoto2());
-        }
-        if (subImages.size() > 4) subImages = subImages.subList(0, 4);
+        // ⭐ 서브 이미지 - Assembler로 이동(결과 동일)
+        List<String> subImages = ProgramDetailAssembler.buildSubImages(stay, office);
 
-        // 장소별 분류
-        PlaceDto hotel = null;
-        List<PlaceDto> offices = new ArrayList<>();
-        List<PlaceDto> attractions = new ArrayList<>();
-
-        for (Place p : places) {
-
-            List<RoomDto> roomDtos = roomRepository.findByPlaceId(p.getId())
-                    .stream()
-                    .map(r -> new RoomDto(
-                            r.getId(),
-                            r.getRoomNo(),
-                            r.getRoomPeople(),
-                            r.getRoomService(),
-                            r.getRoomType()
-                    )).toList();
-
-            PlaceDto dto = new PlaceDto(
-                    p.getId(),
-                    p.getName(),
-                    p.getPlaceAddress(),
-                    p.getPlacePhone(),
-                    p.getPlacePhoto1(),
-                    p.getPlacePhoto2(),
-                    p.getPlacePhoto3(),
-                    p.getPlaceEquipment(),
-                    p.getPlaceType(),
-                    p.getPlaceRegion(),
-                    roomDtos
-            );
-
-            if (p.getPlaceType() == PlaceType.stay) hotel = dto;
-            if (p.getPlaceType() == PlaceType.office) offices.add(dto);
-            if (p.getPlaceType() == PlaceType.attraction) attractions.add(dto);
-        }
+        // 장소별 DTO 조립 - Assembler로 이동(결과 동일)
+        ProgramDetailAssembler.PlacesSplit split =
+                ProgramDetailAssembler.splitPlacesToDtos(places, roomsByPlaceId);
 
         return new ProgramDetailResponseDto(
                 program.getId(),
@@ -136,44 +121,33 @@ public class ProgramService {
                 program.getProgramPrice(),
                 mainImage,
                 subImages,
-                hotel,
-                offices,
-                attractions,
+                split.hotel(),
+                split.offices(),
+                split.attractions(),
                 null   // ⭐ 리뷰는 이제 ReviewService에서 조회함
         );
     }
+
     public List<Program> getAllPrograms() {
         return programRepository.findAll();
     }
 
-    public List<ProgramCardDto> getProgramCards() {
+    public List<ProgramCardDto> getProgramCards(int limit) {
 
-        List<Program> programs = programRepository.findAll();
-
-        return programs.stream()
-                .map(p -> {
-
-                    // ⭐ region 조회
-                    String region = placeRepository.findRegionByProgramId(p.getId());
-
-                    // ⭐ 대표 사진 조회
-                    String photo = placeRepository.findPhotosByProgramId(p.getId())
-                            .stream().findFirst().orElse(null);
-
-                    return new ProgramCardDto(
-                            p.getId(),
-                            p.getTitle(),
-                            photo,
-                            p.getProgramPrice(),
-                            region
-                    );
-                })
+        return programRepository.findAllProgramCardsOrderByIdAsc(limit)
+                .stream()
+                .map(v -> new ProgramCardDto(
+                        v.getId(),
+                        v.getTitle(),
+                        v.getPhoto(),
+                        v.getPrice(),
+                        v.getRegion()
+                ))
                 .toList();
     }
 
 
-
-//    @Transactional(readOnly = true)
+    //    @Transactional(readOnly = true)
     public ProgramReservationInfoDto getProgramForReservation(Long programId) {
 
         Program program = programRepository.findById(programId)
@@ -190,7 +164,6 @@ public class ProgramService {
                 .filter(p -> p.getPlaceType() == PlaceType.office)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("오피스(OFFICE) 없음"));
-
 
         List<RoomSimpleDto> rooms = roomRepository.findByPlaceId(stay.getId())
                 .stream()

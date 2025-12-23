@@ -18,8 +18,6 @@ import java.util.List;
 public class ProgramController {
 
     private final ProgramService programService;
-    private final ReviewService reviewService;
-    private final ProgramRepository  programRepository;
 
     /** 전체 프로그램 조회 */
     @GetMapping
@@ -30,23 +28,13 @@ public class ProgramController {
     /** 프로그램 카드 목록 조회 */
     @GetMapping("/cards")
     public List<ProgramCardDto> getProgramCards() {
-        return programRepository.findAllProgramCardsOrderByIdAsc(100).stream() // limit은 적당히
-                .map(v -> new ProgramCardDto(v.getId(), v.getTitle(), v.getPhoto(), v.getPrice(), v.getRegion()))
-                .toList();
+        return programService.getProgramCards(100);
     }
-
 
     /** 프로그램 상세 조회 (상세페이지 전용) */
     @GetMapping("/{id}")
     public ProgramDetailResponseDto getProgramDetail(@PathVariable Long id) {
-
-        // 프로그램 상세 데이터
-        ProgramDetailResponseDto dto = programService.getProgramDetail(id);
-
-        // 상세페이지용 리뷰 리스트 주입
-        dto.setReviews(reviewService.getReviewsByProgramId(id));
-
-        return dto;
+        return programService.getProgramDetail(id);
     }
 
     /** 예약용 프로그램 정보 조회 */
@@ -57,3 +45,4 @@ public class ProgramController {
         return programService.getProgramForReservation(id);
     }
 }
+

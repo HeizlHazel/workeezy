@@ -9,8 +9,10 @@ import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    List<Room> findByPlaceId(Long placeId);   // 장소별 객실 조회
+    // 기존: 장소별 객실 조회
+    List<Room> findByPlaceId(Long placeId);
 
-    Optional<Object> findFirstByRoomType(RoomType roomType);
+    // ✅ ProgramService에서 이미 사용 중 (N+1 방지용)
+    List<Room> findByPlaceIdIn(List<Long> placeIds);
+
 }
-

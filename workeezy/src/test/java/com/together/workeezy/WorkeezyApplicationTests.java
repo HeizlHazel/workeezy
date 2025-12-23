@@ -11,9 +11,9 @@ class WorkeezyApplicationTests {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Test
-    void encodeTest() {
-        System.out.println(passwordEncoder.encode("1234"));
-    }
+//    @Test
+//    void encodeTest() {
+//        System.out.println(passwordEncoder.encode("1234"));
+//    }
 
 }

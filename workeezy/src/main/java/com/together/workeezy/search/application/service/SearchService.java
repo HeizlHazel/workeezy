@@ -68,7 +68,8 @@ public class SearchService {
             // 지역 필터 (프론트 필터)
             if (regions != null && !regions.isEmpty()) {
                 cards = cards.stream()
-                        .filter(c -> c.getRegion() != null && regions.contains(c.getRegion()))
+                        .filter(c -> c.region() != null && regions.contains(c.region()))
+
                         .toList();
             }
         }
