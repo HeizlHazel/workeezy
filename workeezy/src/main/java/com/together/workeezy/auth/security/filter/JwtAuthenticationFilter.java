@@ -88,6 +88,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Authentication 생성
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
 
+                if (auth != null) {
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    System.out.println("🔥 JWT 인증 성공: " + auth.getName());
+                    System.out.println("🔥 authorities = " + auth.getAuthorities());
+                } else {
+                    SecurityContextHolder.clearContext();
+                    System.out.println("❌ getAuthentication()이 null 반환");
+                }
+
                 System.out.println("🔥 auth 객체 = " + auth);
                 System.out.println("🔥 auth name = " + auth.getName());
                 System.out.println("🔥 auth authorities = " + auth.getAuthorities());
