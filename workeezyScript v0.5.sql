@@ -6,27 +6,23 @@
 
 # 12/11 업데이트 완
 
-# USE 사용DB명;
+ USE 사용자이름;
 
 -- 1. 외래 키 체크 해제
 SET FOREIGN_KEY_CHECKS = 0;
 
--- 2. 그룹 연결 길이 증가
 SET group_concat_max_len = 100000;
 
--- 3. 삭제할 테이블 목록 가져오기
 SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) INTO @tables
 FROM information_schema.tables
-# WHERE table_schema = '사용DB명';
+ WHERE table_schema = '사용자이름';
 
--- 4. 테이블이 존재할 때만 DROP 실행
 SET @drop_query = IF(@tables IS NOT NULL, CONCAT('DROP TABLE IF EXISTS ', @tables), 'SELECT "No tables to drop"');
 
 PREPARE stmt FROM @drop_query;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 5. 외래 키 체크 다시 활성화
 SET FOREIGN_KEY_CHECKS = 1;
 
 
@@ -47,19 +43,24 @@ CREATE TABLE IF NOT EXISTS tb_users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='사용자 테이블';
 
 # 프로그램 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_program (
-  program_id     BIGINT NOT NULL AUTO_INCREMENT COMMENT '프로그램 고유 식별자',
-  program_title  VARCHAR(100) NOT NULL              COMMENT '프로그램명',
-  program_info   TEXT NOT NULL                      COMMENT '프로그램 정보',
-  program_people INT NULL                           COMMENT '참여 인원수',
-  program_price  INT NULL                           COMMENT '단위 금액',
-  stay_id        BIGINT NULL                        COMMENT '숙소 ID',
-  office_id      BIGINT NULL                        COMMENT '오피스 ID',
-  attraction_id1 BIGINT NULL                        COMMENT '1번 추천 어트랙션 ID',
-  attraction_id2 BIGINT NULL                        COMMENT '2번 추천 어트랙션 ID',
-  attraction_id3 BIGINT NULL                        COMMENT '3번 추천 어트랙션 ID',
+CREATE TABLE tb_program (
+  program_id      BIGINT NOT NULL AUTO_INCREMENT COMMENT '프로그램 고유 식별자',
+  program_title   VARCHAR(100) NOT NULL COMMENT '프로그램명',
+  program_info    VARCHAR(1000) NOT NULL COMMENT '프로그램 설명',
+  program_people  INT NOT NULL COMMENT '참여 인원',
+  program_price   INT NOT NULL COMMENT '가격',
+
+  stay_id         BIGINT NULL COMMENT '숙소 place_id',
+  office_id       BIGINT NULL COMMENT '오피스 place_id',
+
+  attraction_id1 BIGINT NULL COMMENT '관광지 place_id 1',
+  attraction_id2 BIGINT NULL COMMENT '관광지 place_id 2',
+  attraction_id3 BIGINT NULL COMMENT '관광지 place_id 3',
+
   PRIMARY KEY (program_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='프로그램 테이블';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='워케이션 프로그램';
+
+
 
 # 예약 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_reservation (
@@ -149,21 +150,28 @@ CREATE TABLE IF NOT EXISTS tb_payment_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='결제 로그 테이블';
 
 # 장소 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_place (
-    place_id        BIGINT NOT NULL AUTO_INCREMENT				COMMENT '장소 고유 식별자',
-    program_id      BIGINT NOT NULL								COMMENT '프로그램 FK',
-    place_type      ENUM('stay', 'office', 'attraction') NULL 	COMMENT '장소 종류',
-    place_name      VARCHAR(100) NOT NULL 						COMMENT '장소명',
-    place_code      VARCHAR(100) NULL 							COMMENT '지역구분코드',
-    place_address   VARCHAR(1000) NULL 							COMMENT '숙소 주소',
-    place_phone     VARCHAR(15) NULL 							COMMENT '전화번호',
-    place_equipment VARCHAR(100) NULL 							COMMENT '부대시설',
-    place_photo1    VARCHAR(100) NULL 							COMMENT '썸네일',
-    place_photo2    VARCHAR(100) NULL 							COMMENT '사진2',
-    place_photo3    VARCHAR(100) NULL 							COMMENT '사진3',
-    attraction_url  VARCHAR(100) NULL 							COMMENT '어트랙션사이트URL',
-    PRIMARY KEY (place_id)
+CREATE TABLE tb_place (
+  place_id        BIGINT NOT NULL AUTO_INCREMENT COMMENT '장소 고유 식별자',
+  program_id      BIGINT NOT NULL COMMENT '프로그램 ID',
+
+  place_type      ENUM('stay','office','attraction') NOT NULL COMMENT '장소 타입',
+  place_name      VARCHAR(100) NOT NULL COMMENT '장소명',
+  place_code      VARCHAR(20) NULL COMMENT '장소 코드',
+  place_address   VARCHAR(255) NOT NULL COMMENT '주소',
+  place_phone     VARCHAR(30) NULL COMMENT '전화번호',
+  place_equipment VARCHAR(255) NULL COMMENT '비품/시설',
+
+  place_photo1    VARCHAR(255) NULL COMMENT '사진1',
+  place_photo2    VARCHAR(255) NULL COMMENT '사진2',
+  place_photo3    VARCHAR(255) NULL COMMENT '사진3',
+
+  attraction_url  VARCHAR(255) NULL COMMENT '어트랙션 URL',
+  place_region    VARCHAR(20) NOT NULL COMMENT '지역',
+
+  PRIMARY KEY (place_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='장소 테이블';
+
+
 
 # 추천 숙소(매핑) 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_search_program (
@@ -175,14 +183,20 @@ CREATE TABLE IF NOT EXISTS tb_search_program (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='추천 숙소 테이블';
 
 # 객실 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_room (
-    room_id      BIGINT NOT NULL AUTO_INCREMENT COMMENT '객실 고유 식별자',
-    place_id     BIGINT NOT NULL 				COMMENT '장소 FK',
-    room_no      INT NULL						COMMENT '객실 번호',
-    room_people  INT NULL						COMMENT '수용 가능 인원수',
-    room_service VARCHAR(1000) NULL				COMMENT '객실 시설',
-    PRIMARY KEY (room_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='객실 테이블';
+CREATE TABLE tb_room (
+  room_id      BIGINT NOT NULL AUTO_INCREMENT COMMENT '룸 고유 식별자',
+  place_id     BIGINT NOT NULL COMMENT '장소 ID',
+
+  room_no      INT NOT NULL COMMENT '호실',
+  room_people  INT NOT NULL COMMENT '수용 인원',
+  room_service VARCHAR(255) NULL COMMENT '서비스 설명',
+
+  room_type    ENUM('economy','standard','superior') NOT NULL COMMENT '룸 타입',
+
+  PRIMARY KEY (room_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='룸 테이블';
+
+
 
 # 검색어 테이블
 CREATE TABLE IF NOT EXISTS tb_search (
@@ -194,15 +208,19 @@ CREATE TABLE IF NOT EXISTS tb_search (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='검색 테이블';
 
 # 리뷰 테이블 생성
-CREATE TABLE IF NOT EXISTS tb_review (
-    review_id      BIGINT NOT NULL AUTO_INCREMENT 			COMMENT '리뷰 고유 식별자',
-    program_id     BIGINT NOT NULL 							COMMENT '프로그램 FK',
-    user_id        BIGINT NOT NULL 							COMMENT '유저 FK',
-    review_content TEXT NULL								COMMENT '내용',
-    review_date    TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP	COMMENT '작성일',
-    review_point   INT NULL DEFAULT 0 						COMMENT '별점',
-    PRIMARY KEY (review_id)
+CREATE TABLE tb_review (
+  review_id      BIGINT NOT NULL AUTO_INCREMENT COMMENT '리뷰 ID',
+  program_id     BIGINT NOT NULL COMMENT '프로그램 ID',
+  user_id        BIGINT NOT NULL COMMENT '작성자 ID',
+
+  review_content TEXT NOT NULL COMMENT '리뷰 내용',
+  review_point   INT NOT NULL COMMENT '별점',
+
+  created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성 시각',
+
+  PRIMARY KEY (review_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='리뷰 테이블';
+
 
 # 채팅 세션 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_chat_session (
@@ -472,31 +490,69 @@ INSERT INTO tb_login_history (user_id, login_ip, user_agent, login_status, fail_
 
 # 프로그램 관련 샘플 데이터
 INSERT INTO tb_program
-(program_title, program_info, program_people, program_price,
-stay_id, office_id, attraction_id1, attraction_id2, attraction_id3)
+(
+  program_id,
+  program_title,
+  program_info,
+  program_people,
+  program_price,
+  stay_id,
+  office_id,
+  attraction_id1,
+  attraction_id2,
+  attraction_id3
+)
 VALUES
-('강릉 워케이션 패키지', '해변 리조트 + 워크센터 + 관광 포함', 10, 300000, 1, 3, 4, 5, NULL),
-('가평 힐링 워케이션', '산속 펜션과 자연 관광', 8, 250000, 2, 3, 4, NULL, NULL),
-('강릉 스페셜', '숙소와 오피스를 함께 제공하는 기본 패키지', 5, 200000, 1, 3, NULL, NULL, NULL),
-('프리워커 패키지', '커피거리 중심의 자유 워케이션', 6, 180000, 1, 3, 5, NULL, NULL),
-('자연 힐링 패키지', '휴식 중심의 워케이션', 4, 150000, 2, 3, NULL, NULL, NULL);
+(1,  '부산 동구 워케이션',      '해변 리조트 + 워크센터 + 관광 포함',            10, 300000, 1,  3,  NULL, NULL, NULL),
+(2,  '가평 힐링 워케이션',      '산속 펜션과 자연 관광',                        8,  250000, 2,  3,  NULL, NULL, NULL),
+(3,  '강원 속초 워케이션',      '숙소와 오피스를 함께 제공하는 기본 패키지',     5,  200000, 6,  3,  NULL, NULL, NULL),
+(4,  '남해 지족 워케이션',      '커피거리 중심의 자유 워케이션',                6,  180000, 7,  NULL, NULL, NULL, NULL),
+(5,  '인천 포내 워케이션',      '휴식 중심의 워케이션',                        4,  150000, 8,  3,  NULL, NULL, NULL),
+(6,  '오키나와 워케이션',       '일본 여행과 워케이션을 함께 제공',              4,  220000, 9,  NULL, NULL, NULL, NULL),
+(7,  '서울 강남 워케이션',      '비즈니스 호텔 + 워크센터 + 카페거리',           8,  260000, 10, 11, NULL, NULL, NULL),
+(8,  '제주 바다 워케이션',      '리조트 + 워크센터 + 관광 패키지',               6,  280000, 13, 14, NULL, NULL, NULL),
+(9,  '속초 힐링 워케이션',      '오션뷰 휴식 + 워케이션 오피스',                 4,  190000, 6,  3,  NULL, NULL, NULL),
+(10, '부산 해운대 워케이션',    '해운대 숙소 + 카페형 오피스',                  4,  210000, 1,  3,  NULL, NULL, NULL),
+(11, '경주 역사 워케이션',      '한옥 숙소 + 유적지 관광',                      5,  200000, 2,  3,  NULL, NULL, NULL),
+(12, '여수 오션 워케이션',      '오션뷰 호텔 + 액티비티',                      6,  230000, 7,  NULL, NULL, NULL, NULL);
+
 
 INSERT INTO tb_place
-(program_id, place_type, place_name, place_code, place_address, place_phone,
- place_equipment, place_photo1, place_photo2, place_photo3, attraction_url)
+(
+  place_id,
+  program_id,
+  place_type,
+  place_name,
+  place_code,
+  place_address,
+  place_phone,
+  place_equipment,
+  place_photo1,
+  place_photo2,
+  place_photo3,
+  attraction_url,
+  place_region
+)
 VALUES
-(1, 'stay', '강릉 해변 리조트', 'ST01', '강원도 강릉시 해변로 100', '033-111-2222',
- '수영장,조식,바다전망', 'stay1_1.jpg', 'stay1_2.jpg', 'stay1_3.jpg', NULL),
-(2, 'stay', '가평 산속 힐링펜션', 'ST02', '경기도 가평군 힐링로 55', '031-222-3333',
- '바비큐장,스파,주차장', 'stay2_1.jpg', 'stay2_2.jpg', 'stay2_3.jpg', NULL),
-(1, 'office', '강릉 워케이션 오피스', 'OF01', '강원도 강릉시 사무로 88', '033-444-5555',
- '회의실,화이트보드,TV모니터', 'office1_1.jpg', 'office1_2.jpg', 'office1_3.jpg', NULL),
-(1, 'attraction', '경포대 해수욕장', 'AT01', '강릉시 해안로 145', NULL,
- NULL, 'attraction1_1.jpg', 'attraction1_2.jpg', 'attraction1_3.jpg', 
- 'https://visitgangneung.kr'),
-(4, 'attraction', '안목 커피거리', 'AT02', '강릉시 안목해변 일대', NULL,
- NULL, 'attraction2_1.jpg', 'attraction2_2.jpg', 'attraction2_3.jpg',
- 'https://coffee-gangneung.kr');
+(1,  1, 'stay',       '토요코인 부산역',                  'ST01', '부산 동구 중앙대로196번길 12 토요코인부산역',        '033-111-2222', '수영장,조식,바다전망',                 'public/부산동구/부산동구1.png',      'public/부산동구/부산동구2.png',      'public/부산동구/부산동구3.png',      NULL,                          '부산'),
+(2,  2, 'stay',       '가평 산속 힐링펜션',                'ST02', '경기도 가평군 힐링로 55',                          '031-222-3333', '바비큐장,스파,주차장',                  'public/가평/가평1.png',            'public/가평/가평2.png',            'public/가평/가평3.png',            NULL,                          '경기'),
+(3,  1, 'office',     '부산 워케이션 오피스',              'OF01', '부산 동구 중앙대로214번길 7',                        '033-444-5555', '회의실,화이트보드,TV모니터',             'public/부산동구/부산동구웤1.png',    'public/부산동구/부산동구웤2.png',    'public/부산동구/부산동구웤3.png.jpg', NULL,                         '부산'),
+(4,  3, 'attraction', '경포대 해수욕장',                   'AT01', '강원도 강릉시 사무로 88',                            NULL,           NULL,                                  'attraction1_1.jpg',                'attraction1_2.jpg',                'attraction1_3.jpg',                'https://visitgangneung.kr',        '강원'),
+(5,  3, 'attraction', '안목 커피거리',                     'AT02', '강원도 강릉시 안목해변 일대',                         NULL,           NULL,                                  'attraction2_1.jpg',                'attraction2_2.jpg',                'attraction2_3.jpg',                'https://coffee-gangneung.kr',      '강원'),
+(6,  3, 'stay',       '강원 속초 워케이션 호텔',            'ST06', '강원도 속초시 조양로 45',                            '033-552-7890', '바다전망,조식,와이파이,헬스장',         'public/강원속초/강원속초1.png',      'public/강원속초/강원속초2.png',      'public/강원속초/강원속초3.png',      NULL,                          '강원'),
+(7,  4, 'stay',       '남해 지족 오션뷰 리조트',            'ST07', '경상남도 남해군 지족면 지족리 101-3',                 '055-862-1234', '바다전망,조식,와이파이,주차장',         'public/남해지족/남해지족1.png',      'public/남해지족/남해지족2.png',      'public/남해지족/남해지족3.png',      NULL,                          '경남'),
+(8,  5, 'stay',       '인천 포내 워케이션 호텔',            'ST08', '인천 강화군 길상면 포내리 230-8',                     '032-441-9876', '와이파이,업무책상,미팅룸,조식',          'public/인천포내/인천포내1.png',      'public/인천포내/인천포내2.png',      'public/인천포내/인천포내3.png',      NULL,                          '인천'),
+(9,  6, 'stay',       '오키나와 나하 비치 호텔',            'ST09', '일본 오키나와현 나하시 3-12-7',                        '+81-98-123-4567', '바다전망,수영장,레스토랑,와이파이',    'public/오키나와나하/나하1.png',      'public/오키나와나하/나하2.png',      'public/오키나와나하/나하3.png',      'https://www.okinawastory.jp',      '해외'),
+(10, 7, 'stay',       '서울 강남 비즈니스 호텔',            'ST10', '서울 강남구 테헤란로 311',                            '02-123-4567',  '조식, 와이파이, 업무책상',               'public/강남/강남1.png',             'public/강남/강남2.png',             'public/강남/강남3.png',             NULL,                          '서울'),
+(11, 7, 'office',     '강남 워크센터',                      'OF02', '서울 강남구 봉은사로 423',                            '02-223-8899',  '회의실, 빔프로젝터, 라운지',             'public/강남오피스/오피1.png',         'public/강남오피스/오피2.png',         'public/강남오피스/오피3.png',         NULL,                         '서울'),
+(12, 7, 'attraction', '청담 카페거리',                      'AT10', '서울 강남구 청담동 일대',                             NULL,           NULL,                                  'attraction10_1.jpg',               'attraction10_2.jpg',               'attraction10_3.jpg',               'https://seoulcafe.kr',             '서울'),
+(13, 8, 'stay',       '제주 바다 전망 리조트',              'ST11', '제주 서귀포시 중문관광로 120',                        '064-777-8888', '바다전망, 수영장, 스파',                 'public/제주바다/제주1.png',          'public/제주바다/제주2.png',          'public/제주바다/제주3.png',          NULL,                         '제주'),
+(14, 8, 'office',     '제주 워케이션 센터',                 'OF03', '제주 제주시 첨단로 33',                               '064-123-9090', '회의실, 프린터, 휴게실',                 'public/제주바다/제주웤1.png',         'public/제주바다/제주웤2.png',         'public/제주바다/제주웤3.png',         NULL,                         '제주'),
+(15, 8, 'attraction', '용머리 해안',                        'AT11', '제주 서귀포시 안덕면',                                NULL,           NULL,                                  'attraction11_1.jpg',               'attraction11_2.jpg',               'attraction11_3.jpg',               'https://visitjeju.net',            '제주'),
+(16, 2, 'office',     '가평 자라섬 워케이션 센터',           'OF04', '경기 가평군 가평제방길 16',                            '033-552-7890', '오픈라운지 30석, 회의실 8석, 폰부스 8석',  'public/가평/가평웤1.png',            'public/가평/가평웤2.png',            'public/가평/가평웤3.png',            NULL,                         '경기'),
+(17, 3, 'office',     '체스터톤스 속초 노마드오피스',        'OF05', '강원 속초시 엑스포로 109',                             '033-552-7892', '좌석 50석',                               'public/속초/속초웤1.png',            'public/속초/속초웤2.png',            'public/속초/속초웤3.png',            NULL,                         '강원'),
+(18, 4, 'office',     '지족 어촌체험휴양마을 공유오피스',     'OF06', '경남 남해군 죽방로 24',                                '033-552-7893', '좌석 50석',                               'public/남해지족/남해지족웤1.png',      'public/남해지족/남해지족웤2.png',      'public/남해지족/남해지족웤3.png',      NULL,                         '경남');
+
 
 INSERT INTO tb_review
 (program_id, user_id, review_content, review_point)
@@ -677,344 +733,5 @@ INSERT INTO tb_payment_logs (payment_id, response_data, event_type, http_status)
 
 
 
-
-# 예약 테이블에 예약인원수 컬럼 추가 - 생성구문 아래 추가해둠
-
-# 프로그램 테이블 프로그램 정보 데이터 타입 변경
-ALTER TABLE tb_program MODIFY COLUMN program_info VARCHAR(1000) not null;
-
-# 장소 테이블 장소 이름 데이터 타입 변경
-ALTER TABLE tb_place MODIFY COLUMN place_name VARCHAR(100) not null;
-
-#장소테이블 지역추가
-ALTER TABLE tb_place
-ADD COLUMN place_region VARCHAR(50);
-
-update tb_place
-set place_address = '강원도 강릉시 사무로 88'
-where place_code = 'AT01';
-
-update tb_place
-set place_address = '강원도 강릉시 안목해변 일대'
-where place_code = 'AT02';
-
-update tb_place
-set place_region = '경기'
-where place_address like '%경기%';
-
-update tb_place
-set place_region = '강원'
-where place_address like '%강원%';
-
-update tb_place
-set place_region = '인천'
-where place_address like '%인천%';
-
-update tb_place
-set place_region = '경남'
-where place_address like '%경상남도%';
-
-update tb_place
-set place_region = '해외'
-where place_address like '%일본%';
-
-#룸타입 추가
-ALTER TABLE tb_room
-ADD COLUMN room_type ENUM('economy', 'standard', 'superior') NULL;
-
-#tb_place 샘플데이터 업데이트구문
-
-UPDATE tb_place SET
-    program_id = 1,
-    place_type = 'stay',
-    place_name = '토요코인 부산역',
-    place_code = 'ST01',
-    place_address = '부산 동구 중앙대로196번길 12 토요코인부산역',
-    place_phone = '033-111-2222',
-    place_equipment = '수영장,조식,바다전망',
-    place_photo1 = 'public/부산동구/부산동구1.png',
-    place_photo2 = 'public/부산동구/부산동구2.png',
-    place_photo3 = 'public/부산동구/부산동구3.png',
-    attraction_url = NULL,
-    place_region = '부산'
-WHERE place_id = 1;
-
-UPDATE tb_place SET
-    program_id = 2,
-    place_type = 'stay',
-    place_name = '가평 산속 힐링펜션',
-    place_code = 'ST02',
-    place_address = '경기도 가평군 힐링로 55',
-    place_phone = '031-222-3333',
-    place_equipment = '바비큐장,스파,주차장',
-    place_photo1 = 'public/가평/가평1.png',
-    place_photo2 = 'public/가평/가평2.png',
-    place_photo3 = 'public/가평/가평3.png',
-    attraction_url = NULL,
-    place_region = '경기'
-WHERE place_id = 2;
-
-UPDATE tb_place SET
-    program_id = 1,
-    place_type = 'office',
-    place_name = '부산 워케이션 오피스',
-    place_code = 'OF01',
-    place_address = '강원도 강릉시 사무로 88',
-    place_phone = '033-444-5555',
-    place_equipment = '회의실,화이트보드,TV모니터',
-    place_photo1 = 'public/부산동구/부산동구웤1.png',
-    place_photo2 = 'public/부산동구/부산동구웤2.png',
-    place_photo3 = 'public/부산동구/부산동구웤3.png.jpg',
-    attraction_url = NULL,
-    place_region = '부산'
-WHERE place_id = 3;
-
-UPDATE tb_place SET
-    program_id = 1,
-    place_type = 'attraction',
-    place_name = '경포대 해수욕장',
-    place_code = 'AT01',
-    place_address = '강원도 강릉시 사무로 88',
-    place_phone = NULL,
-    place_equipment = NULL,
-    place_photo1 = 'attraction1_1.jpg',
-    place_photo2 = 'attraction1_2.jpg',
-    place_photo3 = 'attraction1_3.jpg',
-    attraction_url = 'https://visitgangneung.kr',
-    place_region = '강원'
-WHERE place_id = 4;
-
-UPDATE tb_place SET
-    program_id = 1,
-    place_type = 'attraction',
-    place_name = '안목 커피거리',
-    place_code = 'AT02',
-    place_address = '강원도 강릉시 안목해변 일대',
-    place_phone = NULL,
-    place_equipment = NULL,
-    place_photo1 = 'attraction2_1.jpg',
-    place_photo2 = 'attraction2_2.jpg',
-    place_photo3 = 'attraction2_3.jpg',
-    attraction_url = 'https://coffee-gangneung.kr',
-    place_region = '강원'
-WHERE place_id = 5;
-
-UPDATE tb_place SET
-    program_id = 3,
-    place_type = 'stay',
-    place_name = '강원 속초 워케이션 호텔',
-    place_code = 'ST06',
-    place_address = '강원도 속초시 조양로 45',
-    place_phone = '033-552-7890',
-    place_equipment = '바다전망,조식,와이파이,헬스장',
-    place_photo1 = 'public/강원속초/강원속초1.png',
-    place_photo2 = 'public/강원속초/강원속초2.png',
-    place_photo3 = 'public/강원속초/강원속초3.png',
-    attraction_url = NULL,
-    place_region = '강원'
-WHERE place_id = 6;
-
-UPDATE place SET
-    program_id = 4,
-    place_type = 'stay',
-    place_name = '남해 지족 오션뷰 리조트',
-    place_code = 'ST07',
-    place_address = '경상남도 남해군 지족면 지족리 101-3',
-    place_phone = '055-862-1234',
-    place_equipment = '바다전망,조식,와이파이,주차장',
-    place_photo1 = 'public/남해지족/남해지족1.png',
-    place_photo2 = 'public/남해지족/남해지족2.png',
-    place_photo3 = 'public/남해지족/남해지족3.png',
-    attraction_url = NULL,
-    place_region = '경남'
-WHERE place_id = 7;
-
-UPDATE tb_place SET
-    program_id = 5,
-    place_type = 'stay',
-    place_name = '인천 포내 워케이션 호텔',
-    place_code = 'ST08',
-    place_address = '인천 강화군 길상면 포내리 230-8',
-    place_phone = '032-441-9876',
-    place_equipment = '와이파이,업무책상,미팅룸,조식',
-    place_photo1 = 'public/인천포내/인천포내1.png',
-    place_photo2 = 'public/인천포내/인천포내2.png',
-    place_photo3 = 'public/인천포내/인천포내3.png',
-    attraction_url = NULL,
-    place_region = '인천'
-WHERE place_id = 8;
-
-UPDATE tb_place SET
-    program_id = 6,
-    place_type = 'stay',
-    place_name = '오키나와 나하 비치 호텔',
-    place_code = 'ST09',
-    place_address = '일본 오키나와현 나하시 3-12-7',
-    place_phone = '+81-98-123-4567',
-    place_equipment = '바다전망,수영장,레스토랑,와이파이',
-    place_photo1 = 'public/오키나와나하/나하1.png',
-    place_photo2 = 'public/오키나와나하/나하2.png',
-    place_photo3 = 'public/오키나와나하/나하3.png',
-    attraction_url = 'https://www.okinawastory.jp',
-    place_region = '해외'
-WHERE place_id = 9;
-#tb_program 샘플데이터 구문
-UPDATE tb_program SET
-    program_title = '부산 동구 워케이션',
-    program_info = '해변 리조트 + 워크센터 + 관광 포함',
-    program_people = 10,
-    program_price = 300000,
-    stay_id = 1,
-    office_id = 3,
-    attraction_id1 = 4,
-    attraction_id2 = 5,
-    attraction_id3 = NULL
-WHERE program_id = 1;
-
-UPDATE tb_program SET
-    program_title = '가평 힐링 워케이션',
-    program_info = '산속 펜션과 자연 관광',
-    program_people = 8,
-    program_price = 250000,
-    stay_id = 2,
-    office_id = 3,
-    attraction_id1 = 4,
-    attraction_id2 = NULL,
-    attraction_id3 = NULL
-WHERE program_id = 2;
-
-UPDATE tb_program SET
-    program_title = '강원 속초 워케이션',
-    program_info = '숙소와 오피스를 함께 제공하는 기본 패키지',
-    program_people = 5,
-    program_price = 200000,
-    stay_id = 6,
-    office_id = 3,
-    attraction_id1 = NULL,
-    attraction_id2 = NULL,
-    attraction_id3 = NULL
-WHERE program_id = 3;
-
-UPDATE tb_program SET
-    program_title = '남해 지족 워케이션',
-    program_info = '커피거리 중심의 자유 워케이션',
-    program_people = 6,
-    program_price = 180000,
-    stay_id = 7,
-    office_id = NULL,
-    attraction_id1 = NULL,
-    attraction_id2 = NULL,
-    attraction_id3 = NULL
-WHERE program_id = 4;
-
-UPDATE tb_program SET
-    program_title = '인천 포내 워케이션',
-    program_info = '휴식 중심의 워케이션',
-    program_people = 4,
-    program_price = 150000,
-    stay_id = 8,
-    office_id = 3,
-    attraction_id1 = NULL,
-    attraction_id2 = NULL,
-    attraction_id3 = NULL
-WHERE program_id = 5;
-
-UPDATE tb_program SET
-    program_title = '오키나와 워케이션',
-    program_info = '일본 여행과 워케이션을 함께 제공',
-    program_people = 4,
-    program_price = 220000,
-    stay_id = 9,
-    office_id = NULL,
-    attraction_id1 = NULL,
-    attraction_id2 = NULL,
-    attraction_id3 = NULL
-WHERE program_id = 6;
-#tb_room 룸타입 수정
-UPDATE tb_room SET
-    room_type = 'economy'
-WHERE room_id = 1;
-
-UPDATE tb_room SET
-    room_type = 'standard'
-WHERE room_id = 2;
-
-UPDATE tb_room SET
-    room_type = 'standard'
-WHERE room_id = 3;
-
-UPDATE tb_room SET
-    room_type = 'superior'
-WHERE room_id = 4;
-
-UPDATE tb_room SET
-    room_type = 'economy'
-WHERE room_id = 5;
-
-#프로그램, 장소 샘플데이터 추가
-
-INSERT INTO tb_program
-(program_id, program_title, program_info, program_people, program_price,
- stay_id, office_id, attraction_id1, attraction_id2, attraction_id3)
-VALUES
-(7, '서울 강남 워케이션', '비즈니스 호텔 + 워크센터 + 카페거리',
- 8, 260000, 10, 11, 12, NULL, NULL),
-
-(8, '제주 바다 워케이션', '리조트 + 워크센터 + 관광 패키지',
- 6, 280000, 13, 14, 15, NULL, NULL),
-
-(9, '속초 힐링 워케이션', '오션뷰 휴식 + 워케이션 오피스',
- 4, 190000, 6, 3, NULL, NULL, NULL),
-
-(10, '부산 해운대 워케이션', '해운대 숙소 + 카페형 오피스',
- 4, 210000, 1, 3, 4, NULL, NULL),
-
-(11, '경주 역사 워케이션', '한옥 숙소 + 유적지 관광',
- 5, 200000, 2, 3, 4, 5, NULL),
-
-(12, '여수 오션 워케이션', '오션뷰 호텔 + 액티비티',
- 6, 230000, 7, NULL, NULL, NULL, NULL);
-
-
-INSERT INTO tb_place
-(place_id, program_id, place_type, place_name, place_code, place_address,
- place_phone, place_equipment, place_photo1, place_photo2, place_photo3,
- attraction_url, place_region)
-VALUES
-(10, 7, 'stay', '서울 강남 비즈니스 호텔', 'ST10',
- '서울 강남구 테헤란로 311', '02-123-4567', '조식, 와이파이, 업무책상',
- 'public/강남/강남1.png', 'public/강남/강남2.png', 'public/강남/강남3.png',
- NULL, '서울'),
-
-(11, 7, 'office', '강남 워크센터', 'OF02',
- '서울 강남구 봉은사로 423', '02-223-8899', '회의실, 빔프로젝터, 라운지',
- 'public/강남오피스/오피1.png', 'public/강남오피스/오피2.png', 'public/강남오피스/오피3.png',
- NULL, '서울'),
-
-(12, 7, 'attraction', '청담 카페거리', 'AT10',
- '서울 강남구 청담동 일대', NULL, NULL,
- 'attraction10_1.jpg', 'attraction10_2.jpg', 'attraction10_3.jpg',
- 'https://seoulcafe.kr', '서울'),
-
-(13, 8, 'stay', '제주 바다 전망 리조트', 'ST11',
- '제주 서귀포시 중문관광로 120', '064-777-8888', '바다전망, 수영장, 스파',
- 'public/제주/제주1.png', 'public/제주/제주2.png', 'public/제주/제주3.png',
- NULL, '제주'),
-
-(14, 8, 'office', '제주 워케이션 센터', 'OF03',
- '제주 제주시 첨단로 33', '064-123-9090', '회의실, 프린터, 휴게실',
- 'public/제주오피스/오피1.png', 'public/제주오피스/오피2.png', 'public/제주오피스/오피3.png',
- NULL, '제주'),
-
-(15, 8, 'attraction', '용머리 해안', 'AT11',
- '제주 서귀포시 안덕면', NULL, NULL,
- 'attraction11_1.jpg', 'attraction11_2.jpg', 'attraction11_3.jpg',
- 'https://visitjeju.net', '제주');
-
-delete from tb_room 
-where place_id = 3;
-
-update tb_program
-set attraction_id1 = null , attraction_id2 = null;
 
 commit;
