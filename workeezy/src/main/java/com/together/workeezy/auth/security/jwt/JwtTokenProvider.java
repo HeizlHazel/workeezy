@@ -90,6 +90,7 @@ public class JwtTokenProvider {
         return getClaims(token).getSubject();
     }
 
+    // 관리자/권한 분기용 (현재 미사용)
     public String getRoleFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -136,18 +137,24 @@ public class JwtTokenProvider {
         return getClaims(token).get("userId", Long.class);
     }
 
-    // Access/Refresh 토큰 남은 만료시간(ms) 계산
-    public long getRemainingExpiration(String token) {
-        try {
-            Claims claims = getClaims(token);
-            Date expiration = claims.getExpiration();
-            long now = System.currentTimeMillis();
-
-            long diff = expiration.getTime() - now;
-            return Math.max(diff, 0); // 음수 방지
-        } catch (Exception e) {
-            return 0; // 만료된 토큰이면 0 리턴
-        }
+    // Access Token 만료시간(ms)
+    public long getAccessExpiration() {
+        return accessExpiration;
     }
+
+    // refresh 고도화 시 사용 예정
+    // Access/Refresh 토큰 남은 만료시간(ms) 계산
+//    public long getRemainingExpiration(String token) {
+//        try {
+//            Claims claims = getClaims(token);
+//            Date expiration = claims.getExpiration();
+//            long now = System.currentTimeMillis();
+//
+//            long diff = expiration.getTime() - now;
+//            return Math.max(diff, 0); // 음수 방지
+//        } catch (Exception e) {
+//            return 0; // 만료된 토큰이면 0 리턴
+//        }
+//    }
 }
 
