@@ -5,9 +5,11 @@ import com.together.workeezy.program.review.interfaces.dto.ReviewDto;
 import com.together.workeezy.program.review.application.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
@@ -21,9 +23,14 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createReview(@RequestBody ReviewCreateRequest dto) {
+    public ResponseEntity<String> createReview(
+            @RequestBody ReviewCreateRequest dto,
+            Authentication authentication
+    ) {
+        String email = authentication.getName(); // 인증된 사용자 이메일
 
-        reviewService.createReview(dto);
+        reviewService.createReview(dto, email);
+
         return ResponseEntity.ok("리뷰 등록 완료");
     }
 
