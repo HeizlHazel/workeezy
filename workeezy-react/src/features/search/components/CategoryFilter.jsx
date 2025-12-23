@@ -1,9 +1,11 @@
 import "./CategoryFilter.css";
-import { useSearch } from "../context/SearchContext.jsx";
 
-export default function CategoryFilter() {
-    const { bigRegion, smallRegions, setBigRegion, setSmallRegions } = useSearch();
-
+export default function CategoryFilter({
+                                           bigRegion,
+                                           smallRegions,
+                                           setBigRegion,
+                                           setSmallRegions,
+                                       }) {
     const bigCategories = ["수도권", "영남권", "호남권", "충청권", "강원권", "제주", "해외"];
 
     const smallCategoryMap = {
@@ -25,13 +27,13 @@ export default function CategoryFilter() {
                     className={`all-btn ${bigRegion === "전체" ? "active" : ""}`}
                     onClick={() => {
                         setBigRegion("전체");
-                        setSmallRegions([]); // 안전하게 한 번 더
+                        setSmallRegions([]);
                     }}
                 >
                     전체
                 </button>
 
-                {bigRegion === "전체" && (
+                {bigRegion === "전체" ? (
                     <div className="category-buttons">
                         {bigCategories.map((c) => (
                             <button
@@ -46,9 +48,7 @@ export default function CategoryFilter() {
                             </button>
                         ))}
                     </div>
-                )}
-
-                {bigRegion !== "전체" && (
+                ) : (
                     <div className="category-buttons">
                         {smallList.map((s) => (
                             <button
