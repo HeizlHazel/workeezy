@@ -42,7 +42,7 @@ public class AdminReservationDetailDto {
             String stayName,
             RoomType roomType,
             String officeName
-            // 가격?
+            // 프로그램 가격?
     ) {
         this.reservationId = reservationId;
         this.reservationNo = reservationNo;

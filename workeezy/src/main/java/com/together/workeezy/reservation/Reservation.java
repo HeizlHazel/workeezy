@@ -235,4 +235,41 @@ public class Reservation {
         }
     }
 
+    // ==================================== 관리자 행위 =================================
+
+
+    // 예약 승인 (waiting_payment → approved)
+    public void approve() {
+        if (this.status != ReservationStatus.waiting_payment) {
+            throw new IllegalStateException("결제 대기 상태에서만 승인할 수 있습니다.");
+        }
+        this.status = ReservationStatus.approved;
+    }
+
+    // 예약 반려 (waiting_payment → rejected)
+    public void reject(String reason) {
+        if (this.status != ReservationStatus.waiting_payment) {
+            throw new IllegalStateException("결제 대기 상태에서만 반려할 수 있습니다.");
+        }
+        this.status = ReservationStatus.rejected;
+        this.rejectReason = reason;
+    }
+
+    // 취소 승인 (cancel_requested → cancelled)
+    public void approveCancel() {
+        if (this.status != ReservationStatus.cancel_requested) {
+            throw new IllegalStateException("취소 요청 상태에서만 취소 승인할 수 있습니다.");
+        }
+        this.status = ReservationStatus.cancelled;
+    }
+
+    // 취소 반려 (cancel_requested → confirmed)
+    public void rejectCancel(String reason) {
+        if (this.status != ReservationStatus.cancel_requested) {
+            throw new IllegalStateException("취소 요청 상태에서만 취소 반려할 수 있습니다.");
+        }
+        this.status = ReservationStatus.confirmed;
+        this.rejectReason = reason;
+    }
+
 }
