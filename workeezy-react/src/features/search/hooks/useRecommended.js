@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import api from "../../../api/axios.js";
 
 export default function useRecommended() {
@@ -16,10 +16,7 @@ export default function useRecommended() {
 
     const fetchAndAppend = async () => {
         try {
-            const token = localStorage.getItem("accessToken");
-            const res = await api.get("/api/recommendations/recent", {
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
+            const res = await api.get("/api/recommendations/recent");
 
             setRecommended((prev) => {
                 const used = new Set(prev.map((p) => p.id));
@@ -31,5 +28,5 @@ export default function useRecommended() {
         }
     };
 
-    return { recommended, fetchAndAppend };
+    return {recommended, fetchAndAppend};
 }
