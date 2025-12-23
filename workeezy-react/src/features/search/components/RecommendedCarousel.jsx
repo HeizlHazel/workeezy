@@ -2,8 +2,11 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import RecommendedCard from "./RecommendedCard";
 import "./RecommendecCarousel.css";
+import { useSearch } from "../context/SearchContext.jsx";
 
-export default function RecommendedCarousel({ items = [] }) {
+export default function RecommendedCarousel() {
+    const { recommended } = useSearch();
+
     const listRef = useRef(null);
     const autoPlayRef = useRef(null);
     const navigate = useNavigate();
@@ -38,27 +41,25 @@ export default function RecommendedCarousel({ items = [] }) {
     };
 
     useEffect(() => {
-        if (items.length === 0) return;
+        if (recommended.length === 0) return;
         autoPlayRef.current = setInterval(() => scroll("right"), 3000);
         return () => autoPlayRef.current && clearInterval(autoPlayRef.current);
-    }, [items]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [recommended]);
 
-    if (items.length === 0) return null;
+    if (recommended.length === 0) return null;
 
     return (
         <section className="recommend-section">
             <h2 className="recommend-section-title">다른 지역은 어떠세요?</h2>
 
             <div className="recommend-carousel">
-                <button
-                    className="recommend-arrow recommend-arrow-left"
-                    onClick={() => scroll("left")}
-                >
+                <button className="recommend-arrow recommend-arrow-left" onClick={() => scroll("left")}>
                     ‹
                 </button>
 
                 <div className="recommend-list" ref={listRef}>
-                    {items.map((p) => (
+                    {recommended.map((p) => (
                         <RecommendedCard
                             key={p.id}
                             id={p.id}
@@ -71,10 +72,7 @@ export default function RecommendedCarousel({ items = [] }) {
                     ))}
                 </div>
 
-                <button
-                    className="recommend-arrow recommend-arrow-right"
-                    onClick={() => scroll("right")}
-                >
+                <button className="recommend-arrow recommend-arrow-right" onClick={() => scroll("right")}>
                     ›
                 </button>
             </div>

@@ -1,25 +1,28 @@
 import { useMemo } from "react";
 import KoreaSvgMap from "./KoreaSvgMap.jsx";
 import "./MapView.css";
+import { useSearch } from "../context/SearchContext.jsx";
 
-export default function MapView({ programs = [] }) {
+export default function MapView() {
+    const { filteredPrograms } = useSearch();
+
     const counts = useMemo(() => {
-        return programs.reduce((acc, p) => {
+        return filteredPrograms.reduce((acc, p) => {
             const r = p?.region;
             if (!r) return acc;
             acc[r] = (acc[r] || 0) + 1;
             return acc;
         }, {});
-    }, [programs]);
+    }, [filteredPrograms]);
 
     const programsByRegion = useMemo(() => {
-        return programs.reduce((acc, p) => {
+        return filteredPrograms.reduce((acc, p) => {
             const r = p?.region;
             if (!r) return acc;
             (acc[r] ||= []).push(p);
             return acc;
         }, {});
-    }, [programs]);
+    }, [filteredPrograms]);
 
     return (
         <div className="map-wrap">
