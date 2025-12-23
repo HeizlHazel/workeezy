@@ -139,7 +139,7 @@ select new com.together.workeezy.reservation.dto.AdminReservationDetailDto(
         select pl.name
         from Place pl
         where pl.program = p
-          and pl.placeType = com.together.workeezy.program.entity.PlaceType.office
+          and pl.placeType = com.together.workeezy.program.program.domain.model.entity.PlaceType.office
     )
 )
 from Reservation r
