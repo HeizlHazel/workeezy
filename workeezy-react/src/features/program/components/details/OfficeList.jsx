@@ -1,14 +1,12 @@
 import "./OfficeList.css";
+import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
+import useImagePath from "../../hooks/useImagePath.js";
 
-export default function OfficeList({ offices = [] }) {
-    if (offices.length === 0) return null;
+export default function OfficeList() {
+    const { offices } = useProgramDetail();
+    const { fixPath } = useImagePath();
 
-    const getImage = (url) => {
-        if (!url) return null;
-        return url.startsWith("public/")
-            ? "/" + url.replace("public/", "")
-            : url;
-    };
+    if (!offices || offices.length === 0) return null;
 
     return (
         <section className="OfficeList">
@@ -18,13 +16,7 @@ export default function OfficeList({ offices = [] }) {
 
             {offices.map((o) => (
                 <div key={o.id} className="pd-office-card">
-
-                    {/* 🔥 여기 수정! 변환된 경로 getImage 적용 */}
-                    <img
-                        src={getImage(o.photo1)}
-                        className="pd-office-img"
-                        alt={o.name}
-                    />
+                    <img src={fixPath(o.photo1) ?? ""} className="pd-office-img" alt={o.name} />
 
                     <div className="pd-office-info">
                         <div className="pd-office-title">{o.name}</div>

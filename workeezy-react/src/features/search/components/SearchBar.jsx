@@ -1,11 +1,12 @@
 import "./SearchBar.css";
+import { useSearch } from "../context/SearchContext.jsx";
 
-export default function SearchBar({ value, onChange, onSearch }) {
+export default function SearchBar() {
+    const { searchInput, setSearchInput, submitSearch } = useSearch();
 
-    // Enter 키로 검색 실행
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
-            onSearch();
+            submitSearch();
         }
     };
 
@@ -15,15 +16,14 @@ export default function SearchBar({ value, onChange, onSearch }) {
                 <input
                     className="search-input"
                     placeholder="검색어를 입력하세요"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    onKeyDown={handleKeyDown}   // 🔥 Enter 검색
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
                 />
 
-                {/* 돋보기 아이콘 클릭 시 검색 실행 */}
                 <i
                     className="fa-solid fa-magnifying-glass search-icon"
-                    onClick={onSearch}           // 🔥 버튼처럼 동작
+                    onClick={submitSearch}
                     style={{ cursor: "pointer" }}
                 />
             </div>
