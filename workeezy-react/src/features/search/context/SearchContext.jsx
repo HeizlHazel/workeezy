@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import api from "../../../api/axios.js";
 
 const SearchContext = createContext(null);
@@ -21,7 +21,7 @@ function findBigRegionBySmall(small) {
     return "전체";
 }
 
-export function SearchProvider({ children }) {
+export function SearchProvider({children}) {
     const [params] = useSearchParams();
     const urlKeyword = params.get("keyword") || "";
     const navigate = useNavigate();
@@ -81,30 +81,24 @@ export function SearchProvider({ children }) {
                 }
 
                 const res = await api.get("/api/search", {
-                    params: { keyword: urlKeyword, regions: [] },
+                    params: {keyword: urlKeyword, regions: []},
                 });
 
                 if (!cancelled) setAllPrograms(res.data.cards);
 
-                // 검색 후 추천 1개 쌓기
-                try {
-                    const token = localStorage.getItem("accessToken");
-                    const recRes = await api.get("/api/recommendations/recent", {
-                        headers: token ? { Authorization: `Bearer ${token}` } : {},
-                    });
-                    const incoming = recRes.data ?? [];
 
-                    if (cancelled) return;
+                // 추천 1개 누적
+                const recRes = await api.get("/api/recommendations/recent");
+                const incoming = recRes.data ?? [];
 
-                    setRecommended((prev) => {
-                        const used = new Set(prev.map((p) => p.id));
-                        const nextOne = incoming.find((p) => p?.id && !used.has(p.id));
-                        if (!nextOne) return prev;
-                        return [nextOne, ...prev].slice(0, 10);
-                    });
-                } catch (e) {
-                    console.error("recommendations fetch failed", e);
-                }
+                if (cancelled) return;
+
+                setRecommended((prev) => {
+                    const used = new Set(prev.map((p) => p.id));
+                    const nextOne = incoming.find((p) => p?.id && !used.has(p.id));
+                    return nextOne ? [nextOne, ...prev].slice(0, 10) : prev;
+                });
+
             } catch (e) {
                 console.error("search error", e);
             }

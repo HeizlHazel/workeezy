@@ -6,17 +6,16 @@ export default function useAuthGuard(options = {}) {
     const {
         requireLogin = false,
         requireProfileVerified = false,
-        allowedRoles = null, // ["ADMIN"]
+        allowedRoles = null,
         redirectLogin = "/login",
         redirectProfile = "/profile-check",
     } = options;
 
     const navigate = useNavigate();
-    const {isAuthenticated, user} = useAuth();
+    const {isAuthenticated, user, loading} = useAuth();
 
     useEffect(() => {
-        const profileVerified =
-            localStorage.getItem("profileVerified") === "true";
+        if (loading) return;
 
         // 로그인 필요
         if (requireLogin && !isAuthenticated) {
@@ -24,8 +23,12 @@ export default function useAuthGuard(options = {}) {
             return;
         }
 
-        // 프로필 재확인 필요
-        if (requireProfileVerified && !profileVerified) {
+        // 프로필 검증 필요
+        if (
+            requireProfileVerified &&
+            isAuthenticated &&
+            !user?.profileVerified
+        ) {
             navigate(redirectProfile, {replace: true});
             return;
         }
@@ -33,6 +36,7 @@ export default function useAuthGuard(options = {}) {
         // role 제한
         if (
             allowedRoles &&
+            isAuthenticated &&
             user &&
             !allowedRoles.includes(user.role)
         ) {
@@ -44,6 +48,7 @@ export default function useAuthGuard(options = {}) {
         allowedRoles,
         isAuthenticated,
         user,
+        loading,
         navigate,
         redirectLogin,
         redirectProfile,

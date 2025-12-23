@@ -4,9 +4,11 @@ import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
 import useMyInfo from "../../../hooks/useMyInfo.js";
 import useAuth from "../../../hooks/useAuth.js";
+import {useNavigate} from "react-router-dom";
 
 export default function ProfileForm() {
-    const {myInfo, loading, updatePhone, updatePassword} = useMyInfo();
+    const navigate = useNavigate();
+    const {myInfo, loading, error, updatePhone, updatePassword} = useMyInfo();
     const {logout} = useAuth();
 
     const [user, setUser] = useState({
@@ -22,10 +24,19 @@ export default function ProfileForm() {
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordCheck, setNewPasswordCheck] = useState("");
 
-    // 새 비밀번호 규칙 충족 여부
     const [passwordValidMessage, setPasswordValidMessage] = useState("");
-    // 비밀번호 확인 일치 여부
     const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
+
+    // 재인증 실패 시 리다이렉트
+    useEffect(() => {
+        if (error?.response?.status === 403) {
+            toast.fire({
+                icon: "warning",
+                title: "비밀번호 재확인이 필요합니다.",
+            });
+            navigate("/profile-check", {replace: true});
+        }
+    }, [error, navigate]);
 
     useEffect(() => {
         if (!myInfo) return;
@@ -33,23 +44,21 @@ export default function ProfileForm() {
         setUser({
             email: myInfo.email,
             name: myInfo.name,
-            role: myInfo.role,
             birth: myInfo.birth || "",
             phone: myInfo.phone || "",
             company: myInfo.company || "",
+            role: myInfo.role,
         });
     }, [myInfo]);
 
-    const isValidPhone = (value) => {
-        const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
-        return phoneRegex.test(value);
-    };
+    if (loading || !myInfo) return null;
+
+    const isValidPhone = (value) => /^\d{3}-\d{4}-\d{4}$/.test(value);
 
     const handleUpdate = async () => {
         if (!isValidPhone(user.phone)) {
             await toast.fire({
                 icon: "error",
-                position: "top",
                 title: "연락처 형식 오류",
                 text: "하이픈(-) 포함 13자리 형식으로 입력해주세요.",
             });
@@ -62,94 +71,53 @@ export default function ProfileForm() {
                 icon: "success",
                 title: "연락처가 성공적으로 변경되었습니다!",
             });
-
-        } catch (err) {
-            console.error("수정 실패: ", err);
+        } catch {
             await toast.fire({
                 icon: "error",
-                title: "수정에 실패했습니다. 다시 시도해주세요.",
+                title: "수정에 실패했습니다.",
             });
-        }
-    };
-
-    // 비밀번호 변경
-    const handleChangePassword = async () => {
-        if (!currentPassword || !newPassword || !newPasswordCheck) {
-            await toast.fire({
-                icon: "error",
-                title: "모든 필드를 입력해주세요.",
-            });
-            return;
-        }
-
-        if (newPassword !== newPasswordCheck) {
-            await toast.fire({
-                icon: "error",
-                title: "새 비밀번호가 일치하지 않습니다.",
-            })
-            return;
-        }
-
-        try {
-            await updatePassword(
-                currentPassword,
-                newPassword,
-                newPasswordCheck
-            );
-
-            await toast.fire({
-                icon: "success",
-                title: "비밀번호 변경 완료! 다시 로그인해주세요.",
-            });
-            logout();
-
-        } catch (err) {
-            console.error(err);
-
-            const message = err.response?.data || "비밀번호 변경 실패";
-
-            await toast.fire({
-                icon: "error",
-                title: message,
-            })
         }
     };
 
     const validatePasswordRule = (pwd) => {
         if (!pwd) return "";
-
-        if (pwd.length < 8 || pwd.length > 16)
-            return "비밀번호는 8~16자여야 합니다.";
-        if (!/[0-9]/.test(pwd))
-            return "숫자를 1개 이상 포함해야 합니다.";
-        if (!/[A-Z]/.test(pwd))
-            return "대문자를 1개 이상 포함해야 합니다.";
-        if (!/[a-z]/.test(pwd))
-            return "소문자를 1개 이상 포함해야 합니다.";
-        if (!/[!@#$%^&*]/.test(pwd))
-            return "특수문자(!@#$%^&*)를 포함해야 합니다.";
-
+        if (pwd.length < 8 || pwd.length > 16) return "비밀번호는 8~16자여야 합니다.";
+        if (!/[0-9]/.test(pwd)) return "숫자를 포함해야 합니다.";
+        if (!/[A-Z]/.test(pwd)) return "대문자를 포함해야 합니다.";
+        if (!/[a-z]/.test(pwd)) return "소문자를 포함해야 합니다.";
+        if (!/[!@#$%^&*]/.test(pwd)) return "특수문자를 포함해야 합니다.";
         return "사용 가능한 비밀번호입니다.";
     };
 
     const handleNewPasswordChange = (value) => {
         setNewPassword(value);
         setPasswordValidMessage(validatePasswordRule(value));
-    }
+    };
 
     const handleNewPasswordCheckChange = (value) => {
         setNewPasswordCheck(value);
         setPasswordMatchMessage(
-            value
-                ? value === newPassword
-                    ? "비밀번호가 일치합니다."
-                    : "비밀번호가 일치하지 않습니다."
-                : ""
+            value === newPassword
+                ? "비밀번호가 일치합니다."
+                : "비밀번호가 일치하지 않습니다."
         );
     };
 
-    if (loading) return null;
-
+    const handleChangePassword = async () => {
+        try {
+            await updatePassword(currentPassword, newPassword, newPasswordCheck);
+            await toast.fire({
+                icon: "success",
+                title: "비밀번호 변경 완료! 다시 로그인해주세요.",
+            });
+            logout();
+        } catch (err) {
+            await toast.fire({
+                icon: "error",
+                title: err.response?.data || "비밀번호 변경 실패",
+            });
+        }
+    };
     return (
         <>
             <SectionHeader icon="far fa-user" title="개인 정보 조회"/>

@@ -1,14 +1,15 @@
 import {Link} from "react-router-dom";
 import "./Header.css";
+import useAuth from "../../hooks/useAuth.js";
 
 export default function Header({onOpenMenu}) {
-    const token = localStorage.getItem("accessToken");
+    const { isAuthenticated } = useAuth();
 
     // 링크 경로 설정
-    const userLink = token ? "/profile-check" : "/login";
+    const userLink = isAuthenticated ? "/profile-check" : "/login";
 
     // 아이콘 클래스 설정
-    const userIconClass = token
+    const userIconClass = isAuthenticated
         ? "fa-solid fa-user user-icon"   // 로그인 상태
         : "fa-regular fa-user user-icon"; // 로그아웃 상태
 

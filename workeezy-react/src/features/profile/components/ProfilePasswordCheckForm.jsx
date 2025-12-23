@@ -2,40 +2,45 @@ import "./ProfilePasswordCheckForm.css";
 import {useNavigate} from "react-router-dom";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
 import {checkPasswordApi} from "../../../api/authApi.js";
-import useProfileVerified from "../../../hooks/useProfileVerified.js";
 import {useState} from "react";
 
 export default function ProfilePasswordCheckForm() {
     const [password, setPassword] = useState("");
-    const {verify} = useProfileVerified();
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleCheck = async (e) => {
         e.preventDefault();
+        if (loading) return;
 
         try {
+            setLoading(true);
+
             const res = await checkPasswordApi(password);
 
             if (res.data.success) {
                 await toast.fire({
                     icon: "success",
-                    title: "비밀번호 확인이 완료되었습니다."
+                    title: "비밀번호 확인이 완료되었습니다.",
                 });
-                verify();
-                navigate("/profile", {replace: true});
 
-            } else {
-                await toast.fire({
-                    icon: "error",
-                    title: "비밀번호가 일치하지 않습니다.",
-                });
+                // 서버가 재인증 상태 기억
+                navigate("/profile", {replace: true});
+                return;
             }
+
+            await toast.fire({
+                icon: "error",
+                title: "비밀번호가 일치하지 않습니다.",
+            });
+
         } catch (err) {
-            console.error(err);
             await toast.fire({
                 icon: "error",
                 title: "오류가 발생했습니다.",
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,7 +54,6 @@ export default function ProfilePasswordCheckForm() {
                     <label className="profile-check-label">비밀번호</label>
                     <input
                         type="password"
-                        name="password"
                         placeholder="비밀번호를 입력하세요"
                         className="profile-check-line-input"
                         required
@@ -62,7 +66,7 @@ export default function ProfilePasswordCheckForm() {
                 </p>
 
                 <div className="reauth-button-wrap">
-                    <button type="submit" className="reauth-button">
+                    <button type="submit" className="reauth-button" disabled={loading}>
                         비밀번호 확인
                     </button>
                 </div>
