@@ -57,7 +57,19 @@ public class ReservationController {
     // 내 예약 목록 조회
     @GetMapping("/me")
     public ResponseEntity<?> getMyReservations(Authentication authentication) {
+
+        System.out.println("🧩 authentication = " + authentication);
+
+        if (authentication != null) {
+            System.out.println("🧩 principal = " + authentication.getPrincipal());
+            System.out.println("🧩 name = " + authentication.getName());
+            System.out.println("🧩 authorities = " + authentication.getAuthorities());
+        } else {
+            System.out.println("❌ authentication is NULL");
+        }
+
         String email = authentication.getName();
+
         try {
             System.out.println("📥 예약 목록 조회 요청 by " + email);
             return ResponseEntity.ok(reservationService.getMyReservations(email));
@@ -66,6 +78,7 @@ public class ReservationController {
             return ResponseEntity.internalServerError().body("예약 조회 실패: " + e.getMessage());
         }
     }
+
 
     // 예약 단건 조회
     @GetMapping("/{id}")

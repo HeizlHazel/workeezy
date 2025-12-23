@@ -69,7 +69,6 @@ public class SecurityConfig {
 
                         // 공개 데이터 API
                         .requestMatchers("/api/programs/**").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
                         .requestMatchers("/api/search").authenticated()
                         .requestMatchers("/api/search/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
@@ -81,11 +80,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/recommendations/**").permitAll()
 
                         .requestMatchers("/api/reservations/draft/**").authenticated()
+                        .requestMatchers("/api/reservations/me").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
 
                         .requestMatchers(("/api/payments/**")).authenticated()
 
-                        .requestMatchers("/api/**").authenticated()
+//                        .requestMatchers("/api/**").authenticated()
 
                         // 에러 페이지
                         .requestMatchers("/error").permitAll()
