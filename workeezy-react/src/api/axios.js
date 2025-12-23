@@ -1,84 +1,48 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
-});
-
-// 요청마다 accessToken 자동 포함
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  console.log("헤더 보내기:", config.headers.Authorization);
-  console.log("🔐 Authorization 보내는 값:", config.headers.Authorization);
-  return config;
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
 // refresh 요청 전용 axios
-// Authorization 헤더 자동 포함 방지
 const refreshAxios = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
-
-refreshAxios.defaults.withCredentials = true;
 
 // 응답 인터셉터 → AccessToken 만료 시 자동 재발급 처리
 api.interceptors.response.use(
-  (res) => res,
+    (res) => res,
 
-  async (err) => {
-    const originalRequest = err.config;
-    const status = err.response?.status;
+    async (err) => {
+        const originalRequest = err.config;
+        const status = err.response?.status;
 
-    // accessToken 만료(401) → refresh 시도
-    if ((status === 401 || status === 403) && !originalRequest._retry) {
-      originalRequest._retry = true;
+        // accessToken 만료 → refresh 시도
+        if (status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-      try {
-        const refreshRes = await refreshAxios.post("/api/auth/refresh");
-        const newAccessToken = refreshRes.data.token;
+            try {
+                // refreshToken은 쿠키로 자동 전송됨
+                await refreshAxios.post("/api/auth/refresh");
 
-        localStorage.setItem("accessToken", newAccessToken);
+                // 새 accessToken은 서버가 쿠키로 내려줌
+                // 프론트는 아무 것도 저장/세팅 안 함
 
-        // axios 기본 헤더 갱신
-        api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
+                return api(originalRequest); // 실패한 요청 재시도
+            } catch (e) {
+                console.error("🔥 refresh 실패 → 로그아웃 처리");
 
-        // originalRequest 헤더 보정
-        if (!originalRequest.headers) {
-          originalRequest.headers = {};
+                // 필요 시 프론트 상태만 정리
+                localStorage.removeItem("profileVerified");
+
+                return Promise.reject(e);
+            }
         }
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        return api(originalRequest); // 실패한 요청 재시도
-      } catch (e) {
-        console.error("🔥 refresh 실패 → 자동 로그아웃");
-
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
-
-        return Promise.reject(e);
-      }
+        return Promise.reject(err);
     }
-
-    // refresh 실패가 아닌 401 → 로그인 이동
-    if (status === 401) {
-      window.location.href = "/login";
-    }
-
-    // 접근 권한 없음(403) → 에러 페이지 이동
-    // if (status === 403) {
-    //     window.location.href = "/403";
-    // }
-
-    // 서버 문제(500) → 에러 페이지 이동
-    if (status === 500) {
-      window.location.href = "/500";
-    }
-
-    return Promise.reject(err);
-  }
 );
+
 export default api;

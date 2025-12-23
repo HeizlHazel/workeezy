@@ -1,8 +1,7 @@
 import React from "react";
-import "./index.css";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import "./styles/global.css"; // ★ 여기에 넣어야 적용됨
+import "./styles/global.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { BrowserRouter } from "react-router-dom";
 

@@ -1,66 +1,19 @@
 import "./Menubar.css";
 import React, {useState, useEffect} from "react";
-import {logoutApi} from "../../api/authApi.js"
 import {alert, toast} from "../alert/workeezyAlert.js";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
+import useAuth from "../../hooks/useAuth.js";
 
 export default function MenuBar({isAdmin = false, onClose}) {
     const location = useLocation();
+    const navigate = useNavigate();
     const currentPath = location.pathname;
 
-    const [userName, setUserName] = useState(null);
+    const {isAuthenticated, user, logout} = useAuth();
 
-    const token = localStorage.getItem("accessToken");
-    const userRole = localStorage.getItem("role");
+    const isAdminUser = user?.role?.toUpperCase()?.includes("ADMIN");
 
-    useEffect(() => {
-        const name = localStorage.getItem("userName");
-        setUserName(name);
-    }, []);
-
-    // 로그아웃
-    const handleLogout = async () => {
-        const result = await alert.fire({
-            text: "로그아웃 하시겠습니까?",
-            icon: "warning",
-            showCancelButton: true,
-            showConfirmButton: true,
-            confirmButtonColor: "#ccc",
-            cancelButtonColor: "#35593D",
-            confirmButtonText: "로그아웃",
-            cancelButtonText: "취소",
-            timer: null,
-        });
-
-
-        if (!result.isConfirmed) return;
-
-        await logoutApi();
-        localStorage.clear();
-
-        await toast.fire({
-            icon: "success",
-            title: "로그아웃 완료! 다시 만나요. 😥",
-        });
-        window.location.href = "/login";
-    };
-
-// 보호된 메뉴 클릭 처리
-    const handleProtectedClick = async (path) => {
-        if (!token) {
-            await toast.fire({
-                icon: "warning",
-                title: "로그인이 필요한 서비스입니다.",
-                text: "로그인 후 이용해주세요.",
-                timer: 1500,
-            });
-            window.location.href = "/login";
-            return;
-        }
-        window.location.href = path;
-    };
-
-// 메뉴 데이터
+    // 메뉴 데이터
     const userMenu = [
         {
             title: "마이페이지",
@@ -93,16 +46,11 @@ export default function MenuBar({isAdmin = false, onClose}) {
         {title: "Admin", isFooter: true, path: "/admin"},
     ];
 
-    const isAdminUser =
-        isAdmin ||
-        userRole === "ADMIN" ||
-        userRole === "ROLE_ADMIN" ||
-        userRole?.toUpperCase()?.includes("ADMIN");
-
     const menu = isAdminUser ? adminMenu : userMenu;
 
-//  현재 접근한 페이지의 대메뉴만 펼쳐짐
+    //  현재 페이지 기준 대메뉴만 열기
     const [openItems, setOpenItems] = useState([]);
+
     useEffect(() => {
         const activeParents = menu
             .filter((m) => m.sub?.some((s) => s.path === currentPath))
@@ -119,8 +67,44 @@ export default function MenuBar({isAdmin = false, onClose}) {
         );
     };
 
-    const goToLogin = () => {
-        window.location.href = "/login";
+    // 보호된 메뉴 클릭 처리
+    const handleProtectedClick = async (path) => {
+        if (!isAuthenticated) {
+            await toast.fire({
+                icon: "warning",
+                title: "로그인이 필요한 서비스입니다.",
+            });
+            navigate("/login");
+            return;
+        }
+        navigate(path);
+        onClose?.();
+    };
+
+    // 로그아웃
+    const handleLogout = async () => {
+        const result = await alert.fire({
+            text: "로그아웃 하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonColor: "#ccc",
+            cancelButtonColor: "#35593D",
+            confirmButtonText: "로그아웃",
+            cancelButtonText: "취소",
+            timer: null,
+        });
+
+        if (!result.isConfirmed) return;
+
+        await logout();
+
+        await toast.fire({
+            icon: "success",
+            title: "로그아웃 완료! 다시 만나요. 😥",
+        });
+        navigate("/");
+        onClose?.();
     };
 
     return (
@@ -128,9 +112,9 @@ export default function MenuBar({isAdmin = false, onClose}) {
 
             {/* 메뉴 헤더 */}
             <div className="menu-header">
-                {token && (
+                {isAuthenticated && (
                     <p className="menu-user">
-                        {userName}님 👋
+                        {user?.name}님 👋
                         {isAdminUser && (
                             <span className="admin-badge">Admin</span>
                         )}
@@ -176,12 +160,12 @@ export default function MenuBar({isAdmin = false, onClose}) {
 
             {/* 로그인 / 로그아웃 버튼 */}
             <div className="logout-btn">
-                {token ? (
+                {isAuthenticated ? (
                     <div className="logout-title" onClick={handleLogout}>
                         로그아웃
                     </div>
                 ) : (
-                    <div className="logout-title" onClick={goToLogin}>
+                    <div className="logout-title" onClick={() => navigate("/login")}>
                         로그인
                     </div>
                 )}

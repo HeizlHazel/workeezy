@@ -22,14 +22,38 @@
     z-index: 999;
 }
 
-.menu-bar.open { transform: translateX(0); }
-.menu-bar.close { transform: translateX(100%); }
+.menu-bar.open {
+    transform: translateX(0);
+}
+
+.menu-bar.close {
+    transform: translateX(100%);
+}
 
 /* PC 기본 값 */
-.menu-item      { margin-bottom: 22px; }
-.menu-title     { font-size: 22px; padding: 8px 4px; }
-.submenu        { gap: 8px; margin-top: 8px; display: flex; flex-direction: column; align-items: flex-end; }
-.submenu-item   { width: 100%; font-size: 16px; padding: 8px 6px; text-align: right; }
+.menu-item {
+    margin-bottom: 22px;
+}
+
+.menu-title {
+    font-size: 22px;
+    padding: 8px 4px;
+}
+
+.submenu {
+    gap: 8px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.submenu-item {
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 6px;
+    text-align: right;
+}
 
 /* 공용 */
 .menu-title {
@@ -113,18 +137,56 @@ a, a:link, a:visited, a:hover, a:active {
     background: #e3dfd6;
 }
 
-.logout-btn      { margin-top: 70px; text-align: right; }
-.logout-title    { font-size: 13px; color: #aaaaaa; padding: 8px 4px; margin-right: 10px; }
-.logout-title:hover { color: #7c7c7c; cursor: pointer; }
+.menu-user {
+    font-size: 14px;
+    color: #222;
+}
+
+.admin-badge {
+    margin-left: 8px;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #fff;
+    background: rgba(8, 73, 0, 0.66);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.logout-btn {
+    margin-top: 70px;
+    text-align: right;
+}
+
+.logout-title {
+    font-size: 13px;
+    color: #aaaaaa;
+    padding: 8px 4px;
+    margin-right: 10px;
+}
+
+.logout-title:hover {
+    color: #7c7c7c;
+    cursor: pointer;
+}
 
 /* 태블릿 only (아이패드 포함) */
-@media (min-device-width:600px) and (max-device-width:1024px) {
-    .menu-title { font-size: 18px; }
-    .submenu-item { font-size: 14px; }
+@media (min-device-width: 600px) and (max-device-width: 1024px) {
+    .menu-title {
+        font-size: 18px;
+    }
+
+    .submenu-item {
+        font-size: 14px;
+    }
 }
 
 /* 모바일 only */
-@media (max-device-width:599px) {
-    .menu-title { font-size: 16px; }
-    .submenu-item { font-size: 13px; }
+@media (max-device-width: 599px) {
+    .menu-title {
+        font-size: 16px;
+    }
+
+    .submenu-item {
+        font-size: 13px;
+    }
 }

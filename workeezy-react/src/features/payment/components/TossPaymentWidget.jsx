@@ -1,59 +1,84 @@
-import {loadTossPayments} from "@tosspayments/tosspayments-sdk";
 import {useEffect, useState} from "react";
-import "./TossPaymentWidget.css";
+import {loadTossPayments} from "@tosspayments/tosspayments-sdk";
 
-export function TossPaymentWidget({onClose}) {
-
+export default function TossPaymentWidget({orderId, orderName, amount}) {
     const [widgets, setWidgets] = useState(null);
 
+    // 테스트 결제 전용 customerKey
+    const customerKey = "workeezy";
+
     useEffect(() => {
-        let timer;
-
         async function init() {
-            const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
-            const customerKey = "Um80kmzhfkS_17JxBHT4l";
-
-            const toss = await loadTossPayments(clientKey);
+            const toss = await loadTossPayments(
+                import.meta.env.VITE_TOSS_CLIENT_KEY
+            );
             const w = toss.widgets({customerKey});
-
             setWidgets(w);
         }
 
-        // DOM ready 보장
-        timer = setTimeout(init, 0);
-
-        return () => clearTimeout(timer);
+        init();
     }, []);
 
     useEffect(() => {
         if (!widgets) return;
 
-        widgets.setAmount({currency: "KRW", value: 50000});
+        widgets.setAmount({
+            currency: "KRW",
+            value: amount,
+        });
 
         widgets.renderPaymentMethods({
             selector: "#payment-method",
-            variantKey: "DEFAULT"
         });
 
         widgets.renderAgreement({
             selector: "#agreement",
-            variantKey: "AGREEMENT"
         });
-    }, [widgets]);
+    }, [widgets, amount]);
+
+    const handlePayment = async () => {
+        if (!widgets) return;
+
+        try {
+            await widgets.requestPayment({
+                orderId: orderId,
+                orderName: orderName,
+
+                successUrl: `${window.location.origin}/payment/result`,
+                failUrl: `${window.location.origin}/payment/result?status=fail&orderId=${orderId}`,
+
+                customerName: "테스트 사용자",
+                customerEmail: "test@workeezy.com",
+            });
+        } catch (error) {
+            console.error("결제 요청 실패", error);
+        }
+    };
 
     return (
-        <div className="toss-overlay">
-            <div className="toss-card">
-                <span onClick={onClose}>닫기</span>
-                {/*위젯 : 결제수단 표기 */}
-                <div id="payment-method"></div>
+        <>
+            <div id="payment-method"/>
+            <div id="agreement"/>
 
-                {/* 위젯 : 결제 약관 */}
-                <div id="agreement"></div>
-
-                {/* 이건 Toss 위젯 내부 버튼 누르면 진행됨 → 별도 버튼 필요없음 */}
-            </div>
-        </div>
-    )
-        ;
+            <button
+                onClick={handlePayment}
+                disabled={!widgets}
+                style={{
+                    marginTop: "20px",
+                    padding: "14px",
+                    width: "100%",
+                    backgroundColor: "#007aff",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    cursor: widgets ? "pointer" : "not-allowed",
+                    opacity: widgets ? 1 : 0.6,
+                }}
+            >
+                결제하기
+            </button>
+        </>
+    );
 }
