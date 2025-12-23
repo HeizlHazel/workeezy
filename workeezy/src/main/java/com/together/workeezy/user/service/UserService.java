@@ -2,7 +2,7 @@ package com.together.workeezy.user.service;
 
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.common.exception.ErrorCode;
-import com.together.workeezy.user.dto.UserMeResponseDto;
+import com.together.workeezy.user.dto.UserMeResponse;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
@@ -45,10 +45,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserMeResponseDto getMyInfo(String email) {
+    public UserMeResponse getMyInfo(String email) {
         User user = getUser(email);
 
-        return UserMeResponseDto.from(user);
+        return UserMeResponse.from(user);
     }
 
     private User getUser(String email) {

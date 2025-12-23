@@ -1,18 +1,20 @@
 package com.together.workeezy.payment.entity;
 
+import com.together.workeezy.common.exception.CustomException;
+import com.together.workeezy.common.exception.ErrorCode;
 import com.together.workeezy.payment.enums.PaymentStatus;
+import com.together.workeezy.payment.repository.PaymentRepository;
+import com.together.workeezy.payment.service.PaymentValidator;
 import com.together.workeezy.reservation.Reservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Getter;;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "tb_payments")
 public class Payment {
@@ -46,7 +48,7 @@ public class Payment {
     @Size(max = 50)
     @NotNull
     @Column(name = "payment_method", nullable = false, length = 50)
-    private String paymentMethod;
+    private String method;
 
     // 결제 승인 시각
     @Column(name = "approved_at")
@@ -58,4 +60,37 @@ public class Payment {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    protected Payment() {}
+
+    // 결제 생성
+    public static Payment create(Reservation reservation, Long amount) {
+        Payment p = new Payment();
+        p.reservation = reservation;
+        p.amount = amount;
+        p.status = PaymentStatus.ready;
+
+        reservation.linkPayment(p);
+
+        return p;
+    }
+
+    // 결제 승인
+    public void approve(
+            String orderId,
+            String paymentKey,
+            Long amount,
+            String method,
+            LocalDateTime approvedAt) {
+
+        if (this.status == PaymentStatus.paid) {
+            throw new CustomException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
+        this.amount = amount;
+        this.method = method;
+        this.approvedAt = approvedAt;
+        this.status = PaymentStatus.paid;
+    }
 }

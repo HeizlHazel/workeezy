@@ -1,14 +1,11 @@
 package com.together.workeezy.user.controller;
 
-import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.common.dto.ApiResponse;
-import com.together.workeezy.user.dto.UserMeResponseDto;
+import com.together.workeezy.user.dto.UserMeResponse;
 import com.together.workeezy.user.dto.UserPasswordUpdateRequest;
 import com.together.workeezy.user.dto.UserUpdateRequest;
-import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.service.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,7 +20,7 @@ public class UserController {
 
     // 개인 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<UserMeResponseDto> getMyInfo(Authentication authentication) {
+    public ResponseEntity<UserMeResponse> getMyInfo(Authentication authentication) {
 
         String email = authentication.getName();
 

@@ -1,8 +1,8 @@
 package com.together.workeezy.reservation.service;
 
-import com.together.workeezy.program.entity.Place;
-import com.together.workeezy.program.entity.PlaceType;
-import com.together.workeezy.program.entity.Program;
+import com.together.workeezy.program.program.domain.model.entity.Place;
+import com.together.workeezy.program.program.domain.model.entity.PlaceType;
+import com.together.workeezy.program.program.domain.model.entity.Program;
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationStatus;
 import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
