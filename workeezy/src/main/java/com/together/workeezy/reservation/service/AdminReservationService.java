@@ -23,81 +23,101 @@ public class AdminReservationService {
 
     private final ReservationRepository reservationRepository;
 
-    public Page<AdminReservationListDto> getReservationList(
+//    public Page<AdminReservationListDto> getAdminReservationLists(
+//            int page,
+//            ReservationStatus status,
+//            String keyword
+//    ) {
+//        Pageable pageable = PageRequest.of(page, 5, Sort.by("id").descending());
+//
+//        Page<Reservation> result =
+//                reservationRepository.findAdminReservations(status, keyword, pageable);
+//
+//        return result.map(r -> new AdminReservationListDto(
+//                r.getId(),
+//                r.getReservationNo(),
+//                r.getProgram().getTitle(),
+//                r.getUser().getUserName(),
+//                r.getStatus()
+//        ));
+//    }
+
+    // 관리자 - 전체 유저 예약 리스트로 조회
+    public Page<AdminReservationListDto> getAdminReservationLists(
             int page,
             ReservationStatus status,
             String keyword
     ) {
         Pageable pageable = PageRequest.of(page, 5, Sort.by("id").descending());
-
-        Page<Reservation> result =
-                reservationRepository.findAdminReservations(status, keyword, pageable);
-
-        return result.map(r -> new AdminReservationListDto(
-                r.getId(),
-                r.getReservationNo(),
-                r.getProgram().getTitle(),
-                r.getUser().getUserName(),
-                r.getStatus()
-        ));
+        return reservationRepository.findAdminReservationListDtos(status, keyword, pageable);
     }
 
-    // 예약 상세 조회
+//    // 관리자 - 유저 예약 상세 조회
+//    public AdminReservationDetailDto getReservationDetail(Long reservationId) {
+//
+//        Reservation r = reservationRepository
+//                .findAdminReservationDetail(reservationId)
+//                .orElseThrow(() ->
+//                        new IllegalArgumentException("존재하지 않는 예약입니다.")
+//                );
+//
+//        AdminReservationDetailDto dto = new AdminReservationDetailDto();
+//
+//        /* ===== 식별 / 상태 ===== */
+//        dto.setReservationId(r.getId());
+//        dto.setReservationNo(r.getReservationNo());
+//        dto.setStatus(r.getStatus());
+//
+//        /* ===== 프로그램 ===== */
+//        dto.setProgramTitle(r.getProgram().getTitle());
+//
+//        /* ===== 예약자 정보 ===== */
+//        dto.setUserName(r.getUser().getUserName());
+//        dto.setCompany(r.getUser().getCompany());
+//        dto.setPhone(r.getUser().getPhone());
+//        dto.setEmail(r.getUser().getEmail());
+//
+//        /* ===== 예약 정보 ===== */
+//        dto.setStartDate(r.getStartDate());
+//        dto.setEndDate(r.getEndDate());
+//        dto.setPeopleCount(r.getPeopleCount());
+//
+//        /* ===== 숙소 / 룸 ===== */
+//        dto.setStayName(
+//                r.getStay() != null ? r.getStay().getName() : null
+//        );
+//        dto.setRoomType(
+//                r.getRoom() != null ? r.getRoom().getRoomType().name() : null
+//        );
+//
+//        /* ===== 선택 정보 ===== */
+//        dto.setOfficeName(
+//                extractOfficeName(r.getProgram())
+//        );
+//
+//        return dto;
+//    }
+//
+//    private String extractOfficeName(Program program) {
+//        if (program == null || program.getPlaces() == null) {
+//            return null;
+//        }
+//
+//        return program.getPlaces().stream()
+//                .filter(place -> place.getPlaceType() == PlaceType.office)
+//                .findFirst()
+//                .map(Place::getName)
+//                .orElse(null);
+//    }
+
+    @Transactional(readOnly = true)
     public AdminReservationDetailDto getReservationDetail(Long reservationId) {
 
-        Reservation r = reservationRepository
-                .findAdminReservationDetail(reservationId)
+        return reservationRepository
+                .findAdminReservationDetailDto(reservationId)
                 .orElseThrow(() ->
                         new IllegalArgumentException("존재하지 않는 예약입니다.")
                 );
-
-        AdminReservationDetailDto dto = new AdminReservationDetailDto();
-
-        /* ===== 식별 / 상태 ===== */
-        dto.setReservationId(r.getId());
-        dto.setReservationNo(r.getReservationNo());
-        dto.setStatus(r.getStatus());
-
-        /* ===== 프로그램 ===== */
-        dto.setProgramTitle(r.getProgram().getTitle());
-
-        /* ===== 예약자 정보 ===== */
-        dto.setUserName(r.getUser().getUserName());
-        dto.setCompany(r.getUser().getCompany());
-        dto.setPhone(r.getUser().getPhone());
-        dto.setEmail(r.getUser().getEmail());
-
-        /* ===== 예약 정보 ===== */
-        dto.setStartDate(r.getStartDate());
-        dto.setEndDate(r.getEndDate());
-        dto.setPeopleCount(r.getPeopleCount());
-
-        /* ===== 숙소 / 룸 ===== */
-        dto.setStayName(
-                r.getStay() != null ? r.getStay().getName() : null
-        );
-        dto.setRoomType(
-                r.getRoom() != null ? r.getRoom().getRoomType().name() : null
-        );
-
-        /* ===== 선택 정보 ===== */
-        dto.setOfficeName(
-                extractOfficeName(r.getProgram())
-        );
-
-        return dto;
-    }
-
-    private String extractOfficeName(Program program) {
-        if (program == null || program.getPlaces() == null) {
-            return null;
-        }
-
-        return program.getPlaces().stream()
-                .filter(place -> place.getPlaceType() == PlaceType.office)
-                .findFirst()
-                .map(Place::getName)
-                .orElse(null);
     }
 
     // 예약 승인

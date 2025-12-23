@@ -1,42 +1,65 @@
 package com.together.workeezy.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.together.workeezy.program.entity.RoomType;
 import com.together.workeezy.reservation.ReservationStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 public class AdminReservationDetailDto {
 
-    /* ===== 식별 / 상태 ===== */
     private Long reservationId;
     private String reservationNo;
     private ReservationStatus status;
-
-    /* ===== 프로그램 ===== */
     private String programTitle;
-
-    /* ===== 예약자 정보 ===== */
     private String userName;
     private String company;
     private String phone;
     private String email;
-
-    /* ===== 예약 정보 ===== */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime  endDate;
+    private LocalDateTime endDate;
     private int peopleCount;
-
-    /* ===== 숙소 / 룸 ===== */
     private String stayName;
-    private String roomType;
+    private RoomType roomType;
+    private String officeName;
 
-    /* ===== 선택 정보 ===== */
-    private String officeName; // 없으면 null
-
+    public AdminReservationDetailDto(
+            Long reservationId,
+            String reservationNo,
+            ReservationStatus status,
+            String programTitle, //
+            String userName,//
+            String company,//
+            String phone, //
+            String email, //
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            int peopleCount,
+            String stayName,
+            RoomType roomType,
+            String officeName
+            // 가격?
+    ) {
+        this.reservationId = reservationId;
+        this.reservationNo = reservationNo;
+        this.status = status;
+        this.programTitle = programTitle;
+        this.userName = userName;
+        this.company = company;
+        this.phone = phone;
+        this.email = email;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.peopleCount = peopleCount;
+        this.stayName = stayName;
+        this.roomType = roomType;
+        this.officeName = officeName;
+    }
 }
+
+
+

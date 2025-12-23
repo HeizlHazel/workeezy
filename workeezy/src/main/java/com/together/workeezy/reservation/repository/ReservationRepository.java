@@ -2,6 +2,8 @@ package com.together.workeezy.reservation.repository;
 
 import com.together.workeezy.reservation.Reservation;
 import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
+import com.together.workeezy.reservation.dto.AdminReservationListDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -91,41 +93,79 @@ where r.id = :reservationId
             @Param("email") String email
     );
 
-
-    // 관리자 예약 조회 (Page + left join)
+    // 관리자 - 전체 유저 예약 리스트 조회
     @Query("""
-        select r
-        from Reservation r
-          left join r.user u
-          left join r.program p
-        where (:status is null or r.status = :status)
-          and (
-               :keyword is null
-               or :keyword = ''
-               or u.userName like concat('%', :keyword, '%')
-               or p.title like concat('%', :keyword, '%')
-          )
-        order by r.id desc
-    """)
-    Page<Reservation> findAdminReservations(
-            @Param("status") ReservationStatus status,
-            @Param("keyword") String keyword,
+select new com.together.workeezy.reservation.dto.AdminReservationListDto(
+    r.id,
+    r.reservationNo,
+    p.title,
+    u.userName,
+    r.status
+)
+from Reservation r
+join r.user u
+join r.program p
+where (:status is null or r.status = :status)
+  and (
+       :keyword is null
+       or :keyword = ''
+       or u.userName like concat('%', :keyword, '%')
+       or p.title like concat('%', :keyword, '%')
+  )
+order by r.id desc
+""")
+    Page<AdminReservationListDto> findAdminReservationListDtos(
+            ReservationStatus status,
+            String keyword,
             Pageable pageable
     );
 
-    // 관리자 예약 상세 조회
     @Query("""
-        select r
-        from Reservation r
-          join fetch r.program p
-          join fetch r.user u
-          left join fetch r.stay s
-          left join fetch r.room rm
-          left join fetch p.places pl
-        where r.id = :reservationId
-    """)
-    Optional<Reservation> findAdminReservationDetail(
+select new com.together.workeezy.reservation.dto.AdminReservationDetailDto(
+    r.id,
+    r.reservationNo,
+    r.status,
+    p.title,
+    u.userName,
+    u.company,
+    u.phone,
+    u.email,
+    r.startDate,
+    r.endDate,
+    r.peopleCount,
+    s.name,
+    rm.roomType,
+    (
+        select pl.name
+        from Place pl
+        where pl.program = p
+          and pl.placeType = com.together.workeezy.program.entity.PlaceType.office
+    )
+)
+from Reservation r
+join r.program p
+join r.user u
+left join r.stay s
+left join r.room rm
+where r.id = :reservationId
+""")
+    Optional<AdminReservationDetailDto> findAdminReservationDetailDto(
             @Param("reservationId") Long reservationId
     );
+
+    // 관리자 - 예약 상세 조회
+//    @Query("""
+//        select r
+//        from Reservation r
+//          join fetch r.program p
+//          join fetch r.user u
+//          left join fetch r.stay s
+//          left join fetch r.room rm
+//          left join fetch p.places pl
+//        where r.id = :reservationId
+//    """)
+//    Optional<Reservation> findAdminReservationDetail(
+//            @Param("reservationId") Long reservationId
+//    );
 
 }

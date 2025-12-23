@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class AdminReservationListDto {
 
     private Long id;
@@ -13,4 +12,18 @@ public class AdminReservationListDto {
     private String programTitle;
     private String userName;
     private ReservationStatus status;
+
+    public AdminReservationListDto(
+            Long id,
+            String reservationNo,
+            String programTitle,
+            String userName,
+            ReservationStatus status
+    ) {
+        this.id = id;
+        this.reservationNo = reservationNo;
+        this.programTitle = programTitle;
+        this.userName = userName;
+        this.status = status;
+    }
 }

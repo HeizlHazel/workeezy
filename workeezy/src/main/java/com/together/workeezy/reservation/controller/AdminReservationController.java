@@ -26,7 +26,7 @@ public class AdminReservationController {
             @RequestParam(required = false) String keyword // 프로그램명/예약자
     ) {
         return ResponseEntity.ok(
-                adminReservationService.getReservationList(page, status, keyword)
+                adminReservationService.getAdminReservationLists(page, status, keyword)
         );
     }
 
