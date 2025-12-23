@@ -4,6 +4,7 @@ import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.auth.service.TokenRedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -89,15 +90,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Authorization 헤더에서 Bearer 토큰 추출
+    // Authorization 헤더 + HttpOnly 쿠키
     private String resolveToken(HttpServletRequest request) {
 
+        // Authorization 헤더에서 bearer 토큰
         String header = request.getHeader("Authorization");
-
         System.out.println("🪶 Authorization 헤더 내용: " + header);
 
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
+        }
+        // HttpOnly 쿠키에서 accessToken
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    System.out.println("🍪 accessToken 쿠키 발견");
+                    return cookie.getValue();
+                }
+            }
         }
         return null;
     }
