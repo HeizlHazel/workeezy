@@ -42,11 +42,13 @@ public class ReviewService {
         );
     }
 
-    /** 리뷰 작성 */
+    /**
+     * 리뷰 작성
+     */
     @Transactional
-    public void createReview(ReviewCreateRequest dto) {
+    public void createReview(ReviewCreateRequest dto, String email) {
 
-        User user = userRepository.findById(dto.userId())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Program program = programRepository.findById(dto.programId())
