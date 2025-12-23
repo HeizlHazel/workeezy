@@ -23,6 +23,9 @@ public class AuthController {
     private final AuthService authService;
     private final CookieService cookieService;
 
+    // 환경 분기 (로컬)
+    private static final boolean IS_PROD = false;
+
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
@@ -34,21 +37,49 @@ public class AuthController {
                 request.getPassword(),
                 request.isAutoLogin()
         );
-        cookieService.addRefreshCookie(response, result.refreshToken(), result.autoLogin());
+        // accessToken 쿠키 (인증용)
+        cookieService.addAccessCookie(
+                response,
+                result.accessToken(),
+                IS_PROD
+        );
 
+        // refreshToken 쿠키 (재발급용)
+        cookieService.addRefreshCookie(
+                response,
+                result.refreshToken(),
+                result.autoLogin(),
+                IS_PROD
+        );
+
+        // ❗ body에 accessToken 내려줄 필요 없어도 됨 (지금은 유지)
         return ResponseEntity.ok(
-                new LoginResponse(result.accessToken(), result.name(), result.role()));
+                new LoginResponse(
+                        result.accessToken(),
+                        result.name(),
+                        result.role()
+                )
+        );
     }
 
     // AccessToken 재발급
     @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refresh(HttpServletRequest request) {
+    public ResponseEntity<LoginResponse> refresh(
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         String refreshToken = cookieService.extractRefreshToken(request);
 
-        LoginResponse response = authService.refresh(refreshToken);
+        LoginResponse loginResponse = authService.refresh(refreshToken);
 
-        return ResponseEntity.ok(response);
+        // 새 accessToken 쿠키 재발급
+        cookieService.addAccessCookie(
+                response,
+                loginResponse.getAccessToken(),
+                IS_PROD
+        );
+
+        return ResponseEntity.ok(loginResponse);
     }
 
     // 로그아웃
@@ -61,7 +92,9 @@ public class AuthController {
 
         authService.logout(refreshToken);
 
-        cookieService.deleteRefreshCookie(response);
+        // access / refresh 쿠키 모두 삭제
+        cookieService.deleteAccessCookie(response, IS_PROD);
+        cookieService.deleteRefreshCookie(response, IS_PROD);
 
         return ResponseEntity.ok("로그아웃 성공");
     }
@@ -72,7 +105,10 @@ public class AuthController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody Map<String, String> request) {
 
-        boolean result = authService.checkPassword(userDetails.getUser(), request.get("password"));
+        boolean result = authService.checkPassword(
+                userDetails.getUser(),
+                request.get("password")
+        );
 
         return ResponseEntity.ok(Map.of("success", result));
     }
