@@ -1,7 +1,12 @@
 import "./ActivityInfo.css";
+import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
+import useImagePath from "../../hooks/useImagePath.js";
 
-export default function ActivityInfo({ attractions = [] }) {
-    if (attractions.length === 0) return null;
+export default function ActivityInfo() {
+    const { attractions } = useProgramDetail();
+    const { fixPath } = useImagePath();
+
+    if (!attractions || attractions.length === 0) return null;
 
     return (
         <section className="pd-section">
@@ -11,17 +16,17 @@ export default function ActivityInfo({ attractions = [] }) {
 
             {attractions.map((a) => (
                 <div key={a.id} className="pd-Activity-card">
-                    <img src={a.photo1} className="pd-Activity-img" />
+                    <img src={fixPath(a.photo1) ?? ""} className="pd-Activity-img" />
 
                     <div className="pd-Activity-info">
                         <div className="pd-Activity-title">
                             <h3>{a.name}</h3>
                         </div>
-                        <div className="pd-Activity-time">
-                            {a.equipment}
-                        </div>
+
+                        <div className="pd-Activity-time">{a.equipment}</div>
+
                         {a.attractionUrl && (
-                            <a href={a.attractionUrl} target="_blank">
+                            <a href={a.attractionUrl} target="_blank" rel="noreferrer">
                                 자세히 보기
                             </a>
                         )}
@@ -31,4 +36,3 @@ export default function ActivityInfo({ attractions = [] }) {
         </section>
     );
 }
-

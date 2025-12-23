@@ -1,16 +1,18 @@
-import "./ReviewInput.css"
+import "./ReviewInput.css";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import publicApi from "../../../api/publicApi.js";
+import { useProgramDetail } from "../context/ProgramDetailContext.jsx";
 
-export function ReviewInput({ programId, onReviewSubmitted })  {
+export default function ReviewInput({ onReviewSubmitted }) {
+    const { programId } = useProgramDetail();
+
     const [rating, setRating] = useState(0);
     const [reviewText, setReviewText] = useState("");
 
     const navigate = useNavigate();
 
-    // 로그인한 사용자 ID 가져오기
     let userId = null;
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -37,18 +39,12 @@ export function ReviewInput({ programId, onReviewSubmitted })  {
             })
             .then(() => {
                 alert("리뷰가 등록되었습니다!");
-
-                // 입력값 초기화
                 setRating(0);
                 setReviewText("");
-
-                // 리뷰 게시판으로 이동
                 navigate("/reviews");
-
-                // 상세페이지에서 새로고침 등 추가 로직 필요 시
                 if (onReviewSubmitted) onReviewSubmitted();
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("리뷰 등록 실패:", err);
             });
     };
@@ -62,8 +58,8 @@ export function ReviewInput({ programId, onReviewSubmitted })  {
                         className={star <= rating ? "star filled" : "star"}
                         onClick={() => setRating(star)}
                     >
-                        ★
-                    </span>
+            ★
+          </span>
                 ))}
             </div>
 

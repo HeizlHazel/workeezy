@@ -1,14 +1,12 @@
 import "./HotelInfo.css";
+import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
+import useImagePath from "../../hooks/useImagePath.js";
 
-export default function HotelInfo({ hotel }) {
+export default function HotelInfo() {
+    const { hotel } = useProgramDetail();
+    const { fixPath } = useImagePath();
+
     if (!hotel) return null;
-    const getImage = (url) => {
-        if (!url) return "";
-        return url.startsWith("public/")
-            ? "/" + url.replace("public/", "")
-            : url;
-    };
-
 
     return (
         <section className="pd-section">
@@ -17,16 +15,13 @@ export default function HotelInfo({ hotel }) {
             <br />
 
             <div className="pd-hotel-card">
-                <img src={getImage(hotel.photo1)} className="pd-hotel-img" />
+                <img src={fixPath(hotel.photo1) ?? ""} className="pd-hotel-img" />
                 <div className="pd-hotel-info">
                     <div className="pd-hotel-title">{hotel.name}</div>
                     <div className="pd-hotel-address">{hotel.address}</div>
-                    <div className="pd-hotel-desc">
-                        {hotel.equipment}
-                    </div>
+                    <div className="pd-hotel-desc">{hotel.equipment}</div>
                 </div>
             </div>
         </section>
     );
 }
-
