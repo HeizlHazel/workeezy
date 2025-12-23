@@ -29,7 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/programs/**",
-            "/api/reviews/**"
+            "/api/reviews",
+            "/api/reviews/**",
+            "/ping",              // debug
+            "/error"
     );
 
     @Override
@@ -71,6 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 유효하면 정상 인증
             if (jwtTokenProvider.validateToken(token)) {
+
                 // Authentication 생성
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
@@ -79,18 +83,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("❌ JWT 인증 실패 또는 없음");
             }
         } else {
+            SecurityContextHolder.clearContext();
             System.out.println("❌ JWT 토큰 없음");
         }
-        System.out.println("인증 성공 여부 = " +
-                SecurityContextHolder.getContext().getAuthentication());
-
         filterChain.doFilter(request, response);
     }
 
     // Authorization 헤더에서 Bearer 토큰 추출
     private String resolveToken(HttpServletRequest request) {
+
         String header = request.getHeader("Authorization");
+
         System.out.println("🪶 Authorization 헤더 내용: " + header);
+
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }

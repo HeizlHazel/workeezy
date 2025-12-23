@@ -1,5 +1,7 @@
 package com.together.workeezy.reservation;
 
+import com.together.workeezy.common.exception.CustomException;
+import com.together.workeezy.common.exception.ErrorCode;
 import com.together.workeezy.payment.entity.Payment;
 import com.together.workeezy.program.program.domain.model.entity.Place;
 import com.together.workeezy.program.program.domain.model.entity.Program;
@@ -23,10 +25,12 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "tb_reservation")
-@Getter @Setter
+@Getter
+@Setter
 public class Reservation {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id", nullable = false)
     private Long id;
 
@@ -58,11 +62,11 @@ public class Reservation {
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime  startDate;
+    private LocalDateTime startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime  endDate;
+    private LocalDateTime endDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -97,9 +101,9 @@ public class Reservation {
     @OneToMany(mappedBy = "reservation")
     private List<ReservationPdf> reservationPdfs = new ArrayList<>();
 
+//    protected Reservation() {}
 
     // 상태판단 메소드
-
     // 사용자 예약이 맞는지
     public boolean isOwnedBy(User user) {
         return this.user.getId().equals(user.getId());
@@ -127,8 +131,7 @@ public class Reservation {
     }
 
     // 수정
-
-    public void changePeriod(LocalDateTime  start, LocalDateTime  end) {
+    public void changePeriod(LocalDateTime start, LocalDateTime end) {
         this.startDate = start;
         this.endDate = end;
     }
@@ -146,4 +149,18 @@ public class Reservation {
         this.totalPrice = (long) this.program.getProgramPrice() * this.peopleCount;
     }
 
+    // 결제 상태 변경
+    public void markConfirmed() {
+
+        if (status == ReservationStatus.confirmed)
+            throw new CustomException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+
+        status = ReservationStatus.confirmed;
+    }
+
+    public void linkPayment(Payment payment) {
+        if (this.payment == null) {
+            this.payment = payment;
+        }
+    }
 }

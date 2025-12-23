@@ -26,7 +26,7 @@ public class CookieService {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .domain(".workeezy.cloud")
+                .domain("api.workeezy.cloud")
                 .maxAge(autoLogin ? jwtTokenProvider.getRefreshExpiration() / 1000 : -1)
                 .build();
 
@@ -41,7 +41,7 @@ public class CookieService {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .domain(".workeezy.cloud")
+                .domain("api.workeezy.cloud")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
