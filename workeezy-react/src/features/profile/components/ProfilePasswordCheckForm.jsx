@@ -1,25 +1,27 @@
 import "./ProfilePasswordCheckForm.css";
-import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
 import {checkPasswordApi} from "../../../api/authApi.js";
+import useProfileVerified from "../../../hooks/useProfileVerified.js";
+import {useState} from "react";
 
 export default function ProfilePasswordCheckForm() {
     const [password, setPassword] = useState("");
+    const {verify} = useProfileVerified();
     const navigate = useNavigate();
 
     const handleCheck = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await  checkPasswordApi(password);
+            const res = await checkPasswordApi(password);
 
             if (res.data.success) {
-                localStorage.setItem("profileVerified", "true");
                 await toast.fire({
                     icon: "success",
                     title: "비밀번호 확인이 완료되었습니다."
                 });
+                verify();
                 navigate("/profile", {replace: true});
 
             } else {

@@ -6,11 +6,9 @@ export function Success() {
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-        // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
         const requestData = {
             orderId: searchParams.get("orderId"),
-            amount: searchParams.get("amount"),
+            amount: Number(searchParams.get("amount")),
             paymentKey: searchParams.get("paymentKey"),
         };
 
@@ -20,18 +18,20 @@ export function Success() {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify(requestData),
             });
 
-            const json = await response.json();
-
             if (!response.ok) {
-                // 결제 실패 비즈니스 로직을 구현하세요.
-                navigate(`/fail?message=${json.message}&code=${json.code}`);
+                // JSON 파싱 전에 상태 체크
+                const text = await response.text();
+                console.error("결제 confirm 실패 응답:", text);
+                navigate("/payment/result?status=fail");
                 return;
             }
 
-            // 결제 성공 비즈니스 로직을 구현하세요.
+            const json = await response.json();
+            console.log("결제 성공");
         }
 
         confirm();
@@ -44,9 +44,8 @@ export function Success() {
                     결제 성공
                 </h2>
                 <p>{`주문번호: ${searchParams.get("orderId")}`}</p>
-                <p>{`결제 금액: ${Number(
-                    searchParams.get("amount")
-                ).toLocaleString()}원`}</p>
+                <p>결제 금액:{" "}
+                    {Number(searchParams.get("amount")).toLocaleString()}원</p>
             </div>
             <button onClick={() => navigate("/reservation/list")}>예약 현황 조회</button>
             <button onClick={() => navigate("/")}>Home</button>

@@ -1,11 +1,6 @@
-import {Navigate} from "react-router-dom";
+import useAuthGuard from "../../hooks/useAuthGuard.js";
 
 export default function PrivateRoute({children}) {
-
-    const token = localStorage.getItem("accessToken");
-
-    if(!token){
-        return <Navigate to="/profile-check" replace />;
-    }
+    useAuthGuard({requireLogin: true});
     return children;
 }

@@ -10,7 +10,7 @@ export const alert = Swal.mixin({
     width: 380,
     customClass: {
         popup: "alert-small",
-        icon: "alert-icon-small"   // 🔥 아이콘 커스텀
+        icon: "alert-icon-small"
     },
 });
 

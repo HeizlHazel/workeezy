@@ -1,10 +1,14 @@
 import "./ProfileForm.css";
 import {useEffect, useState} from "react";
-import SectionHeader from "../../../shared/common/SectionHeader.jsx"; // axios 인스턴스
+import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
-import {getMyInfoApi, updatePasswordApi, updatePhoneApi} from "../../../api/userApi.js";
+import useMyInfo from "../../../hooks/useMyInfo.js";
+import useAuth from "../../../hooks/useAuth.js";
 
 export default function ProfileForm() {
+    const {myInfo, loading, updatePhone, updatePassword} = useMyInfo();
+    const {logout} = useAuth();
+
     const [user, setUser] = useState({
         email: "",
         name: "",
@@ -13,6 +17,7 @@ export default function ProfileForm() {
         company: "",
         role: "",
     });
+
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordCheck, setNewPasswordCheck] = useState("");
@@ -23,27 +28,17 @@ export default function ProfileForm() {
     const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
 
     useEffect(() => {
-        const fetchMyInfo = async () => {
-            try {
-                const {data} = await getMyInfoApi();
-                console.log("내 정보:", data);
+        if (!myInfo) return;
 
-                setUser((prev) => ({
-                    ...prev,
-                    email: data.email,
-                    name: data.name,
-                    role: data.role,
-                    birth: data.birth || "",
-                    phone: data.phone || "",
-                    company: data.company || "",
-                }));
-            } catch (err) {
-                console.error("내 정보 불러오기 실패", err);
-            }
-        };
-
-        fetchMyInfo();
-    }, []);
+        setUser({
+            email: myInfo.email,
+            name: myInfo.name,
+            role: myInfo.role,
+            birth: myInfo.birth || "",
+            phone: myInfo.phone || "",
+            company: myInfo.company || "",
+        });
+    }, [myInfo]);
 
     const isValidPhone = (value) => {
         const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
@@ -51,8 +46,6 @@ export default function ProfileForm() {
     };
 
     const handleUpdate = async () => {
-        console.log("업데이트 함수 실행됨!");
-        console.log("user.phone:", user.phone);
         if (!isValidPhone(user.phone)) {
             await toast.fire({
                 icon: "error",
@@ -64,7 +57,7 @@ export default function ProfileForm() {
         }
 
         try {
-            await updatePhoneApi(user.phone);
+            await updatePhone(user.phone);
             await toast.fire({
                 icon: "success",
                 title: "연락처가 성공적으로 변경되었습니다!",
@@ -81,9 +74,6 @@ export default function ProfileForm() {
 
     // 비밀번호 변경
     const handleChangePassword = async () => {
-
-        console.log({currentPassword, newPassword, newPasswordCheck});
-
         if (!currentPassword || !newPassword || !newPasswordCheck) {
             await toast.fire({
                 icon: "error",
@@ -101,12 +91,17 @@ export default function ProfileForm() {
         }
 
         try {
-            await updatePasswordApi(currentPassword, newPassword, newPasswordCheck);
+            await updatePassword(
+                currentPassword,
+                newPassword,
+                newPasswordCheck
+            );
+
             await toast.fire({
                 icon: "success",
                 title: "비밀번호 변경 완료! 다시 로그인해주세요.",
-            })
-            window.location.href = "/login";
+            });
+            logout();
 
         } catch (err) {
             console.error(err);
@@ -118,26 +113,24 @@ export default function ProfileForm() {
                 title: message,
             })
         }
-        console.log("token:", localStorage.getItem("accessToken"));
-    }
+    };
 
     const validatePasswordRule = (pwd) => {
-        const lengthOk = pwd.length >= 8 && pwd.length <= 16;
-        const numberOk = /[0-9]/.test(pwd);
-        const upperOk = /[A-Z]/.test(pwd);
-        const lowerOk = /[a-z]/.test(pwd);
-        const specialOk = /[!@#$%^&*]/.test(pwd);
-
         if (!pwd) return "";
 
-        if (!lengthOk) return "비밀번호는 8~16자여야 합니다.";
-        if (!numberOk) return "비밀번호에는 숫자가 1개 이상 포함되어야 합니다.";
-        if (!upperOk) return "비밀번호에는 영어 대문자가 1개 이상 포함되어야 합니다.";
-        if (!lowerOk) return "비밀번호에는 영어 소문자가 1개 이상 포함되어야 합니다.";
-        if (!specialOk) return "비밀번호에는 특수문자가 1개 이상 포함되어야 합니다.(가능 문자: !@#$%^&*)";
+        if (pwd.length < 8 || pwd.length > 16)
+            return "비밀번호는 8~16자여야 합니다.";
+        if (!/[0-9]/.test(pwd))
+            return "숫자를 1개 이상 포함해야 합니다.";
+        if (!/[A-Z]/.test(pwd))
+            return "대문자를 1개 이상 포함해야 합니다.";
+        if (!/[a-z]/.test(pwd))
+            return "소문자를 1개 이상 포함해야 합니다.";
+        if (!/[!@#$%^&*]/.test(pwd))
+            return "특수문자(!@#$%^&*)를 포함해야 합니다.";
 
         return "사용 가능한 비밀번호입니다.";
-    }
+    };
 
     const handleNewPasswordChange = (value) => {
         setNewPassword(value);
@@ -146,42 +139,39 @@ export default function ProfileForm() {
 
     const handleNewPasswordCheckChange = (value) => {
         setNewPasswordCheck(value);
+        setPasswordMatchMessage(
+            value
+                ? value === newPassword
+                    ? "비밀번호가 일치합니다."
+                    : "비밀번호가 일치하지 않습니다."
+                : ""
+        );
+    };
 
-        if (!value) {
-            setPasswordMatchMessage("");
-            return;
-        }
-
-        if (value === newPassword) {
-            setPasswordMatchMessage("비밀번호가 일치합니다.");
-        } else {
-            setPasswordMatchMessage("비밀번호가 일치하지 않습니다.");
-        }
-    }
+    if (loading) return null;
 
     return (
         <>
             <SectionHeader icon="far fa-user" title="개인 정보 조회"/>
             <div className="profile-page">
 
-
-                {/* ----- 개인정보 수정 섹션 ----- */}
+                {/* 개인정보 수정 */}
                 <div className="profile-section">
                     <h3 className="profile-section-title">개인 정보 수정</h3>
 
                     <div className="profile-form-row">
                         <label>아이디</label>
-                        <input className="readonly-profile" type="text" readOnly value={user.email}/>
+                        <input className="readonly-profile" readOnly value={user.email}/>
                     </div>
 
                     <div className="profile-form-row">
                         <label>이름</label>
-                        <input className="readonly-profile" type="text" readOnly value={user.name}/>
+                        <input className="readonly-profile" readOnly value={user.name}/>
                     </div>
 
                     <div className="profile-form-row">
                         <label>생년월일</label>
-                        <input className="readonly-profile" type="text" readOnly value={user.birth}/>
+                        <input className="readonly-profile" readOnly value={user.birth}/>
                     </div>
 
                     <div className="profile-form-row">
@@ -189,13 +179,13 @@ export default function ProfileForm() {
                         <input type="text"
                                value={user.phone}
                                onChange={(e) =>
-                                   setUser((prev) => ({...prev, phone: e.target.value}))
+                                   setUser((p) => ({...p, phone: e.target.value}))
                                }/>
                     </div>
 
                     <div className="profile-form-row">
                         <label>소속 회사</label>
-                        <input className="readonly-profile" type="text" readOnly value={user.company}/>
+                        <input className="readonly-profile" readOnly value={user.company}/>
                     </div>
                     <button className="primary-btn"
                             onClick={handleUpdate}
@@ -203,7 +193,7 @@ export default function ProfileForm() {
                     </button>
                 </div>
 
-                {/* ----- 비밀번호 변경 섹션 ----- */}
+                {/* 비밀번호 변경 */}
                 <div className="profile-section">
                     <h3 className="profile-section-title">비밀번호 변경</h3>
 
@@ -223,7 +213,6 @@ export default function ProfileForm() {
 
                     <p className={`hint ${passwordValidMessage.includes("사용 가능한 비밀번호입니다.") ? "success" : "error"}`}>
                         {passwordValidMessage}
-                        {/*비밀번호는 공백없는 8~16자의 영문/숫자 등 두 가지 이상 조합으로 입력해주세요.*/}
                     </p>
 
                     <div className="profile-form-row">
@@ -235,7 +224,6 @@ export default function ProfileForm() {
 
                     <p className={`hint ${passwordMatchMessage === "비밀번호가 일치합니다." ? "success" : "error"}`}>
                         {passwordMatchMessage}
-                        {/*비밀번호 확인을 위해 한 번 더 입력해주세요.*/}
                     </p>
 
                     <button className="primary-btn"

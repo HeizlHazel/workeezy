@@ -5,11 +5,12 @@ import LoginButton from "./LoginButton.jsx";
 import SocialLoginButtons from "./SocialLoginButtons.jsx";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {loginApi} from "../../../api/authApi.js";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
+import useAuth from "../../../hooks/useAuth.js";
 
 export default function LoginForm() {
     const navigate = useNavigate();
+    const {login} = useAuth();
 
     // 상태 정의
     const [email, setEmail] = useState("");
@@ -30,30 +31,13 @@ export default function LoginForm() {
         e.preventDefault();
 
         try {
-            const {data} = await loginApi(email, password, autoLogin);
+            const data = await login({
+                email,
+                password,
+                autoLogin,
+                rememberEmail,
+            });
 
-            console.log("로그인 성공", data);
-
-            // 아이디 저장 여부 처리
-            if (rememberEmail) {
-                localStorage.setItem("savedEmail", email);
-            } else {
-                localStorage.removeItem("savedEmail");
-            }
-
-            // 자동 로그인 여부 저장
-            if (autoLogin) {
-                localStorage.setItem("autoLogin", "true");
-            } else {
-                localStorage.removeItem("autoLogin");
-            }
-
-            // 로그인 정보 저장
-            localStorage.setItem("accessToken", data.token);
-            localStorage.setItem("userName", data.username);
-            localStorage.setItem("role", data.role);
-
-            // SweetAlert 성공 팝업
             await toast.fire({
                 icon: "success",
                 title: `${data.username}님 환영합니다. 😊`,
@@ -61,9 +45,7 @@ export default function LoginForm() {
             navigate("/");
 
         } catch (err) {
-            console.error("로그인 실패:", err);
 
-            // SweetAlert 실패 팝업
             await toast.fire({
                 icon: "error",
                 title: "아이디 또는 비밀번호가 올바르지 않습니다.",
