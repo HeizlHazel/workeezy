@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {loginApi, logoutApi, meApi} from "../api/authApi";
+import {loginApi, logoutApi} from "../api/authApi";
+import {getMyInfoApi} from "../api/userApi.js";
 
 export default function useAuth() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function useAuth() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const {data} = await meApi(); // 쿠키 기반
+                const {data} = await getMyInfoApi(); // 쿠키 기반
                 setUser({
                     name: data.username,
                     role: data.role,
