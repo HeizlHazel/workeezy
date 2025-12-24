@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
 
+    AUTH_REFRESH_TOKEN_NOT_FOUND("Refresh token 찾을 수 없음"),
     AUTH_REFRESH_TOKEN_EXPIRED("Refresh token 만료 또는 위조"),
     AUTH_REFRESH_TOKEN_NOT_SAVED("서버에 Refresh Token 없음(로그아웃된 사용자)"),
     AUTH_REFRESH_TOKEN_MISMATCH("Refresh Token 불일치(탈취/중복 로그인 가능)"),

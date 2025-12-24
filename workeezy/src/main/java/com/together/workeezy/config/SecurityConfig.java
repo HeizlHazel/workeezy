@@ -62,23 +62,26 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
                         .requestMatchers("/api/auth/logout").authenticated()
-
-                        // 비밀번호 재확인, 마이페이지용 보호
                         .requestMatchers("/api/auth/check-password").authenticated()
+
+                        // User
                         .requestMatchers("/api/user/**").authenticated()
 
                         // 공개 데이터 API
+                        // Programs / Reviews (공개 범위)
                         .requestMatchers("/api/programs/**").permitAll()
-                        .requestMatchers("/api/search").authenticated()
-                        .requestMatchers("/api/search/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews", "/api/reviews/**").permitAll()
-                        .requestMatchers("/api/recommendations/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
                         .requestMatchers("/api/recommendations/**").permitAll()
 
+                        // Search / Recommend
+                        .requestMatchers("/api/search/**").authenticated()
+                        .requestMatchers("/api/recommendations/**").permitAll()
+
+                        // Reservations / Payments
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/me").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
@@ -86,6 +89,10 @@ public class SecurityConfig {
                         .requestMatchers(("/api/payments/**")).authenticated()
 
 //                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/payments/**").authenticated()
+
+                        // 관리자 전용
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // 에러 페이지
                         .requestMatchers("/error").permitAll()
@@ -105,6 +112,7 @@ public class SecurityConfig {
     // CORS React 허용
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
 
         // 허용 Origin

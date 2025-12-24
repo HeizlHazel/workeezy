@@ -33,17 +33,31 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 권한 반환
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name().toUpperCase()));
     }
 
-    @Override public boolean isAccountNonExpired() { return true; }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    @Override public boolean isAccountNonLocked() { return true; }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-    @Override public boolean isEnabled() { return true; }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
-    public Long getUserId() { return user.getId(); }
+    public Long getUserId() {
+        return user.getId();
+    }
 
 }

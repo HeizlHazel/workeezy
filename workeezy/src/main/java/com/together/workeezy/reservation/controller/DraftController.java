@@ -1,10 +1,12 @@
 package com.together.workeezy.reservation.controller;
 
 import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
+import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.reservation.service.DraftRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +24,12 @@ public class DraftController {
     @PostMapping("/me")
     public ResponseEntity<?> saveDraft(
             @RequestBody Map<String, Object> draftData,
-            @RequestHeader("Authorization") String token
+            Authentication authentication
     ) {
-        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7)); // Bearer 제거
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.getUserId();// Bearer 제거
         String key = draftRedisService.saveDraft(userId,draftData);
         return ResponseEntity.ok(Map.of(
                 "message", "임시저장 완료",
@@ -35,10 +40,12 @@ public class DraftController {
     // 임시저장 목록 조회 (GET /api/reservations/draft/me)
     @GetMapping("/me")
     public ResponseEntity<List<Map<String, Object>>> getDrafts(
-            @RequestHeader("Authorization") String token
+            Authentication authentication
     ) {
-        // 토큰의 userId로 사용자가 누구인지
-        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.getUserId();// Bearer 제거
         List<Map<String, Object>> drafts = draftRedisService.getUserDrafts(userId);
         return ResponseEntity.ok(drafts);
     }
@@ -47,11 +54,12 @@ public class DraftController {
     @GetMapping("/{key:.+}")
     public ResponseEntity<?> getDraftByKey(
             @PathVariable String key,
-            @RequestHeader("Authorization") String token
+            Authentication authentication
     ){
-        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
 
-
+        Long userId = userDetails.getUserId();// Bearer 제거
         // 본인 확인
         if (!key.startsWith("draft:"+userId)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error","본인 데이터만 조회할 수 있습니다."));
@@ -67,9 +75,12 @@ public class DraftController {
     @DeleteMapping("/{key}")
     public ResponseEntity<?> deleteDraft(
             @PathVariable String key,
-            @RequestHeader("Authorization") String token
+            Authentication authentication
     ){
-        Long userId = jwtTokenProvider.getUserIdFromToken(token.substring(7));
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.getUserId();// Bearer 제거
         if(!key.startsWith("draft:"+userId)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error","본인 데이터만 삭제할 수 있습니다."));

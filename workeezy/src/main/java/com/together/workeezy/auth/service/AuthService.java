@@ -64,17 +64,17 @@ public class AuthService {
     // RefreshToken으로 AccessToken 재발급
     public LoginResponse refresh(String refreshToken) {
 
-        // 토큰 만료 여부 확인
-        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+        if (refreshToken == null) {
+            throw new CustomException(AUTH_REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new CustomException(AUTH_REFRESH_TOKEN_EXPIRED);
         }
 
-        // refreshToken에서 이메일 추출
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
-        // Redis에 저장된 refreshToken 가져오기
         String savedToken = tokenRedisService.getRefreshToken(email);
-
         if (savedToken == null) {
             throw new CustomException(AUTH_REFRESH_TOKEN_NOT_SAVED);
         }
@@ -84,10 +84,10 @@ public class AuthService {
         }
 
         Claims claims = jwtTokenProvider.getClaims(refreshToken);
-
-        // role 꺼내기
         String role = (String) claims.get("role");
-        // userId 꺼내기
+        if (role.startsWith("ROLE_")) {
+            role = role.substring(5); // ROLE_ADMIN → ADMIN
+        }
         Long userId = claims.get("userId", Long.class);
 
         String newAccess = jwtTokenProvider.createAccessToken(email, role, userId);
