@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import "./AdminReservationList.css";
 import Pagination from "../../../../shared/common/Pagination";
-import ReservationStatusButton from "../../../../shared/common/ReservationStatusButton";
+import ReservationStatusButton from "../ReservationStatusButton.jsx";
 import axios from "../../../../api/axios";
 import {useNavigate} from "react-router-dom";
 

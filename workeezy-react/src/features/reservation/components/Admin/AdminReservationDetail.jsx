@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import ReservationStatusButton from "../../../../shared/common/ReservationStatusButton";
+import ReservationStatusButton from "../ReservationStatusButton.jsx";
 import axios from "../../../../api/axios";
 import {formatLocalDateTime} from "../../../../utils/dateTime";
 import "./AdminReservationDetail.css";

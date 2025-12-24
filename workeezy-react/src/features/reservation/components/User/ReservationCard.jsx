@@ -1,5 +1,5 @@
 import "./ReservationCard.css";
-import ReservationStatusButton from "../../../../shared/common/ReservationStatusButton";
+import ReservationStatusButton from "../ReservationStatusButton.jsx";
 import { formatLocalDateTime } from "../../../../utils/dateTime";
 import ReservationCardActions from "./../ReservationCardActions";
 
