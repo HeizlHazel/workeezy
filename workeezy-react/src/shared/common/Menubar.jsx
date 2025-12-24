@@ -14,38 +14,35 @@ export default function MenuBar({onClose}) {
 
     console.log("🧠 MenuBar render", {user, loading, isAuthenticated});
 
-    // 메뉴 데이터
-    const userMenu = [
-        {
-            title: "마이페이지",
-            sub: [
-                {name: "개인 정보 조회", path: "/profile-check"},
-                {name: "찜 목록", path: "/likes"},
-            ],
-        },
-        {
-            title: "나의 예약",
-            sub: [
-                {name: "예약 조회", path: "/reservation/list"},
-                {name: "예약 변경", path: "/modifyreservation"},
-            ],
-        },
-        {title: "프로그램 찾기", path: "/search"},
-        {title: "리뷰", path: "/reviews"},
-    ];
+  // 메뉴 데이터
+  const userMenu = [
+    {
+      title: "마이페이지",
+      sub: [
+        { name: "개인 정보 조회", path: "/profile-check" },
+        { name: "찜 목록", path: "/likes" },
+      ],
+    },
+    {
+      title: "나의 예약",
+      sub: [
+        { name: "예약 조회", path: "/reservation/list" },
+        { name: "작성 중인 예약", path: "/reservation/drafts" },
+      ],
+    },
+    { title: "프로그램 찾기", path: "/search" },
+    { title: "리뷰", path: "/reviews" },
+  ];
 
-    const adminMenu = [
-        {
-            title: "예약 관리",
-            sub: [
-                {name: "예약 조회", path: "/admin/reservations"},
-                {name: "예약 승인", path: "/admin/approval"},
-            ],
-        },
-        {title: "프로그램 찾기", path: "/search"},
-        {title: "리뷰", path: "/reviews"},
-        {title: "Admin", isFooter: true, path: "/admin"},
-    ];
+  const adminMenu = [
+    {
+      title: "예약 관리",
+      path: "/admin/reservations",
+    },
+    { title: "프로그램 찾기", path: "/search" },
+    { title: "리뷰", path: "/reviews" },
+    { title: "Admin", isFooter: true, path: "/admin" },
+  ];
 
     // 권한/메뉴
     const role = normalizeRole(user?.role);
