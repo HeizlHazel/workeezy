@@ -5,6 +5,9 @@
       "dest": "https://api.workeezy.cloud/api/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
