@@ -1,5 +1,6 @@
-package com.together.workeezy.reservation;
+package com.together.workeezy.reservation.domain;
 
+import com.together.workeezy.reservation.enums.ReservationModifyStatus;
 import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
