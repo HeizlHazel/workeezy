@@ -55,7 +55,7 @@ export default function LoginForm() {
 
             await toast.fire({
                 icon: "success",
-                title: `${data.username}님 환영합니다. 😊`,
+                title: `${data.name}님 환영합니다. 😊`,
             });
 
             navigate("/");
