@@ -6,6 +6,7 @@ import {refreshAxios} from "../../../api/axios.js";
 export default function useAuth() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [initialized, setInitialized] = useState(false);
 
     const isAuthenticated = user !== null;
 
@@ -14,9 +15,15 @@ export default function useAuth() {
         async function initAuth() {
             console.log("🟢 initAuth start");
 
+            // 이미 로그인으로 user가 있으면 건너뜀
+            if (initialized) {
+                console.log("🟡 initAuth skip (initialized)");
+                setLoading(false);
+                return;
+            }
+
             try {
                 await refreshAxios.post("/api/auth/refresh");
-                // accessToken 재발급 후 me
                 const res = await getMyInfoApi();
                 console.log("🟢 me success", res.data);
 
@@ -25,17 +32,16 @@ export default function useAuth() {
                     role: res.data.role,
                 });
             } catch (e) {
-                // me 실패 → 비로그인
                 console.log("🔴 me fail", e?.response?.status);
-                setUser(null);
             } finally {
-                console.log("🟡 initAuth end");
+                setInitialized(true);
                 setLoading(false);
+                console.log("🟡 initAuth end");
             }
         }
 
         initAuth();
-    }, []);
+    }, [initialized]);
 
     // 로그인
     const login = async ({email, password, autoLogin}) => {
@@ -52,7 +58,7 @@ export default function useAuth() {
         } else {
             localStorage.removeItem("autoLogin");
         }
-
+        setInitialized(true);
         return data;
     };
 
