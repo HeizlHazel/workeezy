@@ -21,3 +21,7 @@ export const logoutApi = async () => {
 export const checkPasswordApi = (password) => {
     return api.post("/api/auth/check-password", {password});
 }
+
+export const refreshApi = async () => {
+    return api.post("/api/auth/refresh");
+}

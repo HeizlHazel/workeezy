@@ -1,12 +1,14 @@
 import {Link} from "react-router-dom";
 import "./Header.css";
-import useAuth from "../../hooks/useAuth.js";
+import {useAuthContext} from "../../auth/AuthContext.jsx";
 
 export default function Header({onOpenMenu}) {
-    const { isAuthenticated } = useAuth();
+    const {user, isAuthenticated, loading} = useAuthContext();
+
+    if (loading) return null;
 
     // 링크 경로 설정
-    const userLink = isAuthenticated ? "/profile-check" : "/login";
+    const userLink = user ? "/profile-check" : "/login";
 
     // 아이콘 클래스 설정
     const userIconClass = isAuthenticated

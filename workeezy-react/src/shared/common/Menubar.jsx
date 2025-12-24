@@ -1,17 +1,15 @@
 import "./Menubar.css";
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {alert, toast} from "../alert/workeezyAlert.js";
 import {useLocation, useNavigate} from "react-router-dom";
-import useAuth from "../../hooks/useAuth.js";
+import {useAuthContext} from "../../auth/AuthContext";
+import {normalizeRole} from "../../utils/normalizeRole.js";
 
-export default function MenuBar({isAdmin = false, onClose}) {
+export default function MenuBar({onClose}) {
     const location = useLocation();
     const navigate = useNavigate();
     const currentPath = location.pathname;
-
-    const {isAuthenticated, user, logout} = useAuth();
-
-    const isAdminUser = user?.role?.toUpperCase()?.includes("ADMIN");
+    const {user, isAuthenticated, loading, logout} = useAuthContext();
 
     // 메뉴 데이터
     const userMenu = [
@@ -46,7 +44,12 @@ export default function MenuBar({isAdmin = false, onClose}) {
         {title: "Admin", isFooter: true, path: "/admin"},
     ];
 
-    const menu = isAdminUser ? adminMenu : userMenu;
+    const role = normalizeRole(user?.role);
+    const isAdminUser = role === "ADMIN";
+
+    const menu = useMemo(() => {
+        return isAdminUser ? adminMenu : userMenu;
+    }, [isAdminUser]);
 
     //  현재 페이지 기준 대메뉴만 열기
     const [openItems, setOpenItems] = useState([]);
@@ -57,7 +60,9 @@ export default function MenuBar({isAdmin = false, onClose}) {
             .map((m) => m.title);
 
         setOpenItems(activeParents);
-    }, [currentPath]);
+    }, [currentPath, menu]);
+
+    if (loading) return null;
 
     const toggleItem = (title) => {
         setOpenItems((prev) =>
@@ -97,7 +102,7 @@ export default function MenuBar({isAdmin = false, onClose}) {
 
         if (!result.isConfirmed) return;
 
-        await logout();
+        await logout(); // 상태만 초기화
 
         await toast.fire({
             icon: "success",
@@ -112,12 +117,10 @@ export default function MenuBar({isAdmin = false, onClose}) {
 
             {/* 메뉴 헤더 */}
             <div className="menu-header">
-                {isAuthenticated && (
+                {user && (
                     <p className="menu-user">
-                        {user?.name}님 👋
-                        {isAdminUser && (
-                            <span className="admin-badge">Admin</span>
-                        )}
+                        {user.name}님 👋
+                        {isAdminUser && <span className="admin-badge">Admin</span>}
                     </p>
                 )}
             </div>

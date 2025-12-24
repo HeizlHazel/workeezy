@@ -6,11 +6,11 @@ import SocialLoginButtons from "./SocialLoginButtons.jsx";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
-import useAuth from "../../../hooks/useAuth.js";
+import {useAuthContext} from "../../../auth/AuthContext.jsx";
 
 export default function LoginForm() {
     const navigate = useNavigate();
-    const {login} = useAuth();
+    const {login} = useAuthContext();
 
     // 입력 상태
     const [email, setEmail] = useState("");

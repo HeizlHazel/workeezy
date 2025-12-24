@@ -3,13 +3,13 @@ import {useEffect, useState} from "react";
 import SectionHeader from "../../../shared/common/SectionHeader.jsx";
 import {toast} from "../../../shared/alert/workeezyAlert.js";
 import useMyInfo from "../../../hooks/useMyInfo.js";
-import useAuth from "../../../hooks/useAuth.js";
 import {useNavigate} from "react-router-dom";
+import {useAuthContext} from "../../../auth/AuthContext.jsx";
 
 export default function ProfileForm() {
     const navigate = useNavigate();
     const {myInfo, loading, error, updatePhone, updatePassword} = useMyInfo();
-    const {logout} = useAuth();
+    const {logout} = useAuthContext();
 
     const [user, setUser] = useState({
         email: "",

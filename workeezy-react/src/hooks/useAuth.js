@@ -1,53 +1,53 @@
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {loginApi, logoutApi} from "../api/authApi";
-import {getMyInfoApi} from "../api/userApi.js";
+import {loginApi, logoutApi, refreshApi} from "../api/authApi";
+import {getMyInfoApi} from "../api/userApi";
 
 export default function useAuth() {
-    const navigate = useNavigate();
-
     const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // 앱 시작 시 인증 상태 확인
+    const isAuthenticated = user !== null;
+
+    // 앱 시작 시 인증 초기화
     useEffect(() => {
-        async function checkAuth() {
+        async function initAuth() {
+            const auto = localStorage.getItem("autoLogin");
+
             try {
-                const {data} = await getMyInfoApi();
+                // autoLogin 여부와 무관하게 refresh 한 번 시도
+                await refreshApi();          // refreshToken → accessToken 재발급
+
+                const {data} = await getMyInfoApi(); // 내 정보 조회
+
                 setUser({
                     name: data.username,
                     role: data.role,
                 });
-                setIsAuthenticated(true);
             } catch (e) {
-                if (e.response?.status === 401 || e.response?.status === 403) {
-                    // "아직 확인 불가" 상태로만 둔다
-                    setUser(null);
-                    setIsAuthenticated(false);
-                } else {
-                    console.error("checkAuth error", e);
-                }
+                // refresh / me 실패 → 비로그인 처리
+                setUser(null);
             } finally {
                 setLoading(false);
             }
         }
 
-        checkAuth();
+        initAuth();
     }, []);
 
     // 로그인
-    const login = async ({email, password, autoLogin, rememberEmail}) => {
+    const login = async ({email, password, autoLogin}) => {
         const {data} = await loginApi(email, password, autoLogin);
-
-        // 토큰 저장 없음
-        // 쿠키는 서버가 이미 내려줌
 
         setUser({
             name: data.username,
             role: data.role,
         });
-        setIsAuthenticated(true);
+
+        if (autoLogin) {
+            localStorage.setItem("autoLogin", "true");
+        } else {
+            localStorage.removeItem("autoLogin");
+        }
 
         return data;
     };
@@ -55,11 +55,10 @@ export default function useAuth() {
     // 로그아웃
     const logout = async () => {
         try {
-            await logoutApi(); // refreshToken 폐기
+            await logoutApi();
         } finally {
+            localStorage.removeItem("autoLogin");
             setUser(null);
-            setIsAuthenticated(false);
-            navigate("/login");
         }
     };
 
