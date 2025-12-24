@@ -1,7 +1,7 @@
 package com.together.workeezy.reservation.repository;
 
-import com.together.workeezy.reservation.Reservation;
-import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.domain.Reservation;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
 import com.together.workeezy.reservation.dto.AdminReservationListDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;

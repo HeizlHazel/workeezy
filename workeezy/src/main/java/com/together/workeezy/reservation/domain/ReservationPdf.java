@@ -1,4 +1,4 @@
-package com.together.workeezy.reservation;
+package com.together.workeezy.reservation.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

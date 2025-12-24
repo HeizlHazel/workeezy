@@ -1,6 +1,6 @@
 package com.together.workeezy.reservation.controller;
 
-import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
 import com.together.workeezy.reservation.dto.AdminReservationListDto;
 import com.together.workeezy.reservation.dto.RejectReservationRequestDto;

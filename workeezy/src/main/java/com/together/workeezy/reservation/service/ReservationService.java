@@ -1,12 +1,12 @@
 package com.together.workeezy.reservation.service;
 
+import com.together.workeezy.draft.service.DraftApplicationService;
 import com.together.workeezy.program.program.domain.model.entity.PlaceType;
 import com.together.workeezy.program.program.domain.model.entity.Program;
 import com.together.workeezy.program.program.domain.model.entity.Room;
 import com.together.workeezy.program.program.domain.repository.PlaceRepository;
 import com.together.workeezy.program.program.domain.repository.ProgramRepository;
-import com.together.workeezy.reservation.Reservation;
-import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
@@ -35,7 +35,8 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
-    private final DraftRedisService draftRedisService;
+//    private final DraftRedisService draftRedisService;
+    private final DraftApplicationService draftApplicationService;
 
     // 동시 요청 방지를 위해 synchronized 추가 (멀티유저 환경 대비)
     public synchronized Reservation createNewReservation(ReservationCreateDto dto, String email) {
@@ -114,7 +115,11 @@ public class ReservationService {
 
         // 예약 저장 후 임시저장 삭제
         if (dto.getDraftKey() !=null && !dto.getDraftKey().isBlank()){
-            draftRedisService.deleteDraft(dto.getDraftKey());
+
+            draftApplicationService.deleteDraft(
+                    user.getId(),        // Long userId
+                    dto.getDraftKey()    // String draftKey
+            );
         }
         return saved;
     }
