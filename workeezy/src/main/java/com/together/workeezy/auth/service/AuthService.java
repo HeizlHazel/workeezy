@@ -6,6 +6,7 @@ import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.user.entity.User;
+import com.together.workeezy.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TokenRedisService tokenRedisService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
 
     // 로그인 처리
     public LoginResult login(String email, String password, boolean autoLogin) {
@@ -92,8 +95,11 @@ public class AuthService {
 
         String newAccess = jwtTokenProvider.createAccessToken(email, role, userId);
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
         // 새 Access Token 발급
-        return new LoginResponse(newAccess, null, role);
+        return new LoginResponse(newAccess, user.getUserName(), role);
     }
 
     // 로그아웃
