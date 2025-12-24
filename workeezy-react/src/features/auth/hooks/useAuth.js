@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {loginApi, logoutApi} from "../api/authApi.js";
 import {getMyInfoApi} from "../api/userApi.js";
+import {refreshAxios} from "../../../api/axios.js";
 
 export default function useAuth() {
     const [user, setUser] = useState(null);
@@ -14,8 +15,9 @@ export default function useAuth() {
             console.log("🟢 initAuth start");
 
             try {
+                await refreshAxios.post("/api/auth/refresh");
                 // accessToken 재발급 후 me
-                const res = await getMyInfoApi({meta: {silentAuth: true}});
+                const res = await getMyInfoApi();
                 console.log("🟢 me success", res.data);
 
                 setUser({
