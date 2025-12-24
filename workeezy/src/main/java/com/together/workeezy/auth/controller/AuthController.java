@@ -83,7 +83,9 @@ public class AuthController {
                 response,
                 loginResponse.getAccessToken(),
                 IS_PROD
+
         );
+        System.out.println("🔥 refresh accessToken 발급");
 
         return ResponseEntity.ok(loginResponse);
     }

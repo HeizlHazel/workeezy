@@ -1,6 +1,7 @@
 package com.together.workeezy.config;
 
 import com.together.workeezy.auth.security.filter.JwtAuthenticationFilter;
+import com.together.workeezy.auth.security.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // 인증 매니저
     @Bean
@@ -91,7 +93,9 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable()); // 브라우저 인증 팝업 X (Basic Auth)
 
         // JWT 필터가 스프링 필터 체인 앞에서 토큰 인증 처리
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         return http.build();
     }
