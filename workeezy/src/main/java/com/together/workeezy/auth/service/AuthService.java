@@ -65,7 +65,7 @@ public class AuthService {
     }
 
     // RefreshToken으로 AccessToken 재발급
-    public LoginResponse refresh(String refreshToken) {
+    public LoginResult refresh(String refreshToken) {
 
         if (refreshToken == null) {
             throw new CustomException(AUTH_REFRESH_TOKEN_NOT_FOUND);
@@ -99,7 +99,14 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         // 새 Access Token 발급
-        return new LoginResponse(newAccess, user.getUserName(), role);
+        // 내부 로직용 객체 반환
+        return new LoginResult(
+                newAccess,
+                null,    // refreshToken (refresh에서는 새로 안 만듦)
+                user.getUserName(),
+                role,
+                false               // autoLogin (refresh에서는 의미 없음)
+        );
     }
 
     // 로그아웃
