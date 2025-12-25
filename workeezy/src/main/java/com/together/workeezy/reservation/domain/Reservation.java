@@ -64,11 +64,11 @@ public class Reservation {
     private String reservationNo;
 
     @NotNull
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME(6)")
     private LocalDateTime startDate;
 
     @NotNull
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date", nullable = false, columnDefinition = "DATETIME(6)")
     private LocalDateTime endDate;
 
     @NotNull
