@@ -32,10 +32,16 @@ public class PaymentController {
                 paymentFacade.confirm(request, email));
     }
 
-//    @GetMapping("/{reservationId}")
-//    public ResponseEntity<PaymentConfirmResponse> getPayment(@PathVariable Long reservationId) {
-//        return ResponseEntity.ok(paymentService.getPayment(reservationId));
-//    }
+    @GetMapping("/{reservationId}")
+    public PaymentReadyResponse getPaymentReadyInfo(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        return paymentFacade.getPaymentReadyInfo(
+                reservationId,
+                user.getUserId()
+        );
+    }
 
 //    @GetMapping("/receipt/{reservationId}")
 //    public ResponseEntity<PaymentConfirmResponse> getPayment(@PathVariable("reservationId") String reservationId) {
