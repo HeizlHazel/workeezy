@@ -167,7 +167,6 @@ export default function ReservationForm({
   ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const token = localStorage.getItem("accessToken");
 
     try {
       if (initialData?.id) {
