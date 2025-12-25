@@ -13,11 +13,11 @@ export default function useAuth() {
     // 앱 시작 시 인증 초기화
     useEffect(() => {
         async function initAuth() {
-            console.log("🟢 initAuth start");
+            console.log("initAuth start");
 
-            // 이미 로그인으로 user가 있으면 건너뜀
+            // 로그인 상태면 skip
             if (initialized) {
-                console.log("🟡 initAuth skip (initialized)");
+                console.log("initAuth skip (initialized)");
                 setLoading(false);
                 return;
             }
@@ -25,18 +25,18 @@ export default function useAuth() {
             try {
                 await refreshAxios.post("/api/auth/refresh");
                 const res = await getMyInfoApi();
-                console.log("🟢 me success", res.data);
+                console.log("me success", res.data);
 
                 setUser({
                     name: res.data.name,
                     role: res.data.role,
                 });
             } catch (e) {
-                console.log("🔴 me fail", e?.response?.status);
+                console.log("me fail", e?.response?.status);
             } finally {
                 setInitialized(true);
                 setLoading(false);
-                console.log("🟡 initAuth end");
+                console.log("initAuth end");
             }
         }
 

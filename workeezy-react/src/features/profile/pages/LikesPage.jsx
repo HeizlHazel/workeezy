@@ -14,7 +14,7 @@ export default function LikesPage() {
     return (
         <PageLayout>
             <SectionHeader icon="far fa-heart" title="Likes"/>
-                <LikesList items={mockLikes}/>
+            <LikesList items={mockLikes}/>
         </PageLayout>
     );
 }

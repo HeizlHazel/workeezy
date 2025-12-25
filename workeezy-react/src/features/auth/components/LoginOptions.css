@@ -3,7 +3,7 @@
     margin: 10px auto 20px;
     display: flex;
     justify-content: center;
-    gap: 45px; /* 좌우 간격 */
+    gap: 45px;
 }
 
 .option {
@@ -13,7 +13,6 @@
     cursor: pointer;
 }
 
-/* 체크박스 */
 .check-input {
     appearance: none;
     width: 20px;
@@ -24,7 +23,6 @@
     position: relative;
 }
 
-/* 체크됨 */
 .check-input:checked {
     background-color: #b3b3b3;
     border-color: #b3b3b3;

@@ -11,9 +11,9 @@ export default function PrivateRoute({children}) {
 
     // 미인증
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace/>;
     }
 
     // 인증됨
-    return children ? children : <Outlet />;
+    return children ? children : <Outlet/>;
 }

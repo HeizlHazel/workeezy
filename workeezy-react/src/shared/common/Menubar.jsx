@@ -12,37 +12,37 @@ export default function MenuBar({onClose}) {
 
     const {user, isAuthenticated, loading, logout} = useAuthContext();
 
-    console.log("🧠 MenuBar render", {user, loading, isAuthenticated});
+    console.log("MenuBar render", {user, loading, isAuthenticated});
 
-  // 메뉴 데이터
-  const userMenu = [
-    {
-      title: "마이페이지",
-      sub: [
-        { name: "개인 정보 조회", path: "/profile-check" },
-        { name: "찜 목록", path: "/likes" },
-      ],
-    },
-    {
-      title: "나의 예약",
-      sub: [
-        { name: "예약 조회", path: "/reservation/list" },
-        { name: "작성 중인 예약", path: "/reservation/drafts" },
-      ],
-    },
-    { title: "프로그램 찾기", path: "/search" },
-    { title: "리뷰", path: "/reviews" },
-  ];
+    // 메뉴 데이터
+    const userMenu = [
+        {
+            title: "마이페이지",
+            sub: [
+                {name: "개인 정보 조회", path: "/profile-check"},
+                {name: "찜 목록", path: "/likes"},
+            ],
+        },
+        {
+            title: "나의 예약",
+            sub: [
+                {name: "예약 조회", path: "/reservation/list"},
+                {name: "작성 중인 예약", path: "/reservation/drafts"},
+            ],
+        },
+        {title: "프로그램 찾기", path: "/search"},
+        {title: "리뷰", path: "/reviews"},
+    ];
 
-  const adminMenu = [
-    {
-      title: "예약 관리",
-      path: "/admin/reservations",
-    },
-    { title: "프로그램 찾기", path: "/search" },
-    { title: "리뷰", path: "/reviews" },
-    { title: "Admin", isFooter: true, path: "/admin" },
-  ];
+    const adminMenu = [
+        {
+            title: "예약 관리",
+            path: "/admin/reservations",
+        },
+        {title: "프로그램 찾기", path: "/search"},
+        {title: "리뷰", path: "/reviews"},
+        {title: "Admin", isFooter: true, path: "/admin"},
+    ];
 
     // 권한/메뉴
     const role = normalizeRole(user?.role);
@@ -52,7 +52,7 @@ export default function MenuBar({onClose}) {
         return isAdminUser ? adminMenu : userMenu;
     }, [isAdminUser]);
 
-    // 열린 메뉴
+    //  현재 페이지 기준 대메뉴만 열기
     const [openItems, setOpenItems] = useState([]);
 
     useEffect(() => {
@@ -65,13 +65,11 @@ export default function MenuBar({onClose}) {
 
     const toggleItem = (title) => {
         setOpenItems((prev) =>
-            prev.includes(title)
-                ? prev.filter((t) => t !== title)
-                : [...prev, title]
+            prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
         );
     };
 
-    // 보호된 메뉴 이동
+    // 보호된 메뉴 클릭 처리
     const handleProtectedClick = async (path) => {
         if (!isAuthenticated) {
             await toast.fire({
@@ -107,7 +105,6 @@ export default function MenuBar({onClose}) {
             icon: "success",
             title: "로그아웃 완료! 다시 만나요. 😥",
         });
-
         navigate("/");
         onClose?.();
     };
@@ -150,7 +147,9 @@ export default function MenuBar({onClose}) {
                             {item.sub.map((sub, subIdx) => (
                                 <div
                                     key={subIdx}
-                                    className={`submenu-item ${sub.path === currentPath ? "active" : ""}`}
+                                    className={`submenu-item ${
+                                        sub.path === currentPath ? "active" : ""
+                                    }`}
                                     onClick={() => handleProtectedClick(sub.path)}
                                 >
                                     {sub.name}

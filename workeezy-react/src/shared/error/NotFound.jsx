@@ -1,5 +1,5 @@
 import ErrorLayout from "./ErrorLayout";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export default function NotFound() {
     const nav = useNavigate();

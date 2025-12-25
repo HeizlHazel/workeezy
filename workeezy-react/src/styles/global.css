@@ -17,6 +17,7 @@ body {
     gap: 28px;
     justify-items: center;
 }
+
 /* 어떤 grid든 부모 폭 안에만 존재 */
 .search-grid,
 .program-grid,

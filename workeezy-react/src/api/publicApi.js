@@ -2,13 +2,7 @@ import axios from "axios";
 
 const publicApi = axios.create({
     baseURL: "",
-    withCredentials: true, // refreshToken 쿠키 때문에 필요할 수 있음
+    withCredentials: true,
 });
-
-// // Refresh 로직도 제거 (public API는 필요 없음)
-// publicApi.interceptors.response.use(
-//     (res) => res,
-//     (err) => Promise.reject(err)
-// );
 
 export default publicApi;

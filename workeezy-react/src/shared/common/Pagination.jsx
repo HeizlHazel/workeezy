@@ -1,7 +1,7 @@
 import React from "react";
 import "./Pagination.css";
 
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
+export default function Pagination({currentPage, totalPages, onPageChange}) {
     const pageNumbers = [];
 
     // 1) 첫 페이지는 항상 표시

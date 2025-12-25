@@ -1,6 +1,6 @@
 import "./ErrorLayout.css";
 
-export default function ErrorLayout({ code, title, message, children }) {
+export default function ErrorLayout({code, title, message, children}) {
     return (
         <div className="error-container">
             <h1 className="error-code">{code}</h1>

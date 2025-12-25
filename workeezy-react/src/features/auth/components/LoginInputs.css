@@ -3,7 +3,6 @@
     margin: 0 auto;
 }
 
-/* 웹 기본: 라벨 + 인풋 같은 줄 */
 .login-form-row {
     display: flex;
     align-items: center;
@@ -11,7 +10,6 @@
     margin-bottom: 34px;
 }
 
-/* 라벨 */
 .login-label {
     width: 90px;
     font-size: 15px;
@@ -20,7 +18,6 @@
     flex-shrink: 0;
 }
 
-/* input */
 .login-line-input {
     width: 100%;
     border: none;
@@ -40,7 +37,7 @@
 
 @media (max-width: 600px) {
     .login-form-row {
-        flex-direction: column; /* 줄 분리 */
+        flex-direction: column;
         align-items: stretch;
         gap: 6px;
     }

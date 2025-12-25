@@ -1,11 +1,11 @@
 .section-header {
-  margin: 40px 0 40px 40px;
-  display: flex;
+    margin: 40px 0 40px 40px;
+    display: flex;
 }
 
 .section-title {
-  font-size: 22px;
-  font-weight: 600;
-  align-items: center;
-  gap: 6px;
+    font-size: 22px;
+    font-weight: 600;
+    align-items: center;
+    gap: 6px;
 }

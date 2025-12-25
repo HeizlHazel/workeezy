@@ -1,6 +1,6 @@
 import "./SectionHeader.css";
 
-export default function SectionHeader({ icon, title }) {
+export default function SectionHeader({icon, title}) {
     return (
         <div className="section-header">
             <p className="section-title">

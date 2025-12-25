@@ -1,9 +1,8 @@
 .profile-page {
     width: 65%;
-    margin: 0 auto; /* 중앙 정렬 */
+    margin: 0 auto;
 }
 
-/* 섹션 */
 .profile-section {
     margin-bottom: 80px;
 }
@@ -22,14 +21,12 @@
     width: 100%;
 }
 
-/* 왼쪽 라벨 */
 .profile-form-row label {
     width: 150px;
     font-size: 15px;
     color: #333;
 }
 
-/* 오른쪽 input 라인 스타일 */
 .profile-form-row input {
     flex: 1;
     border: none;
@@ -43,7 +40,6 @@
     border-bottom-color: #35593d;
 }
 
-/* 소셜 로그인 부분 */
 .social-list {
     display: flex;
     flex-direction: column;
@@ -75,7 +71,6 @@
     cursor: pointer;
 }
 
-/* 안내문 */
 .hint {
     margin: 20px 150px;
     font-size: 13px;
@@ -90,7 +85,6 @@
     color: #d9534f;
 }
 
-/* 버튼 */
 .primary-btn {
     display: block;
     margin: auto;
@@ -114,33 +108,28 @@
 
 @media (max-width: 768px) {
 
-    /* 라벨 + 인풋 세로 전환 */
     .profile-form-row {
         flex-direction: column;
         align-items: stretch;
         gap: 6px;
     }
 
-    /* 라벨 폭 해제 */
     .profile-form-row label {
         width: 100%;
         font-size: 14px;
         color: #555;
     }
 
-    /* 인풋 가로 꽉 차게 */
     .profile-form-row input {
         width: 100%;
         font-size: 15px;
     }
 
-    /* 안내 문구 위치 보정 */
     .hint {
         margin: 12px 0 20px;
         font-size: 12px;
     }
 
-    /* 버튼 크기 보정 */
     .primary-btn {
         width: 100%;
         max-width: 320px;

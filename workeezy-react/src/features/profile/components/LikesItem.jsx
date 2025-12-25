@@ -1,9 +1,9 @@
 import "./LikesItem.css";
 
-export default function LikesItem({ item }) {
+export default function LikesItem({item}) {
     return (
         <div className="likes-card">
-            <img src={item.img} alt={item.title} className="likes-card-img" />
+            <img src={item.img} alt={item.title} className="likes-card-img"/>
 
             <div className="likes-card-body">
                 <h3 className="likes-card-title">{item.title}</h3>

@@ -9,7 +9,6 @@ const openKakaoChat = () => {
 export default function FloatingButtons() {
 
 
-
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
