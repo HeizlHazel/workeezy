@@ -8,18 +8,10 @@ export default function CheckoutPage() {
     const [reservation, setReservation] = useState(null);
 
     useEffect(() => {
-        const fetchReservation = async () => {
-            try {
-                const res = await api.get(`/api/reservations/${reservationId}`);
-                setReservation(res.data);
-            } catch (e) {
-                console.error("예약 조회 실패", e);
-            }
-        };
-
-        fetchReservation();
+        api.get(`/api/payments/${reservationId}`)
+            .then(res => setReservation(res.data))
+            .catch(console.error);
     }, [reservationId]);
-
 
     if (!reservation) return null;
 
