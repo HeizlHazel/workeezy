@@ -38,14 +38,19 @@ public class AuthController {
                 request.getPassword(),
                 request.isAutoLogin()
         );
-        // accessToken 쿠키 (인증용)
+
+        // accessToken을 쿠키로 내려줌
+        // 실제 API 인증에 사용됨
+        // 이후 모든 요청에서 이 쿠키가 자동 전송
         cookieService.addAccessCookie(
                 response,
                 result.accessToken(),
                 IS_PROD
         );
 
-        // refreshToken 쿠키 (재발급용)
+        // refreshToken을 쿠키로 내려줌
+        // accessToken 만료 시 재발급용
+        // HttpOnly 쿠키 + Redis 저장과 함께 사용
         cookieService.addRefreshCookie(
                 response,
                 result.refreshToken(),
@@ -53,7 +58,7 @@ public class AuthController {
                 IS_PROD
         );
 
-        // ❗ body에 accessToken 내려줄 필요 없어도 됨 (지금은 유지)
+        // 프론트에 로그인 성공 응답 전달
         return ResponseEntity.ok(
                 new LoginResponse(
                         result.accessToken(),
@@ -69,25 +74,35 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response) {
 
+        // 요청에 포함된 refreshToken 쿠키 추출
         String refreshToken = cookieService.extractRefreshToken(request);
 
-        // refreshToken 없으면 그냥 401
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        LoginResponse loginResponse = authService.refresh(refreshToken);
+        // refreshToken 검증 + Redis 대조 + 새 accessToken 생성
+        LoginResult result = authService.refresh(refreshToken);
 
-        // 새 accessToken 쿠키 재발급
+        // 새로 발급한 accessToken을 쿠키로 다시 내려줌
+        // 기존 accessToken 폐기
+        // 이후 요청부터는 이 new 토큰 사용됨
         cookieService.addAccessCookie(
                 response,
-                loginResponse.getAccessToken(),
+                result.accessToken(),
                 IS_PROD
 
         );
         System.out.println("🔥 refresh accessToken 발급");
 
-        return ResponseEntity.ok(loginResponse);
+        // 프론트 응답
+        return ResponseEntity.ok(
+                new LoginResponse(
+                        result.accessToken(),
+                        result.name(),
+                        result.role()
+                )
+        );
     }
 
     // 로그아웃

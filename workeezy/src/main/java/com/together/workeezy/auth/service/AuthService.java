@@ -1,11 +1,11 @@
 package com.together.workeezy.auth.service;
 
 import com.together.workeezy.auth.dto.internal.LoginResult;
-import com.together.workeezy.auth.dto.response.LoginResponse;
 import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.user.entity.User;
+import com.together.workeezy.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +24,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TokenRedisService tokenRedisService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     // 로그인 처리
     public LoginResult login(String email, String password, boolean autoLogin) {
@@ -62,7 +63,7 @@ public class AuthService {
     }
 
     // RefreshToken으로 AccessToken 재발급
-    public LoginResponse refresh(String refreshToken) {
+    public LoginResult refresh(String refreshToken) {
 
         if (refreshToken == null) {
             throw new CustomException(AUTH_REFRESH_TOKEN_NOT_FOUND);
@@ -92,8 +93,18 @@ public class AuthService {
 
         String newAccess = jwtTokenProvider.createAccessToken(email, role, userId);
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
         // 새 Access Token 발급
-        return new LoginResponse(newAccess, null, role);
+        // 내부 로직용 객체 반환
+        return new LoginResult(
+                newAccess,
+                null,    // refreshToken (refresh에서는 새로 안 만듦)
+                user.getUserName(),
+                role,
+                false               // autoLogin (refresh에서는 의미 없음)
+        );
     }
 
     // 로그아웃
