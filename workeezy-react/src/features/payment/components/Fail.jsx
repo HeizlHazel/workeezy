@@ -1,4 +1,4 @@
-import "./result.css";
+import "./Result.css";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
 export function Fail() {
