@@ -17,7 +17,7 @@ public class PaymentValidator {
 
     // 결제 가능 여부
     public Reservation validatePayable(Long reservationId, Long userId) {
-
+        System.out.println("🔥 validatePayable reservationId=" + reservationId);
         Reservation reservation =
                 reservationRepository.findByIdAndUserId(reservationId, userId)
                         .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
