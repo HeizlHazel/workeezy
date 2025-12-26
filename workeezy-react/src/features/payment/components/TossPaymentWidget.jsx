@@ -47,7 +47,7 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
                 orderId,
                 orderName,
 
-                successUrl: `${window.location.origin}/payment/result?status=success`,
+                successUrl: `${window.location.origin}/payment/result?status=success&orderId=${orderId}`,
                 failUrl: `${window.location.origin}/payment/result?status=fail&orderId=${orderId}`,
 
                 customerName: "테스트 사용자",

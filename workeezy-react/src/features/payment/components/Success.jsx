@@ -1,22 +1,31 @@
 import "./Result.css";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
 export function Success() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
+    const calledRef = useRef(false);
+
     useEffect(() => {
-            if (import.meta.env.DEV) {
-                console.log("DEV MODE - confirm 생략");
-                return;
-            }
+        // StrictMode / 재마운트 방지
+        if (calledRef.current) return;
+        calledRef.current = true;
+
+        // 개발 환경에서는 confirm 생략
+        if (import.meta.env.DEV) {
+            console.log("DEV MODE - confirm 생략");
+            return;
+        }
 
         const requestData = {
             orderId: searchParams.get("orderId"),
             amount: Number(searchParams.get("amount")),
             paymentKey: searchParams.get("paymentKey"),
         };
+
+        console.log("🔥 confirm payload", requestData);
 
         async function confirm() {
             try {
