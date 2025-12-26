@@ -16,7 +16,6 @@ export function Success() {
             orderId: searchParams.get("reservationNo"),
             amount: Number(searchParams.get("amount")),
             paymentKey: searchParams.get("paymentKey"),
-            reservationId: Number(searchParams.get("reservationId")),
         };
 
         async function confirm() {

@@ -17,6 +17,7 @@ export default function PaymentResultPage() {
     } else if (paymentKey && orderId && amount) {
         content = <Success/>;
     }
+    console.log({ orderId, paymentKey, amount });
 
     return <PageLayout>{content}</PageLayout>;
 }
