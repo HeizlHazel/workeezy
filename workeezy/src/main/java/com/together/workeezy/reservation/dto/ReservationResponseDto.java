@@ -39,4 +39,7 @@ public class ReservationResponseDto {
 
     private String rejectReason;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdDate;
+
 }

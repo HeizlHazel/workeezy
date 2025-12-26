@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,22 +42,33 @@ select new com.together.workeezy.reservation.dto.ReservationResponseDto(
     p.id,
     s.name,
     o.name,
-    rm.id,
-    rm.roomType,
+    r.room.id,
+    r.room.roomType,
     r.totalPrice,
     r.peopleCount,
-    r.rejectReason
+    r.rejectReason,
+    r.createdDate
 )
 from Reservation r
 join r.user u
 join r.program p
 join r.stay s
 join r.office o
-join r.room rm
+join r.room r2
 where r.user.id = :userId
-order by r.createdDate desc
+  and (
+        :cursorDate is null
+        or r.createdDate < :cursorDate
+        or (r.createdDate = :cursorDate and r.id < :cursorId)
+      )
+order by r.createdDate desc, r.id desc
 """)
-    List<ReservationResponseDto> findMyReservationDtos(@Param("userId") Long userId);
+    List<ReservationResponseDto> findMyReservationsWithCursor(
+            Long userId,
+            LocalDateTime cursorDate,
+            Long cursorId,
+            Pageable pageable
+    );
 
     // ***** 사용자 단건 조회 ***** //
     @Query("""
@@ -77,7 +89,8 @@ select new com.together.workeezy.reservation.dto.ReservationResponseDto(
     rm.roomType,
     r.totalPrice,
     r.peopleCount,
-    r.rejectReason
+    r.rejectReason,
+    r.createdDate
 )
 from Reservation r
 join r.user u

@@ -15,12 +15,16 @@ import com.together.workeezy.search.domain.model.repository.RoomRepository;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,7 @@ import com.together.workeezy.program.program.domain.model.entity.Place;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final UserRepository userRepository;
@@ -185,14 +190,31 @@ public class ReservationService {
 //        );
 //    }
 
-    // 예약 전체 조회
-    @Transactional(readOnly = true)
-    public List<ReservationResponseDto> getMyReservations(String email) {
+    public Slice<ReservationResponseDto> getMyReservations(
+            String email,
+            LocalDateTime cursorDate,
+            Long cursorId,
+            int size
+    ) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
 
-        return reservationRepository.findMyReservationDtos(user.getId());
+        Pageable pageable = PageRequest.of(0, size + 1);
+
+        List<ReservationResponseDto> list =
+                reservationRepository.findMyReservationsWithCursor(
+                        user.getId(),
+                        cursorDate,
+                        cursorId,
+                        pageable
+                );
+
+        boolean hasNext = list.size() > size;
+        if (hasNext) list.remove(size);
+
+        return new SliceImpl<>(list, pageable, hasNext);
     }
+
 
     
     // 예약 단건 조회
