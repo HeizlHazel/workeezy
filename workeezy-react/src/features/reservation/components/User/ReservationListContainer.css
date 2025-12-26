@@ -1,0 +1,29 @@
+.infinite-loader {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.loading-text {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+.end-text {
+  color: #bbb;
+  font-size: 13px;
+}
