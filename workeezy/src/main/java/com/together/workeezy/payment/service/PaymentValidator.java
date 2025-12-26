@@ -2,7 +2,7 @@ package com.together.workeezy.payment.service;
 
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.payment.dto.PaymentConfirmCommand;
-import com.together.workeezy.reservation.Reservation;
+import com.together.workeezy.reservation.domain.Reservation;
 import org.springframework.stereotype.Component;
 
 import static com.together.workeezy.common.exception.ErrorCode.*;

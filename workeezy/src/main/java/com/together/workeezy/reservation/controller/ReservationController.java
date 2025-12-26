@@ -5,9 +5,13 @@ import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
 import com.together.workeezy.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/reservations") // 기본 url
@@ -53,9 +57,36 @@ public class ReservationController {
     }
 
     // 내 예약 목록 조회
-    @GetMapping("/me")
-    public ResponseEntity<?> getMyReservations(Authentication authentication) {
+//    @GetMapping("/me")
+//    public ResponseEntity<?> getMyReservations(Authentication authentication) {
+//
+//        System.out.println("🧩 authentication = " + authentication);
+//
+//        if (authentication != null) {
+//            System.out.println("🧩 principal = " + authentication.getPrincipal());
+//            System.out.println("🧩 name = " + authentication.getName());
+//            System.out.println("🧩 authorities = " + authentication.getAuthorities());
+//        } else {
+//            System.out.println("❌ authentication is NULL");
+//        }
+//
+//        String email = authentication.getName();
+//
+//        try {
+//            return ResponseEntity.ok(reservationService.getMyReservations(email));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().body("예약 조회 실패: " + e.getMessage());
+//        }
+//    }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyReservations(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime cursorDate,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
+    ) {
         System.out.println("🧩 authentication = " + authentication);
 
         if (authentication != null) {
@@ -65,16 +96,14 @@ public class ReservationController {
         } else {
             System.out.println("❌ authentication is NULL");
         }
-
         String email = authentication.getName();
 
-        try {
-            return ResponseEntity.ok(reservationService.getMyReservations(email));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("예약 조회 실패: " + e.getMessage());
-        }
+        Slice<ReservationResponseDto> result =
+                reservationService.getMyReservations(email, cursorDate, cursorId, size);
+
+        return ResponseEntity.ok(result);
     }
+
 
 
     // 예약 단건 조회

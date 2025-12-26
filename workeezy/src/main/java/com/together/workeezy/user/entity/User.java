@@ -1,8 +1,8 @@
 package com.together.workeezy.user.entity;
 
 import com.together.workeezy.common.exception.CustomException;
-import com.together.workeezy.reservation.Reservation;
-import com.together.workeezy.reservation.ReservationModify;
+import com.together.workeezy.reservation.domain.Reservation;
+import com.together.workeezy.reservation.domain.ReservationModify;
 import com.together.workeezy.user.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

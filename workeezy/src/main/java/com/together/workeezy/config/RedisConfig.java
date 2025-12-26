@@ -51,10 +51,10 @@ public class RedisConfig {
 
         // 기계가 데이터를 JSON으로 바꿀 때 객체의 타입 정보도 같이 붙게 만드는 설정
 
-        objectMapper.activateDefaultTyping(
-                LaissezFaireSubTypeValidator.instance, // 웬만한 타입 다 허용
-                ObjectMapper.DefaultTyping.NON_FINAL //final이 아닌 클래스(예: DTO, List 등)에 타입정보를 붙여라.
-        );
+//        objectMapper.activateDefaultTyping(
+//                LaissezFaireSubTypeValidator.instance, // 웬만한 타입 다 허용
+//                ObjectMapper.DefaultTyping.NON_FINAL //final이 아닌 클래스(예: DTO, List 등)에 타입정보를 붙여라.
+//        );
         //이 objectMapper를 JSON 변환용으로 씀
         serializer.setObjectMapper(objectMapper);
 

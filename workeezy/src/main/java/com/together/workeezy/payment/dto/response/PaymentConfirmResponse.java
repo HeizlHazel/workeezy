@@ -1,7 +1,7 @@
 package com.together.workeezy.payment.dto.response;
 
 import com.together.workeezy.payment.entity.Payment;
-import com.together.workeezy.reservation.Reservation;
+import com.together.workeezy.reservation.domain.Reservation;
 import lombok.Getter;
 import lombok.Setter;
 

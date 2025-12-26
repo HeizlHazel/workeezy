@@ -1,4 +1,4 @@
-package com.together.workeezy.reservation;
+package com.together.workeezy.reservation.enums;
 
 public enum ReservationStatus {
 

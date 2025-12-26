@@ -1,7 +1,7 @@
 package com.together.workeezy.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.program.program.domain.model.entity.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,5 +38,8 @@ public class ReservationResponseDto {
     //private List<String> subImages;     // 관련 이미지 (선택 시 표시)
 
     private String rejectReason;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdDate;
 
 }

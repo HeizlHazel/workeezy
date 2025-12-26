@@ -1,7 +1,6 @@
 package com.together.workeezy.reservation.dto;
 
-import com.together.workeezy.reservation.ReservationStatus;
-import lombok.AllArgsConstructor;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import lombok.Getter;
 
 @Getter

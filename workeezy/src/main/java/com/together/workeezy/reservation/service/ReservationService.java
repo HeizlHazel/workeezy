@@ -1,12 +1,12 @@
 package com.together.workeezy.reservation.service;
 
+import com.together.workeezy.draft.service.DraftApplicationService;
 import com.together.workeezy.program.program.domain.model.entity.PlaceType;
 import com.together.workeezy.program.program.domain.model.entity.Program;
 import com.together.workeezy.program.program.domain.model.entity.Room;
 import com.together.workeezy.program.program.domain.repository.PlaceRepository;
 import com.together.workeezy.program.program.domain.repository.ProgramRepository;
-import com.together.workeezy.reservation.Reservation;
-import com.together.workeezy.reservation.ReservationStatus;
+import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
@@ -15,12 +15,16 @@ import com.together.workeezy.search.domain.model.repository.RoomRepository;
 import com.together.workeezy.user.entity.User;
 import com.together.workeezy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,7 @@ import com.together.workeezy.program.program.domain.model.entity.Place;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final UserRepository userRepository;
@@ -35,7 +40,8 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
-    private final DraftRedisService draftRedisService;
+//    private final DraftRedisService draftRedisService;
+    private final DraftApplicationService draftApplicationService;
 
     // 동시 요청 방지를 위해 synchronized 추가 (멀티유저 환경 대비)
     public synchronized Reservation createNewReservation(ReservationCreateDto dto, String email) {
@@ -114,7 +120,11 @@ public class ReservationService {
 
         // 예약 저장 후 임시저장 삭제
         if (dto.getDraftKey() !=null && !dto.getDraftKey().isBlank()){
-            draftRedisService.deleteDraft(dto.getDraftKey());
+
+            draftApplicationService.deleteDraft(
+                    user.getId(),        // Long userId
+                    dto.getDraftKey()    // String draftKey
+            );
         }
         return saved;
     }
@@ -180,14 +190,31 @@ public class ReservationService {
 //        );
 //    }
 
-    // 예약 전체 조회
-    @Transactional(readOnly = true)
-    public List<ReservationResponseDto> getMyReservations(String email) {
+    public Slice<ReservationResponseDto> getMyReservations(
+            String email,
+            LocalDateTime cursorDate,
+            Long cursorId,
+            int size
+    ) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
 
-        return reservationRepository.findMyReservationDtos(user.getId());
+        Pageable pageable = PageRequest.of(0, size + 1);
+
+        List<ReservationResponseDto> list =
+                reservationRepository.findMyReservationsWithCursor(
+                        user.getId(),
+                        cursorDate,
+                        cursorId,
+                        pageable
+                );
+
+        boolean hasNext = list.size() > size;
+        if (hasNext) list.remove(size);
+
+        return new SliceImpl<>(list, pageable, hasNext);
     }
+
 
     
     // 예약 단건 조회

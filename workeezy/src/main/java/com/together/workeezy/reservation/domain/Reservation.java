@@ -1,4 +1,4 @@
-package com.together.workeezy.reservation;
+package com.together.workeezy.reservation.domain;
 
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.common.exception.ErrorCode;
@@ -6,6 +6,7 @@ import com.together.workeezy.payment.entity.Payment;
 import com.together.workeezy.program.program.domain.model.entity.Place;
 import com.together.workeezy.program.program.domain.model.entity.Program;
 import com.together.workeezy.program.program.domain.model.entity.Room;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
