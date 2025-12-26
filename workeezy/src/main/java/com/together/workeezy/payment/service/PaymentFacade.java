@@ -37,7 +37,6 @@ public class PaymentFacade {
     public PaymentConfirmResponse confirm(PaymentConfirmRequest request, String userEmail) {
 
         PaymentConfirmCommand command = new PaymentConfirmCommand(
-                request.getReservationId(),
                 request.getOrderId(),
                 request.getPaymentKey(),
                 request.getAmount(),
