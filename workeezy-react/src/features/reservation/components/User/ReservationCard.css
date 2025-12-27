@@ -152,3 +152,17 @@ dd {
   flex-shrink: 0;
   background-color: #f2f2f2;
 }
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.image-grid img {
+  width: 100%;
+  height: 250px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+}
