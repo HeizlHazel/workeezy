@@ -1,0 +1,115 @@
+/* ===============================
+   임시 저장 리스트 전용 CSS
+=============================== */
+
+.draft-reservation-list {
+  padding: 0;
+}
+
+/* 테이블 */
+.draft-reservation-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* 공통 셀 */
+.draft-reservation-table th,
+.draft-reservation-table td {
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 15px;
+  padding: 12px 16px;
+  height: 48px;
+}
+
+/* 헤더 */
+.draft-reservation-table thead th {
+  font-weight: 600;
+  background-color: #fafafa;
+  color: #333;
+}
+
+/* 빈 데이터 */
+.draft-reservation-table td[colspan] {
+  color: #888;
+}
+
+/* 액션 버튼 */
+.draft-reservation-table .action-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 버튼 */
+.draft-reservation-table .btn-detail,
+.draft-reservation-table .btn-delete {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draft-reservation-table .btn-detail {
+  background-color: #f0f4ff;
+  color: #2f5cff;
+  margin-right: 8px;
+}
+
+.draft-reservation-table .btn-detail:hover {
+  background-color: #e2e9ff;
+}
+
+.draft-reservation-table .btn-delete {
+  background-color: #fff1f1;
+  color: #e53935;
+}
+
+.draft-reservation-table .btn-delete:hover {
+  background-color: #ffe2e2;
+}
+
+/* 클릭 텍스트 */
+.draft-reservation-table .clickable-text {
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.draft-reservation-table .clickable-text:hover {
+  text-decoration: underline;
+}
+
+.draft-reservation-table th:nth-child(1),
+.draft-reservation-table td:nth-child(1) {
+  width: 18%; /* 프로그램 */
+}
+
+.draft-reservation-table th:nth-child(2),
+.draft-reservation-table td:nth-child(2) {
+  width: 19%; /* 숙소 */
+}
+
+.draft-reservation-table th:nth-child(3),
+.draft-reservation-table td:nth-child(3) {
+  width: 20%; /* 기간 (늘리고 싶음) */
+}
+
+.draft-reservation-table th:nth-child(4),
+.draft-reservation-table td:nth-child(4) {
+  width: 10%; /* 인원 (줄임) */
+}
+
+.draft-reservation-table th:nth-child(5),
+.draft-reservation-table td:nth-child(5) {
+  width: 20%; /* 저장일 */
+}
+
+.draft-reservation-table th:nth-child(6),
+.draft-reservation-table td:nth-child(6) {
+  width: 13%; /* 작업 */
+}

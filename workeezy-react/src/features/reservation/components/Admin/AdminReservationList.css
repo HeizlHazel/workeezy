@@ -1,5 +1,5 @@
 .admin-reservation-list {
-  padding: 0px;
+  padding: 0px 24px 24px 24px;
 }
 
 .list-title {
@@ -67,7 +67,7 @@
 
 /* hover 시 강조 */
 .reservation-table tbody tr:hover {
-  /* background-color: #7b4e4e; */
+  background-color: #f9f9f9;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -90,54 +90,47 @@
 .clickable-row:hover {
   background-color: #f9fafb;
 }
-/* ===== 버튼 공통 ===== */
-/* 행 선택시 */
-.clickable-row {
-  cursor: pointer;
+
+.status-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  align-content: center;
+  flex-direction: column-reverse;
 }
 
-.clickable-row:hover {
-  background-color: #f9fafb;
+.status-cell > * {
+  margin: 0 auto;
+}
+/* 예약 번호 */
+.reservation-table th:nth-child(1),
+.reservation-table td:nth-child(1) {
+  width: 20%;
 }
 
-/* ===== 버튼 공통 ===== */
-.action-cell {
-  text-align: center;
-  white-space: nowrap;
+/* 프로그램명 */
+.reservation-table th:nth-child(2),
+.reservation-table td:nth-child(2) {
+  width: 20%;
 }
 
-.btn-detail,
-.btn-delete {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  /* margin: 0p */
+/* 예약자 (줄이기) */
+.reservation-table th:nth-child(3),
+.reservation-table td:nth-child(3) {
+  width: 8%;
 }
 
-.btn-detail {
-  background-color: #f0f4ff;
-  color: #2f5cff;
-  border: 1px solid #d6e0ff;
-  margin-right: 10px;
-  height: 33px;
+/* 예약 신청일 */
+.reservation-table th:nth-child(4),
+.reservation-table td:nth-child(4) {
+  width: 20%;
 }
 
-.btn-detail:hover {
-  background-color: #e2e9ff;
-}
-
-.btn-delete {
-  background-color: #fff1f1;
-  color: #e53935;
-  border: 1px solid #f3c2c2;
-  height: 33px;
-}
-.btn-delete:hover {
-  background-color: #ffe2e2;
+/* 상태 */
+.reservation-table th:nth-child(5),
+.reservation-table td:nth-child(5) {
+  width: 12%;
 }
