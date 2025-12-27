@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../components/Admin/AdminReservationList.css"; // 기존 관리자 CSS 재사용
 import Pagination from "../../../../shared/common/Pagination";
 import { fetchDraftList } from "../../api/draft.api.js";
+import { normalizeDraft } from "../../utils/draftNormalize.js";
 
 export default function DraftReservationList() {
   const [drafts, setDrafts] = useState([]);
@@ -22,9 +23,12 @@ export default function DraftReservationList() {
         page: page - 1,
       });
 
+      console.log("📦 전체 응답 res:", res);
+      console.log("📦 res.data:", res.data);
+
       // 서버 응답 구조 예시:
       // { content: [...], totalPages: 3 }
-      setDrafts(res.data.content || res.data);
+      setDrafts(res.data.map(normalizeDraft));
       setTotalPages(res.data.totalPages || 1);
     } catch (e) {
       console.error("임시저장 목록 조회 실패", e);

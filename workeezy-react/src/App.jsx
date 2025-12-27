@@ -86,7 +86,7 @@ export default function App() {
         }
       />
 
-      <Route path="/reservation/draftList" elemen={<DraftReservationPage />} />
+      <Route path="/reservation/draftList" element={<DraftReservationPage />} />
 
       {/* 결제 */}
       <Route path="/payment/:reservationId" element={<CheckoutPage />} />

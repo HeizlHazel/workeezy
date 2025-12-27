@@ -9,3 +9,16 @@ export const normalizeDraftToForm = (draft) => ({
   stayId: draft.stayId ?? "",
   stayName: draft.stayName ?? draft.hotelName ?? "",
 });
+
+// Redis에서 온 raw draft 구조 정리
+export const normalizeDraft = (draft) => {
+  if (!draft) return null;
+
+  // Redis 직렬화 구조 제거
+  const data = Array.isArray(draft.data) ? draft.data[1] : draft.data;
+
+  return {
+    ...draft,
+    data,
+  };
+};
