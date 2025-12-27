@@ -47,7 +47,10 @@ select new com.together.workeezy.reservation.dto.ReservationResponseDto(
     r.totalPrice,
     r.peopleCount,
     r.rejectReason,
-    r.createdDate
+    r.createdDate,
+    s.placePhoto1,
+    s.placePhoto2,
+    s.placePhoto3
 )
 from Reservation r
 join r.user u
@@ -90,7 +93,10 @@ select new com.together.workeezy.reservation.dto.ReservationResponseDto(
     r.totalPrice,
     r.peopleCount,
     r.rejectReason,
-    r.createdDate
+    r.createdDate,
+    s.placePhoto1,
+    s.placePhoto2,
+    s.placePhoto3
 )
 from Reservation r
 join r.user u
