@@ -80,6 +80,9 @@ export default function AdminReservationList() {
               <span className="th-label">예약자</span>
             </th>
             <th>
+              <span className="th-label">예약 신청일</span>
+            </th>
+            <th>
               <span className="th-label">예약 상태</span>
             </th>
           </tr>
@@ -95,8 +98,16 @@ export default function AdminReservationList() {
               <td>{r.programTitle}</td>
               <td>{r.userName}</td>
               <td>
-                {/* ✅ status 그대로 전달 */}
-                <ReservationStatusButton status={r.status} />
+                {new Date(r.createdDate).toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}
+              </td>
+              <td className="status-td">
+                <div className="status-cell">
+                  <ReservationStatusButton status={r.status} />
+                </div>
               </td>
             </tr>
           ))}
