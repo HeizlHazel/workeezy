@@ -98,16 +98,22 @@ public class PaymentConfirmUseCase {
                     PaymentLog.success(payment, json, 200)
             );
         } catch (Exception e) {
-            try {
-                // 실패 로그 저장
-                paymentLogRepository.save(
-                        PaymentLog.fail(payment, e.getMessage(), 500)
-                );
-            } catch (Exception logEx) {
-                log.error("결제 로그 저장 실패", logEx);
-            }
-        }
 
+            log.error("결제 승인 실패", e);
+
+            // payment가 아직 영속 상태가 아닐 수 있음
+            if (payment != null && payment.getId() != null) {
+                try {
+                    paymentLogRepository.save(
+                            PaymentLog.fail(payment, e.getMessage(), 500)
+                    );
+                } catch (Exception logEx) {
+                    log.error("결제 실패 로그 저장 실패", logEx);
+                }
+            }
+
+            throw e;
+        }
         // 응답 생성
         return PaymentConfirmResponse.of(payment, reservation);
     }
