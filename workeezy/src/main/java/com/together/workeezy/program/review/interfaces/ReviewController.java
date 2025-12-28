@@ -27,11 +27,11 @@ public class ReviewController {
             @RequestBody ReviewCreateRequest dto,
             Authentication authentication
     ) {
-        String email = authentication.getName(); // 인증된 사용자 이메일
-
+        String email = authentication.getName();
         reviewService.createReview(dto, email);
 
         return ResponseEntity.ok("리뷰 등록 완료");
     }
+
 
 }
