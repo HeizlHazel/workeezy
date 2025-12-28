@@ -10,16 +10,10 @@ export default function RecommendedCard({ id, title, photo, price, region, onCli
                 <div className="recommend-card-overlay">
                     <div className="recommend-card-title">{title}</div>
 
-                    {region && (
-                        <div className="recommend-card-region">
-                            {region}
-                        </div>
-                    )}
+                    {region && <div className="recommend-card-region">{region}</div>}
 
                     {price != null && (
-                        <div className="recommend-card-price">
-                            {price.toLocaleString()}원~
-                        </div>
+                        <div className="recommend-card-price">{price.toLocaleString()}원~</div>
                     )}
                 </div>
             </div>

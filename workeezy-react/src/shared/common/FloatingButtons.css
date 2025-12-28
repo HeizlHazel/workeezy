@@ -24,7 +24,8 @@
     cursor: pointer;
 }
 
-.chatButtons {
+/* ✅ 클래스명 JSX와 동일하게 */
+.chatButton {
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,6 +1,6 @@
 import "./OfficeList.css";
 import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
-import useImagePath from "../../hooks/useImagePath.js";
+import useImagePath from "../../../../hooks/useImagePath.js";
 
 export default function OfficeList() {
     const { offices } = useProgramDetail();

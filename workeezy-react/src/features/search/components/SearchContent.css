@@ -1,0 +1,17 @@
+.search-results-shell {
+    position: relative;
+    margin-bottom: 24px;
+    min-height: 0;
+
+    /* ✅ 높이 변화가 있을 때 부드럽게 (튀는 느낌 완화) */
+    transition: min-height 180ms ease;
+}
+
+/* ✅ 로딩 중 + (첫 진입 hold) 동안만 높이 확보 */
+.search-results-shell.is-loading {
+    min-height: clamp(360px, 45vh, 720px);
+}
+
+
+
+
