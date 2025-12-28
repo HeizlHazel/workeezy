@@ -91,6 +91,7 @@ public class PaymentConfirmUseCase {
             log.info("before save payment");
 
             paymentRepository.save(payment);
+            paymentRepository.flush();
 
             // 성공 로그 저장
             paymentLogRepository.save(
