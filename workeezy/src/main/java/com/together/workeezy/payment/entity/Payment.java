@@ -11,6 +11,7 @@ import lombok.Getter;;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Entity
@@ -78,7 +79,7 @@ public class Payment {
             String paymentKey,
             Long amount,
             String method,
-            LocalDateTime approvedAt) {
+            OffsetDateTime approvedAt) {
 
         if (this.status == PaymentStatus.paid) {
             throw new CustomException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
@@ -88,7 +89,7 @@ public class Payment {
         this.paymentKey = paymentKey;
         this.amount = amount;
         this.method = method;
-        this.approvedAt = approvedAt;
+        this.approvedAt = approvedAt.toLocalDateTime();
         this.status = PaymentStatus.paid;
     }
 }
