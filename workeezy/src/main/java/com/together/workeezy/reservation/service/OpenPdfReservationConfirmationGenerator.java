@@ -44,7 +44,7 @@ public class OpenPdfReservationConfirmationGenerator {
     private BaseFont loadKoreanBaseFont() {
         try {
             // resources/fonts/NanumGothic.ttf 넣어두기
-            ClassPathResource fontResource = new ClassPathResource("fonts/NanumGothic.ttf");
+            ClassPathResource fontResource = new ClassPathResource("fonts/AritaDotumKR-Medium.ttf");
             try (InputStream is = fontResource.getInputStream()) {
                 byte[] fontBytes = is.readAllBytes();
                 return BaseFont.createFont(
