@@ -1,32 +1,39 @@
 package com.together.workeezy.payment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.payment.dto.PaymentConfirmCommand;
 import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
 import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import com.together.workeezy.payment.entity.Payment;
+import com.together.workeezy.payment.entity.PaymentLog;
+import com.together.workeezy.payment.repository.PaymentLogRepository;
 import com.together.workeezy.payment.repository.PaymentRepository;
 import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.together.workeezy.common.exception.ErrorCode.*;
 import static com.together.workeezy.common.exception.ErrorCode.PAYMENT_ALREADY_COMPLETED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentConfirmUseCase {
 
     private final ReservationRepository reservationRepository;
+    private final PaymentLogRepository paymentLogRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentValidator paymentValidator;
     private final PaymentProcessor paymentProcessor;
+    private final ObjectMapper objectMapper;
 
     @Transactional
-    public PaymentConfirmResponse confirm(PaymentConfirmCommand cmd) {
+    public PaymentConfirmResponse confirm(PaymentConfirmCommand cmd) throws Exception {
 
         // 기본 파라미터 검증
         paymentValidator.validateBasic(cmd);
@@ -51,28 +58,50 @@ public class PaymentConfirmUseCase {
 
         Payment payment = reservation.getPayment();
 
-        if(payment == null)
-            payment = Payment.create(reservation, cmd.amount());
+        if (payment == null) {
+            payment = Payment.create(reservation, cmd.amount(), "TOSS");
+        }
 
-        TossConfirmResponse api = paymentProcessor.confirm(
-                cmd.paymentKey(),
-                cmd.orderId(),
-                cmd.amount()
-        );
+        try {
+            TossConfirmResponse api = paymentProcessor.confirm(
+                    cmd.paymentKey(),
+                    cmd.orderId(),
+                    cmd.amount()
+            );
 
-        // Payment 도메인 메서드로 승인 처리
-        payment.approve(
-                api.getOrderId(),
-                api.getPaymentKey(),
-                api.getAmount(),
-                api.getMethod(),
-                api.getApprovedAt()
-        );
+            String json = objectMapper.writeValueAsString(api);
 
-        // Reservation 상태 CONFIRMED
-        reservation.markConfirmed();
+            // Payment 도메인 메서드로 승인 처리
+            payment.approve(
+                    api.getOrderId(),
+                    api.getPaymentKey(),
+                    api.getAmount(),
+                    api.getMethod(),
+                    api.getApprovedAt()
+            );
 
-        paymentRepository.save(payment);
+            // Reservation 상태 CONFIRMED
+            reservation.markConfirmed();
+            log.info("before save payment");
+
+            paymentRepository.save(payment);
+
+            // 성공 로그 저장
+            paymentLogRepository.save(
+                    PaymentLog.success(
+                            payment,
+                            json,
+                            200)
+            );
+        } catch (Exception e) {
+            paymentLogRepository.save(
+                    PaymentLog.fail(
+                            payment,
+                            e.getMessage(),
+                            500)
+            );
+            throw e;
+        }
 
         // 응답 생성
         return PaymentConfirmResponse.of(payment, reservation);

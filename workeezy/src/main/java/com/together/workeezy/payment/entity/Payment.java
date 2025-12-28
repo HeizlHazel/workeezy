@@ -61,12 +61,12 @@ public class Payment {
     protected Payment() {}
 
     // 결제 생성
-    public static Payment create(Reservation reservation, Long amount) {
+    public static Payment create(Reservation reservation, Long amount, String method) {
         Payment p = new Payment();
         p.reservation = reservation;
         p.amount = amount;
+        p.method = "TOSS";
         p.status = PaymentStatus.ready;
-
         reservation.linkPayment(p);
 
         return p;
