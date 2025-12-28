@@ -1,6 +1,7 @@
 package com.together.workeezy.payment.dto.response;
 
 import com.together.workeezy.payment.entity.Payment;
+import com.together.workeezy.payment.enums.PaymentMethod;
 import com.together.workeezy.reservation.domain.Reservation;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ public class PaymentConfirmResponse {
     private String paymentKey;
     private String orderId;
     private Long amount;
-    private String method;
+    private PaymentMethod method;
     private LocalDateTime approvedAt;
     private String reservationNo;
 
