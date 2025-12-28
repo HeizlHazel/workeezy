@@ -34,7 +34,8 @@ public enum ErrorCode {
     INVALID_PASSWORD_LOWER(HttpStatus.BAD_REQUEST, "소문자가 포함되어야 합니다."),
     INVALID_PASSWORD_SPECIAL(HttpStatus.BAD_REQUEST, "특수문자가 포함되어야 합니다."),
 
-    PAYMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "승인 후 결제 가능합니다.");
+    PAYMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "승인 후 결제 가능합니다."),
+    PAYMENT_LOG_SERIALIZE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 로그 직렬화에 실패했습니다.");
 
     private final HttpStatus status;
     private final String message;
