@@ -95,6 +95,9 @@ public class Reservation {
     @Column(name = "people_count", nullable = false)
     private int peopleCount;
 
+    @Column(name="confirm_pdf_key")
+    private String confirmPdfKey;
+
     @OneToOne(mappedBy = "reservation",  fetch = LAZY)
     private Payment payment;
 
@@ -272,5 +275,25 @@ public class Reservation {
         this.status = ReservationStatus.confirmed;
         this.rejectReason = reason;
     }
+
+    // 예약 확정서 생성 기준
+    public void ensureConfirmed() {
+        if (this.status != ReservationStatus.confirmed) {
+            throw new IllegalStateException("확정된 예약만 확정서를 생성/조회할 수 있습니다.");
+        }
+    }
+
+    // 예약 확정서 존재 여부
+    public void ensureHasConfirmPdf() {
+        if (this.confirmPdfKey == null || this.confirmPdfKey.isBlank()) {
+            throw new IllegalStateException("확정서 PDF가 아직 생성되지 않았습니다.");
+        }
+    }
+
+    // 예약 확정서 key 업데이트
+    public void updateConfirmPdfKey(String key) {
+        this.confirmPdfKey = key;
+    }
+
 
 }
