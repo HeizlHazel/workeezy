@@ -2,6 +2,7 @@ package com.together.workeezy.payment.entity;
 
 import com.together.workeezy.common.exception.CustomException;
 import com.together.workeezy.common.exception.ErrorCode;
+import com.together.workeezy.payment.enums.PaymentMethod;
 import com.together.workeezy.payment.enums.PaymentStatus;
 import com.together.workeezy.reservation.domain.Reservation;
 import jakarta.persistence.*;
@@ -44,10 +45,10 @@ public class Payment {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus status; // ready, paid, cancelled, failed
 
-    @Size(max = 50)
     @NotNull
-    @Column(name = "payment_method", nullable = false, length = 50)
-    private String method;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod method; // unknown, card, transfer, easy_pay
 
     // 결제 승인 시각
     @Column(name = "approved_at")
@@ -59,18 +60,20 @@ public class Payment {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected Payment() {}
+    protected Payment() {
+    }
+
+    private Payment(Reservation reservation, Long amount) {
+        this.reservation = reservation;
+        this.amount = amount;
+        this.createdAt = LocalDateTime.now();
+        this.status = PaymentStatus.ready;
+        this.method = PaymentMethod.unknown;
+    }
 
     // 결제 생성
-    public static Payment create(Reservation reservation, Long amount, String method) {
-        Payment p = new Payment();
-        p.reservation = reservation;
-        p.amount = amount;
-        p.method = method;
-        p.status = PaymentStatus.ready;
-        reservation.linkPayment(p);
-
-        return p;
+    public static Payment create(Reservation reservation, Long amount) {
+        return new Payment(reservation, amount);
     }
 
     // 결제 승인
@@ -78,7 +81,7 @@ public class Payment {
             String orderId,
             String paymentKey,
             Long amount,
-            String method,
+            PaymentMethod method,
             OffsetDateTime approvedAt) {
 
         if (this.status == PaymentStatus.paid) {
@@ -88,7 +91,7 @@ public class Payment {
         this.orderId = orderId;
         this.paymentKey = paymentKey;
         this.amount = amount;
-        this.method = method;
+        this.method = (method == null ? PaymentMethod.unknown : method);
         this.approvedAt = approvedAt.toLocalDateTime();
         this.status = PaymentStatus.paid;
     }

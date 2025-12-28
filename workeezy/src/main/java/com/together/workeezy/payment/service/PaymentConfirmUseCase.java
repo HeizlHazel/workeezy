@@ -5,7 +5,7 @@ import com.together.workeezy.payment.dto.PaymentConfirmCommand;
 import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
 import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import com.together.workeezy.payment.entity.Payment;
-import com.together.workeezy.payment.entity.PaymentLog;
+import com.together.workeezy.payment.enums.PaymentMethod;
 import com.together.workeezy.payment.repository.PaymentRepository;
 import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.enums.ReservationStatus;
@@ -56,7 +56,9 @@ public class PaymentConfirmUseCase {
         Payment payment = reservation.getPayment();
 
         if (payment == null) {
-            payment = Payment.create(reservation, cmd.amount(), "TOSS");
+            payment = Payment.create(reservation, cmd.amount());
+            reservation.linkPayment(payment);
+            paymentRepository.save(payment);
         }
 
         try {
@@ -66,19 +68,19 @@ public class PaymentConfirmUseCase {
                     cmd.amount()
             );
 
+            PaymentMethod paymentMethod = api.getMethod();
+
             // Payment 도메인 메서드로 승인 처리
             payment.approve(
                     api.getOrderId(),
                     api.getPaymentKey(),
                     api.getAmount(),
-                    api.getMethod(),
+                    paymentMethod,
                     api.getApprovedAt()
             );
 
             // Reservation 상태 CONFIRMED
             reservation.markConfirmed();
-
-            paymentRepository.save(payment);
 
             // 성공 로그 저장
             paymentLogService.saveSuccess(payment, api);
@@ -88,9 +90,14 @@ public class PaymentConfirmUseCase {
 
             log.error("결제 승인 실패", e);
 
-            if (payment.getId() != null) {
-                paymentLogService.saveFail(payment, e);
+            try {
+                if (payment.getId() != null) {
+                    paymentLogService.saveFail(payment, e);
+                }
+            } catch (Exception logEx) {
+                log.error("결제 실패 로그 저장 실패", logEx);
             }
+
             throw e;
         }
     }
