@@ -19,7 +19,7 @@ export default function ReservationConfirmPreview({ data }) {
       <section>
         <h3>결제 정보</h3>
         <p>결제 금액: {data.totalPrice.toLocaleString()}원</p>
-        <p>결제 상태: {data.paymentStatus}</p>
+        <p>결제 상태: {data.status}</p>
       </section>
     </div>
   );
