@@ -1,6 +1,6 @@
 import "./HotelInfo.css";
 import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
-import useImagePath from "../../hooks/useImagePath.js";
+import useImagePath from "../../../../hooks/useImagePath.js";
 
 export default function HotelInfo() {
     const { hotel } = useProgramDetail();

@@ -11,6 +11,9 @@
     cursor: pointer;
     position: relative;
     transition: transform .25s ease;
+
+    /* ✅ (추천) scroll-snap에서 카드가 기준점이 되도록 */
+    scroll-snap-align: start;
 }
 
 .recommend-card:hover {
@@ -50,4 +53,11 @@
     font-size: 16px;
     font-weight: 500;
     opacity: 0.85;
+}
+
+.recommend-card-price {
+    margin-top: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    opacity: 0.95;
 }

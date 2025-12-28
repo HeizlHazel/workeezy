@@ -1,7 +1,3 @@
-/* ===========================
-    추천 섹션 전체 레이아웃
-=========================== */
-
 .recommend-section {
     margin-top: 80px;
     padding: 0 80px;
@@ -13,63 +9,66 @@
     margin-bottom: 32px;
 }
 
-/* ===========================
-        캐러셀 영역
-=========================== */
-
 .recommend-carousel {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.recommend-list {
+/* ✅ 화살표 영역만큼 좌우 패딩 주기 (걸쳐 보이게) */
+.recommend-viewport {
+    overflow: hidden;
+    width: 100%;
+    padding: 12px 64px;
+    box-sizing: border-box;
+}
+
+.recommend-track {
     display: flex;
     gap: 24px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 12px 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
 }
 
-.recommend-list::-webkit-scrollbar {
-    display: none;
-}
-
-/* ===========================
-        캐러셀 화살표
-=========================== */
-
+/* 화살표 버튼 */
 .recommend-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 10;
 
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     border: none;
 
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 32px;
     cursor: pointer;
-    transition: background .2s ease;
+
+    font-size: 40px;
+    font-weight: 1200;
+    line-height: 1;
+    padding: 0;
+
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .recommend-arrow:hover {
     background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+    transform: translateY(-50%) scale(1.06);
 }
 
 .recommend-arrow-left {
-    left: -20px;
+    left: -24px;
 }
 
 .recommend-arrow-right {
-    right: -20px;
+    right: -24px;
 }

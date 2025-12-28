@@ -2,7 +2,7 @@ import "./ReservationCard.css";
 import ReservationStatusButton from "../ReservationStatusButton.jsx";
 import { formatLocalDateTime } from "../../../../utils/dateTime";
 import ReservationCardActions from "./../ReservationCardActions";
-import useImagePath from "../../../program/hooks/useImagePath.js";
+import useImagePath from "../../../../hooks/useImagePath.js";
 
 export default function ReservationCard({ data, isSelected, onSelect }) {
   const {

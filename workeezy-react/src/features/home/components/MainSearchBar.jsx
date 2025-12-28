@@ -1,22 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback } from "react";
 import "./MainSearchBar.css";
+import { useSearch } from "../../search/context/SearchContext.jsx";
 
 export default function MainSearchBar() {
     const [keyword, setKeyword] = useState("");
-    const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { submitSearch } = useSearch();
 
-    const handleSearch = () => {
-        if (!keyword.trim()) return;
+    const handleSearch = useCallback(() => {
+        const trimmed = keyword.trim();
+        if (!trimmed || isSubmitting) return;
 
-        // 검색페이지로 이동
-        navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
-    };
+        setIsSubmitting(true);
+
+        // ✅ 검색페이지 검색바와 동일하게: submitSearch가 URL 이동까지 처리
+        submitSearch(trimmed);
+
+        // ✅ 메인 input 비우기
+        setKeyword("");
+
+        // ✅ 연타 방지용 잠깐 락 해제 (라우팅/렌더 틱 지나면 풀림)
+        // 너무 길 필요 없음
+        queueMicrotask(() => setIsSubmitting(false));
+    }, [keyword, isSubmitting, submitSearch]);
 
     const onKeyDown = (e) => {
-        if (e.key === "Enter") {
-            handleSearch();
-        }
+        if (e.key === "Enter") handleSearch();
     };
 
     return (
@@ -29,9 +38,14 @@ export default function MainSearchBar() {
                 onKeyDown={onKeyDown}
             />
             <i
-                className="fa-solid fa-magnifying-glass main-search-icon"
+                className={`fa-solid fa-magnifying-glass main-search-icon ${
+                    isSubmitting ? "disabled" : ""
+                }`}
                 onClick={handleSearch}
-            ></i>
+                role="button"
+                tabIndex={0}
+                aria-label="검색"
+            />
         </div>
     );
 }

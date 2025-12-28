@@ -1,6 +1,6 @@
 import "./ActivityInfo.css";
 import { useProgramDetail } from "../../context/ProgramDetailContext.jsx";
-import useImagePath from "../../hooks/useImagePath.js";
+import useImagePath from "../../../../hooks/useImagePath.js";
 
 export default function ActivityInfo() {
     const { attractions } = useProgramDetail();

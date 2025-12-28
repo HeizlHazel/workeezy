@@ -1,6 +1,18 @@
-import {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
-import api from "../../../api/axios.js";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+import {
+    useNavigate,
+    useSearchParams,
+    useNavigationType,
+    useLocation,
+} from "react-router-dom";
+import api, { getDeduped } from "../../../api/axios.js";
 
 const SearchContext = createContext(null);
 
@@ -14,93 +26,133 @@ const REGION_MAP = {
     해외: ["해외"],
 };
 
-function findBigRegionBySmall(small) {
-    for (const [big, list] of Object.entries(REGION_MAP)) {
-        if (list.includes(small)) return big;
+function safeParseJson(v) {
+    try {
+        return JSON.parse(v);
+    } catch {
+        return null;
     }
-    return "전체";
 }
 
-export function SearchProvider({children}) {
-    const [params] = useSearchParams();
-    const urlKeyword = params.get("keyword") || "";
+export function SearchProvider({ children }) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const navType = useNavigationType();
 
-    // UI 상태
-    const [searchInput, setSearchInput] = useState(urlKeyword);
-    const [viewMode, setViewMode] = useState("list"); // "list" | "map"
+    const [params] = useSearchParams();
+    const urlKeyword = (params.get("keyword") || "").trim();
 
-    // 필터 상태
+    // state
+    const [keyword, setKeyword] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const effectiveKeyword = keyword || urlKeyword;
+
+    // region filters
     const [bigRegion, setBigRegionState] = useState("전체");
     const [smallRegions, setSmallRegionsState] = useState([]);
 
-    // 데이터 상태
-    const [allPrograms, setAllPrograms] = useState([]);
-    const [recommended, setRecommended] = useState([]);
-
-    // 페이징
-    const [currentPage, setCurrentPage] = useState(1);
+    // view / pagination
+    const [viewMode, setViewModeState] = useState("list");
+    const [currentPage, setCurrentPageState] = useState(1);
     const pageSize = 6;
 
-    // urlKeyword -> input 동기화
-    useEffect(() => {
-        setSearchInput(urlKeyword);
-        setCurrentPage(1);
-    }, [urlKeyword]);
+    // data
+    const [allPrograms, setAllPrograms] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasFetched, setHasFetched] = useState(false);
 
-    // 추천 persist
-    const STORAGE_KEY = "workeezy_recommended_v1";
+    // recommended
+    const [recommended, setRecommended] = useState(() => {
+        const saved = localStorage.getItem("workeezy_recommended_v1");
+        const parsed = saved ? safeParseJson(saved) : null;
+        return Array.isArray(parsed) ? parsed : [];
+    });
 
     useEffect(() => {
+        localStorage.setItem("workeezy_recommended_v1", JSON.stringify(recommended));
+    }, [recommended]);
+
+    const fetchRecommendedAndAppend = useCallback(async () => {
         try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) setRecommended(JSON.parse(saved));
+            // ✅ dedupe 적용 (StrictMode에도 1번만)
+            const res = await getDeduped("/api/recommendations/recent");
+            const incoming = Array.isArray(res.data) ? res.data : [];
+
+            setRecommended((prev) => {
+                const used = new Set(prev.map((p) => p?.id));
+                const nextOne = incoming.find((p) => p?.id && !used.has(p.id));
+                return nextOne ? [nextOne, ...prev].slice(0, 10) : prev;
+            });
         } catch (e) {
-            console.error("recommended restore failed", e);
+            console.error("recommend fetch failed", e);
         }
     }, []);
 
+    // ✅ A안: Search 진입 시 추천은 1회만 가져오면 충분 (dedupe가 있으니 StrictMode도 OK)
     useEffect(() => {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(recommended));
-        } catch (e) {
-            console.error("recommended save failed", e);
-        }
-    }, [recommended]);
+        fetchRecommendedAndAppend();
+    }, [fetchRecommendedAndAppend]);
 
-    // 검색 데이터 fetch
+    // UI 초기화
+    const resetSearchUI = useCallback(() => {
+        setKeyword("");
+        setSearchInput("");
+        setBigRegionState("전체");
+        setSmallRegionsState([]);
+        setCurrentPageState(1);
+        setViewModeState("list");
+        setHasFetched(false);
+    }, []);
+
+    // POP(뒤로/새로고침) 처리
+    useEffect(() => {
+        if (navType === "POP" && location.pathname === "/search") {
+            if (urlKeyword !== "") {
+                navigate("/search", { replace: true });
+            }
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            resetSearchUI();
+        }
+    }, [navType, location.pathname, urlKeyword, navigate, resetSearchUI]);
+
+    // ✅ fetch (A안 유지: 키워드 없으면 전체 cards)
     useEffect(() => {
         let cancelled = false;
 
         const run = async () => {
             try {
-                if (!urlKeyword || urlKeyword.trim() === "") {
-                    const res = await api.get("/api/programs/cards");
-                    if (!cancelled) setAllPrograms(res.data);
+                if (!cancelled) {
+                    setIsLoading(true);
+                    setHasFetched(false);
+                }
+
+                const k = (effectiveKeyword || "").trim();
+
+                if (!k) {
+                    // ✅ 전체조회도 dedupe 적용 (StrictMode에도 1번만)
+                    const res = await getDeduped("/api/programs/cards");
+                    if (!cancelled) setAllPrograms(Array.isArray(res.data) ? res.data : []);
                     return;
                 }
 
-                const res = await api.get("/api/search", {
-                    params: {keyword: urlKeyword, regions: []},
-                });
+                // ✅ 검색도 dedupe 적용 (같은 키면 1번만)
+                const res = await getDeduped("/api/search", { params: { keyword: k } });
 
-                if (!cancelled) setAllPrograms(res.data.cards);
+                const cards = Array.isArray(res.data?.cards)
+                    ? res.data.cards
+                    : Array.isArray(res.data)
+                        ? res.data
+                        : [];
 
-
-                // 추천 1개 누적
-                const recRes = await api.get("/api/recommendations/recent");
-                const incoming = recRes.data ?? [];
-
-                if (cancelled) return;
-
-                setRecommended((prev) => {
-                    const used = new Set(prev.map((p) => p.id));
-                    const nextOne = incoming.find((p) => p?.id && !used.has(p.id));
-                    return nextOne ? [nextOne, ...prev].slice(0, 10) : prev;
-                });
-
+                if (!cancelled) setAllPrograms(cards);
             } catch (e) {
                 console.error("search error", e);
+                if (!cancelled) setAllPrograms([]);
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                    setHasFetched(true);
+                }
             }
         };
 
@@ -108,91 +160,108 @@ export function SearchProvider({children}) {
         return () => {
             cancelled = true;
         };
-    }, [urlKeyword]);
+    }, [effectiveKeyword]);
+
+    // region filtering
+    const filteredPrograms = useMemo(() => {
+        if (bigRegion === "전체") return allPrograms;
+
+        if (smallRegions.length > 0) {
+            const set = new Set(smallRegions);
+            return allPrograms.filter((p) => p?.region && set.has(p.region));
+        }
+
+        const allowed = REGION_MAP[bigRegion] || [];
+        const set = new Set(allowed);
+        return allPrograms.filter((p) => p?.region && set.has(p.region));
+    }, [allPrograms, bigRegion, smallRegions]);
+
+    // pagination
+    const totalPages = useMemo(() => {
+        const tp = Math.ceil(filteredPrograms.length / pageSize);
+        return tp <= 0 ? 1 : tp;
+    }, [filteredPrograms.length, pageSize]);
+
+    const paginatedPrograms = useMemo(() => {
+        const start = (currentPage - 1) * pageSize;
+        return filteredPrograms.slice(start, start + pageSize);
+    }, [filteredPrograms, currentPage, pageSize]);
+
+    const isEmpty = hasFetched && !isLoading && paginatedPrograms.length === 0;
 
     // actions
-    const submitSearch = useCallback(() => {
-        const trimmed = searchInput.trim();
-        if (trimmed === "") {
-            navigate("/search");
+    const submitSearch = useCallback(
+        (overrideKeyword) => {
+            const trimmed = (overrideKeyword ?? searchInput).trim();
+            setHasFetched(false);
+
+            if (!trimmed) {
+                navigate("/search", { replace: false });
+                resetSearchUI();
+                return;
+            }
+
+            setKeyword(trimmed);
             setSearchInput("");
-            setCurrentPage(1);
-            setViewMode("list");
-            return;
-        }
-        navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
-        setCurrentPage(1);
-        setViewMode("list");
-    }, [navigate, searchInput]);
+            navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
+
+            setCurrentPageState(1);
+            setViewModeState("list");
+        },
+        [navigate, searchInput, resetSearchUI]
+    );
 
     const setBigRegion = useCallback((r) => {
         setBigRegionState(r);
         setSmallRegionsState([]);
-        setCurrentPage(1);
-        setViewMode("list");
+        setCurrentPageState(1);
+        setViewModeState("list");
     }, []);
 
     const setSmallRegions = useCallback((updaterOrList) => {
         setSmallRegionsState((prev) => {
             const next =
                 typeof updaterOrList === "function" ? updaterOrList(prev) : updaterOrList;
-
-            if (next?.length > 0) {
-                setBigRegionState(findBigRegionBySmall(next[0]));
-            }
-            return next;
+            return Array.isArray(next) ? next : [];
         });
-        setCurrentPage(1);
-        setViewMode("list");
+        setCurrentPageState(1);
+        setViewModeState("list");
     }, []);
 
-    // derived: filtered
-    const filteredPrograms = useMemo(() => {
-        return allPrograms.filter((p) => {
-            if (bigRegion !== "전체") {
-                const validSmall = REGION_MAP[bigRegion] || [];
-                if (!p.region || !validSmall.includes(p.region)) return false;
-            }
-            if (smallRegions.length > 0) {
-                if (!smallRegions.includes(p.region)) return false;
-            }
-            return true;
-        });
-    }, [allPrograms, bigRegion, smallRegions]);
+    const setViewMode = useCallback((m) => {
+        setViewModeState(m);
+        setCurrentPageState(1);
+    }, []);
 
-    // derived: pagination
-    const totalPages = Math.ceil(filteredPrograms.length / pageSize);
-    const start = (currentPage - 1) * pageSize;
-    const paginatedPrograms = filteredPrograms.slice(start, start + pageSize);
-    const isEmpty = paginatedPrograms.length === 0;
+    const setCurrentPage = useCallback((p) => {
+        setCurrentPageState(p);
+    }, []);
 
     const value = {
-        // UI
         searchInput,
         setSearchInput,
         submitSearch,
-        viewMode,
-        setViewMode,
 
-        // filter
         bigRegion,
         smallRegions,
         setBigRegion,
         setSmallRegions,
 
-        // programs
+        viewMode,
+        setViewMode,
+
+        isLoading,
+        hasFetched,
         allPrograms,
         filteredPrograms,
         paginatedPrograms,
         isEmpty,
 
-        // pagination
         currentPage,
         setCurrentPage,
         totalPages,
         pageSize,
 
-        // recommended
         recommended,
     };
 
