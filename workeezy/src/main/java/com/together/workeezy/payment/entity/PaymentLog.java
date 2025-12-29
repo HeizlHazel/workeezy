@@ -4,11 +4,13 @@ import com.together.workeezy.payment.enums.EventType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "tb_payment_logs")
 public class PaymentLog {
@@ -38,25 +40,4 @@ public class PaymentLog {
     @Column(name = "logged_at", nullable = false, updatable = false)
     private LocalDateTime loggedAt;
 
-    protected  PaymentLog() {}
-
-    public static PaymentLog success(Payment payment, String responseJson, int httpStatus) {
-        PaymentLog log = new PaymentLog();
-        log.payment = payment;
-        log.responseData = responseJson;
-        log.eventType = EventType.response;
-        log.httpStatus = httpStatus;
-
-        return log;
-    }
-
-    public static PaymentLog fail(Payment payment, String responseJson, int httpStatus) {
-        PaymentLog log = new PaymentLog();
-        log.payment = payment;
-        log.responseData = responseJson;
-        log.eventType = EventType.fail;
-        log.httpStatus = httpStatus;
-
-        return log;
-    }
 }

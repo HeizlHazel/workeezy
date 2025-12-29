@@ -5,19 +5,17 @@ import com.together.workeezy.payment.dto.PaymentConfirmCommand;
 import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
 import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import com.together.workeezy.payment.entity.Payment;
-import com.together.workeezy.payment.enums.PaymentMethod;
 import com.together.workeezy.payment.repository.PaymentRepository;
 import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.together.workeezy.common.exception.ErrorCode.*;
+import static com.together.workeezy.common.exception.ErrorCode.PAYMENT_ALREADY_COMPLETED;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentConfirmUseCase {
@@ -26,17 +24,15 @@ public class PaymentConfirmUseCase {
     private final PaymentRepository paymentRepository;
     private final PaymentValidator paymentValidator;
     private final PaymentProcessor paymentProcessor;
-//    private final PaymentLogService paymentLogService;
 
     @Transactional
     public PaymentConfirmResponse confirm(PaymentConfirmCommand cmd) {
-        log.info("🔥 PaymentConfirmUseCase.confirm start");
 
         // 기본 파라미터 검증
         paymentValidator.validateBasic(cmd);
 
         // 예약 조회
-        Reservation reservation = reservationRepository.findByReservationNo(cmd.orderId())
+        Reservation reservation = reservationRepository.findById(cmd.reservationId())
                 .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
 
         // 예약 소유자 검증
@@ -55,12 +51,8 @@ public class PaymentConfirmUseCase {
 
         Payment payment = reservation.getPayment();
 
-        if (payment == null) {
-            log.info("🔥 creating payment");
+        if(payment == null)
             payment = Payment.create(reservation, cmd.amount());
-            reservation.linkPayment(payment);
-//            paymentRepository.save(payment);
-        }
 
         TossConfirmResponse api = paymentProcessor.confirm(
                 cmd.paymentKey(),
@@ -68,20 +60,21 @@ public class PaymentConfirmUseCase {
                 cmd.amount()
         );
 
-        PaymentMethod method = api.getMethod();
-
-//        PaymentMethod method = PaymentMethod.from(api.getMethod());
-
+        // Payment 도메인 메서드로 승인 처리
         payment.approve(
                 api.getOrderId(),
                 api.getPaymentKey(),
                 api.getAmount(),
-                method,
+                api.getMethod(),
                 api.getApprovedAt()
         );
 
-//        reservation.markConfirmed();
+        // Reservation 상태 CONFIRMED
+        reservation.markConfirmed();
 
+        paymentRepository.save(payment);
+
+        // 응답 생성
         return PaymentConfirmResponse.of(payment, reservation);
     }
 }

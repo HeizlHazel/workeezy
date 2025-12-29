@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
 
-    // 로그인/조회 시 사용
-    // 존재하지 않을 수 있으므로 Optional 반환
+    // 이메일이 존재하지 않을 수도 있기 때문에
+    // null 체크 대신 Optional 사용
     Optional<User> findByEmail(String email);
 }

@@ -25,7 +25,6 @@ public class CookieService {
                 .secure(isProd)                         // 로컬=false / 운영=true
                 .sameSite(isProd ? "None" : "Lax")      // 로컬=Lax / 운영=None
                 .path("/")                              // 모든 API에 전송
-                .domain(".workeezy.cloud")
                 .maxAge(jwtTokenProvider.getAccessExpiration() / 1000)
                 .build();
 
@@ -39,7 +38,6 @@ public class CookieService {
                 .secure(isProd)
                 .sameSite(isProd ? "None" : "Lax")
                 .path("/")
-                .domain(".workeezy.cloud")
                 .maxAge(0)
                 .build();
 
@@ -59,8 +57,9 @@ public class CookieService {
                 .secure(isProd)
                 .sameSite(isProd ? "None" : "Lax")
                 .path("/")
-                .domain(".workeezy.cloud")
-                .maxAge(jwtTokenProvider.getRefreshExpiration() / 1000)
+                .maxAge(autoLogin
+                        ? jwtTokenProvider.getRefreshExpiration() / 1000
+                        : -1)
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
@@ -74,26 +73,23 @@ public class CookieService {
                 .secure(isProd)
                 .sameSite(isProd ? "None" : "Lax")
                 .path("/")
-                .domain(".workeezy.cloud")
                 .maxAge(0)
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
-    // 현재 인증은 JwtAuthenticationFilter에서 처리함
-    // 컨트롤러/서비스 레벨에서는 accessToken을 직접 사용하지 않음
-//    public String extractAccessToken(HttpServletRequest request) {
-//
-//        if (request.getCookies() == null) return null;
-//
-//        for (Cookie cookie : request.getCookies()) {
-//            if ("accessToken".equals(cookie.getName())) {
-//                return cookie.getValue();
-//            }
-//        }
-//        return null;
-//    }
+    public String extractAccessToken(HttpServletRequest request) {
+
+        if (request.getCookies() == null) return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("accessToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 
     // request -> refresh 쿠키 추출
     public String extractRefreshToken(HttpServletRequest request) {

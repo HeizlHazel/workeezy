@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public class RecentSearchService {
 
+
     // RedisConfig에서 만든 String-String 템플릿
     private final RedisTemplate<String, String> redisTemplate;
 

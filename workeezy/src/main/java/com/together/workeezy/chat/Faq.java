@@ -24,6 +24,7 @@ public class Faq {
     @Column(name = "intent_name", length = 100)
     private String intentName;
 
+    @Lob
     @Column(name = "example_phrases")
     private String examplePhrases;
 

@@ -64,11 +64,11 @@ public class Reservation {
     private String reservationNo;
 
     @NotNull
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME(6)")
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
     @NotNull
-    @Column(name = "end_date", nullable = false, columnDefinition = "DATETIME(6)")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
     @NotNull
@@ -237,11 +237,6 @@ public class Reservation {
         if (this.payment == null) {
             this.payment = payment;
         }
-    }
-
-    // 관리자 승인 후에만 결제 가능
-    public boolean isPayable() {
-        return this.status == ReservationStatus.approved;
     }
 
     // ==================================== 관리자 행위 =================================

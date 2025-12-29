@@ -29,6 +29,7 @@ public class Program {
     private String title;
 
     @NotNull
+    @Lob
     @Column(name = "program_info", nullable = false)
     private String programInfo;
 

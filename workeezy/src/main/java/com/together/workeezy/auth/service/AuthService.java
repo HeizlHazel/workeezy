@@ -1,7 +1,6 @@
 package com.together.workeezy.auth.service;
 
 import com.together.workeezy.auth.dto.internal.LoginResult;
-import com.together.workeezy.auth.dto.response.LoginResponse;
 import com.together.workeezy.auth.security.jwt.JwtTokenProvider;
 import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.common.exception.CustomException;
@@ -26,7 +25,6 @@ public class AuthService {
     private final TokenRedisService tokenRedisService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-
 
     // 로그인 처리
     public LoginResult login(String email, String password, boolean autoLogin) {
