@@ -199,7 +199,9 @@ public class ReservationService {
             String email,
             LocalDateTime cursorDate,
             Long cursorId,
-            int size
+            int size,
+            String keyword,
+            ReservationStatus status
     ) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
@@ -211,6 +213,8 @@ public class ReservationService {
                         user.getId(),
                         cursorDate,
                         cursorId,
+                        keyword,
+                        status,
                         pageable
                 );
 

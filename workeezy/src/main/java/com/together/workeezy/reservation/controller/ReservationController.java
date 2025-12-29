@@ -4,6 +4,7 @@ import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.service.ReservationConfirmationService;
 import com.together.workeezy.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -86,6 +87,10 @@ public class ReservationController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime cursorDate,
             @RequestParam(required = false) Long cursorId,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false)
+            String keyword,
+            @RequestParam(required = false)
+            ReservationStatus status,
             Authentication authentication
     ) {
         System.out.println("🧩 authentication = " + authentication);
@@ -100,7 +105,8 @@ public class ReservationController {
         String email = authentication.getName();
 
         Slice<ReservationResponseDto> result =
-                reservationService.getMyReservations(email, cursorDate, cursorId, size);
+                reservationService.getMyReservations(email, cursorDate, cursorId, size, keyword,
+                        status);
 
         return ResponseEntity.ok(result);
     }

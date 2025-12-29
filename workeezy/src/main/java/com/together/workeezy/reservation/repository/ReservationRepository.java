@@ -60,6 +60,16 @@ join r.stay s
 join r.office o
 join r.room r2
 where r.user.id = :userId
+and (
+    :keyword is null
+    or p.title like concat('%', :keyword, '%')
+)
+
+and (
+    :status is null
+    or r.status = :status
+)
+
   and (
         :cursorDate is null
         or r.createdDate < :cursorDate
@@ -71,6 +81,8 @@ order by r.createdDate desc, r.id desc
             Long userId,
             LocalDateTime cursorDate,
             Long cursorId,
+            String keyword,
+            ReservationStatus status,
             Pageable pageable
     );
 
