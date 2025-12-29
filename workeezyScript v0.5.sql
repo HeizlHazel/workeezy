@@ -83,7 +83,12 @@ CREATE TABLE IF NOT EXISTS tb_reservation (
     UNIQUE KEY uq_reservation_no (reservation_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='예약 테이블';
 
+-- 사용자별 예약 조회 성능 개선용 인덱스
+CREATE INDEX idx_reservation_user_created
+ON tb_reservation (user_id, created_date DESC);
+
 ALTER TABLE tb_reservation ADD COLUMN people_count INT NOT NULL DEFAULT 1 COMMENT '예약 인원수';
+
 
 # 소셜 로그인 테이블 생성
 CREATE TABLE IF NOT EXISTS tb_social_login (
