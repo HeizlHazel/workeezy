@@ -5,6 +5,7 @@ import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
 import com.together.workeezy.reservation.dto.AdminReservationListDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
+import com.together.workeezy.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -178,6 +179,8 @@ where r.id = :reservationId
     Optional<Reservation> findByIdAndUserId(Long reservationId, Long userId);
 
     Optional<Reservation> findByReservationNo(String s);
+
+    int countByUserAndStatus(User user, ReservationStatus status);
 
     // 관리자 - 예약 상세 조회
 //    @Query("""

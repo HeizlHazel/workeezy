@@ -16,6 +16,28 @@ public enum ErrorCode {
     ORDER_ID_MISMATCH(HttpStatus.BAD_REQUEST, "주문 번호가 일치하지 않습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보가 존재하지 않습니다."),
 
+    // 예약 제한 관련
+    RESERVATION_WAITING_LIMIT_EXCEEDED
+            (
+            HttpStatus.BAD_REQUEST,
+            "예약 대기 건수가 너무 많습니다.",
+            "예약 대기는 최대 5건까지 가능합니다."
+    ),
+    RESERVATION_APPROVED_LIMIT_EXCEEDED(
+            HttpStatus.BAD_REQUEST,
+            "결제 대기 중인 예약이 너무 많습니다.",
+            "결제 대기 상태는 최대 3건까지 가능합니다."
+    ),
+    RESERVATION_CONFIRMED_LIMIT_EXCEEDED(
+            HttpStatus.BAD_REQUEST,
+            "확정된 예약이 너무 많습니다.",
+            "확정된 예약은 최대 3건까지 가능합니다."
+    ),
+    RESERVATION_TOTAL_LIMIT_EXCEEDED(
+            HttpStatus.BAD_REQUEST,
+            "예약 가능 개수를 초과했습니다.",
+            "예약 가능 건수를 초과했습니다."
+    ),
     // 사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 
@@ -39,12 +61,16 @@ public enum ErrorCode {
 
     private final HttpStatus status;
     private final String message;
+    private final String detail;
 
     ErrorCode(HttpStatus status, String message) {
+        this(status, message, null);
+    }
+    ErrorCode(HttpStatus status, String message, String detail) {
         this.status = status;
         this.message = message;
+        this.detail = detail;
     }
-
     public HttpStatus getStatus() {
         return status;
     }
@@ -52,4 +78,9 @@ public enum ErrorCode {
     public String getMessage() {
         return message;
     }
+
+    public String getDetail() {
+        return detail;
+    }
+
 }

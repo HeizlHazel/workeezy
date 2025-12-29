@@ -1,5 +1,6 @@
 package com.together.workeezy.reservation.controller;
 
+import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
@@ -50,13 +51,10 @@ public class ReservationController {
         System.out.println("🎯 programTitle = " + dto.getProgramTitle());
          */
 
-        try {
+            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
+            reservationService.validateReservationCreate(userId);
             reservationService.createNewReservation(dto, authentication.getName());
             return ResponseEntity.ok("예약 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("예약 실패: " + e.getMessage());
-        }
     }
 
     // 내 예약 목록 조회

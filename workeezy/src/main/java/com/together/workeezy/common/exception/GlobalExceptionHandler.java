@@ -10,10 +10,11 @@ public class GlobalExceptionHandler {
 
     // Custom 비즈니스 예외
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<?> handleCustomException(CustomException e) {
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
-                .body(e.getMessage());
+                .body(new ErrorResponse(errorCode));
     }
 
     // 접근 권한 없음
@@ -38,4 +39,6 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("서버 오류가 발생했습니다.");
     }
+
+
 }
