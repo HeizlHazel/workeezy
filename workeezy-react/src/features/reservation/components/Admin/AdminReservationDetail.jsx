@@ -1,186 +1,95 @@
 import { useEffect, useState } from "react";
 import ReservationStatusButton from "../ReservationStatusButton.jsx";
+import AdminReservationActions from "./AdminReservationActions.jsx";
 import axios from "../../../../api/axios";
 import { formatLocalDateTime } from "../../../../utils/dateTime";
 import "./AdminReservationDetail.css";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminReservationDetail({ reservationId }) {
-  const [reservation, setReservation] = useState(null);
+    const navigate = useNavigate();
+    const [reservation, setReservation] = useState(null);
 
-  useEffect(() => {
-    Swal.fire({
-      title: "예약 정보를 불러오는 중",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    const fetchDetail = async () => {
+        try {
+            const res = await axios.get(`/api/admin/reservations/${reservationId}`);
+            setReservation(res.data);
+        } catch {
+            Swal.fire("조회 실패", "예약 정보를 불러올 수 없습니다.", "error");
+        }
+    };
 
-    axios
-      .get(`/api/admin/reservations/${reservationId}`)
-      .then((res) => {
-        setReservation(res.data);
-        Swal.close();
-      })
-      .catch(() => {
+    useEffect(() => {
         Swal.fire({
-          icon: "error",
-          title: "조회 실패",
-          text: "예약 정보를 불러오지 못했습니다.",
+            title: "예약 정보를 불러오는 중",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
         });
-      });
-  }, [reservationId]);
 
-  if (!reservation) return null;
+        fetchDetail().finally(() => Swal.close());
+    }, [reservationId]);
 
-  const isWaitingPayment = reservation.status === "waiting_payment";
-  const isCancelRequested = reservation.status === "cancel_requested";
+    if (!reservation) return null;
 
-  /* 공통 액션 헬퍼 */
-  const confirmAndExecute = async (config, apiCall) => {
-    const result = await Swal.fire(config);
-    if (!result.isConfirmed) return;
-    await apiCall(result.value);
-    fetchDetail();
-  };
+    return (
+        <div className="admin-detail-wrapper">
+            <div className="admin-detail-card">
+                <ReservationStatusButton status={reservation.status} />
 
-  return (
-    <div className="admin-detail-card">
-      <ReservationStatusButton status={reservation.status} />
+                <div className="detail-section">
+                    <h3 className="section-title">예약 정보</h3>
+                    <dl className="detail-grid">
+                        <dt>예약번호</dt>
+                        <dd>{reservation.reservationNo}</dd>
 
-      <dl className="reservation-detail">
-        <div>
-          <dt>예약번호</dt>
-          <dd>{reservation.reservationNo}</dd>
+                        <dt>프로그램</dt>
+                        <dd>{reservation.programTitle}</dd>
+
+                        <dt>예약 기간</dt>
+                        <dd>
+                            {formatLocalDateTime(reservation.startDate)} ~{" "}
+                            {formatLocalDateTime(reservation.endDate)}
+                        </dd>
+
+                        <dt>예약자</dt>
+                        <dd>{reservation.userName}</dd>
+
+                        <dt>예약자 번호</dt>
+                        <dd>{reservation.phone}</dd>
+                    </dl>
+                </div>
+
+                <div className="detail-section">
+                    <h3 className="section-title">이용 정보</h3>
+                    <dl className="detail-grid">
+                        <dt>숙소명</dt>
+                        <dd>{reservation.stayName}</dd>
+
+                        <dt>룸 타입</dt>
+                        <dd>{reservation.roomType}</dd>
+
+                        <dt>오피스명</dt>
+                        <dd>{reservation.officeName}</dd>
+
+                        <dt>인원</dt>
+                        <dd>{reservation.peopleCount}명</dd>
+                    </dl>
+                </div>
+
+                <AdminReservationActions
+                    reservationId={reservationId}
+                    status={reservation.status}
+                    onSuccess={fetchDetail}
+                />
+
+                {/* 카드 바깥 */}
+            </div>
+            <div className="detail-footer">
+                <button className="btn-back" onClick={() => navigate(-1)}>
+                    목록으로
+                </button>
+            </div>
         </div>
-        <div>
-          <dt>프로그램명</dt>
-          <dd>{reservation.programTitle}</dd>
-        </div>
-
-        <div>
-          <dt>기간</dt>
-          <dd>
-            {formatLocalDateTime(reservation.startDate)} ~{" "}
-            {formatLocalDateTime(reservation.endDate)}
-          </dd>
-        </div>
-
-        <div>
-          <dt>예약자</dt>
-          <dd>{reservation.userName}</dd>
-        </div>
-
-        <div>
-          <dt>숙소</dt>
-          <dd>{reservation.stayName}</dd>
-        </div>
-
-        <div>
-          <dt>룸 타입</dt>
-          <dd>{reservation.roomType}</dd>
-        </div>
-
-        <div>
-          <dt>인원</dt>
-          <dd>{reservation.peopleCount}명</dd>
-        </div>
-
-        <div>
-          <dt>오피스</dt>
-          <dd>{reservation.officeName}</dd>
-        </div>
-      </dl>
-
-      {/* 관리자 액션 */}
-      <div className="detail-actions">
-        {isWaitingPayment && (
-          <>
-            <button
-              className="btn-approve"
-              onClick={() =>
-                confirmAndExecute(
-                  {
-                    title: "예약 승인",
-                    text: "예약을 승인하시겠습니까?",
-                    showCancelButton: true,
-                  },
-                  () =>
-                    axios.patch(
-                      `/api/admin/reservations/${reservationId}/approve`
-                    )
-                )
-              }
-            >
-              승인
-            </button>
-
-            <button
-              className="btn-reject"
-              onClick={() =>
-                confirmAndExecute(
-                  {
-                    title: "예약 반려",
-                    input: "textarea",
-                    inputPlaceholder: "반려 사유 입력",
-                    showCancelButton: true,
-                  },
-                  (reason) =>
-                    axios.patch(
-                      `/api/admin/reservations/${reservationId}/reject`,
-                      { reason }
-                    )
-                )
-              }
-            >
-              반려
-            </button>
-          </>
-        )}
-
-        {isCancelRequested && (
-          <>
-            <button
-              className="btn-approve"
-              onClick={() =>
-                confirmAndExecute(
-                  {
-                    title: "취소 승인",
-                    showCancelButton: true,
-                  },
-                  () =>
-                    axios.patch(
-                      `/api/admin/reservations/${reservationId}/cancel/approve`
-                    )
-                )
-              }
-            >
-              취소 승인
-            </button>
-
-            <button
-              className="btn-reject"
-              onClick={() =>
-                confirmAndExecute(
-                  {
-                    title: "취소 반려",
-                    input: "textarea",
-                    showCancelButton: true,
-                  },
-                  (reason) =>
-                    axios.patch(
-                      `/api/admin/reservations/${reservationId}/cancel/reject`,
-                      { reason }
-                    )
-                )
-              }
-            >
-              취소 반려
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
+    );
 }

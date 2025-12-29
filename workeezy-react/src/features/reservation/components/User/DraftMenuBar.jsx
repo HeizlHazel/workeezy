@@ -76,23 +76,40 @@ export default function DraftMenuBar({
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
+    try {
+      const res = await saveDraft(payload);
 
-    const res = await saveDraft(payload);
-    Swal.close();
+      Swal.close();
 
-    // 스냅샷 + latest id
-    onSnapshotSaved(payload);
-    onSaved?.(res.data.id);
+      onSnapshotSaved(payload);
+      onSaved?.(res.data.id);
 
-    const listRes = await fetchDraftList();
-    setDraftList(listRes.data || []);
+      const listRes = await fetchDraftList();
+      setDraftList(listRes.data || []);
 
-    Swal.fire({
-      icon: "success",
-      title: "임시저장 완료!",
-      timer: 1200,
-      showConfirmButton: false,
-    });
+      Swal.fire({
+        icon: "success",
+        title: "임시저장 완료!",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } catch (e) {
+      Swal.close();
+
+      if (e.response?.status === 400) {
+        Swal.fire({
+          icon: "warning",
+          title: "임시저장 제한",
+          html: e.response.data,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "임시저장 실패",
+          text: "임시저장 중 오류가 발생했습니다.",
+        });
+      }
+    }
   };
 
   /* 불러오기 */
