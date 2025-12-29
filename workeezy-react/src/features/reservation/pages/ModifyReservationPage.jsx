@@ -15,7 +15,7 @@ export default function ModifyReservationPage() {
       const response = await axios.get(
         `/api/reservations/${id}`
       );
-      setReservation(response.data);
+      setReservation(response.data.data);
     };
     fetchReservation();
   }, [id]); // url에 적힌 id값이 바뀌었는지 감지. 렌더링될 때 이게 바뀌었는지 감지!

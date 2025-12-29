@@ -21,7 +21,9 @@ export default function ReservationFields({
   stayName,
   stayId,
 }) {
-  // 사용자가 select에서 옵션 바꿀 때마다 form에 roomId, roomType
+    console.log("🔥 rooms =", rooms);
+
+    // 사용자가 select에서 옵션 바꿀 때마다 form에 roomId, roomType
   const handleSelectChange = (type, e) => {
     // 사용자가 선택한 option의 value(roomId) 객체 구조 분해 할당
     const { value } = e.target;

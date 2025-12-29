@@ -1,32 +1,40 @@
 import TossPaymentWidget from "../components/TossPaymentWidget.jsx";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
 export default function CheckoutPage() {
     const {reservationId} = useParams();
+    const navigate = useNavigate();
     const [reservation, setReservation] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`/api/reservations/${reservationId}`, {
+        fetch(`/api/payments/${reservationId}`, {
             credentials: "include",
         })
             .then(async (res) => {
-                const ct = res.headers.get("content-type") || "";
-                if (!res.ok) {
-                    const text = await res.text();
-                    console.error("예약 조회 실패:", text);
-                    throw new Error("예약 조회 실패");
-                }
-                if (!ct.includes("application/json")) {
-                    const text = await res.text();
-                    console.error("JSON 아닌 응답:", text);
-                    throw new Error("예약조회 API가 JSON을 반환하지 않음");
-                }
+                if (!res.ok) throw new Error("결제 진입 실패");
                 return res.json();
             })
-            .then(setReservation)
-            .catch(console.error);
-    }, [reservationId]);
+            .then((data) => {
+                // 이미 결제 완료된 예약이면 여기서 차단
+                if (data.status === "CONFIRMED") {
+                    navigate("/reservation/list", {replace: true});
+                    return;
+                }
+
+                setReservation(data);
+            })
+            .catch((e) => {
+                console.error(e);
+                navigate("/reservation/list", {replace: true});
+            })
+            .finally(() => setLoading(false));
+    }, [reservationId, navigate]);
+
+    if (loading) {
+        return <div style={{textAlign: "center", marginTop: 120}}>결제 정보 불러오는 중...</div>;
+    }
 
     if (!reservation) return null;
 
@@ -34,7 +42,7 @@ export default function CheckoutPage() {
         <div style={{maxWidth: 480, margin: "100px auto"}}>
             <h2>결제 진행</h2>
             <p>주문번호: {reservation.reservationNo}</p>
-            <p>금액: {reservation.totalPrice}원</p>
+            <p>금액: {reservation.totalPrice.toLocaleString()}원</p>
 
             <TossPaymentWidget
                 orderId={reservation.reservationNo}

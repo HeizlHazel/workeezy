@@ -3,6 +3,7 @@ import {loadTossPayments} from "@tosspayments/tosspayments-sdk";
 
 export default function TossPaymentWidget({orderId, orderName, amount}) {
     const [widgets, setWidgets] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     // 테스트 결제 전용 customerKey
     const customerKey = "workeezy";
@@ -37,14 +38,16 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
     }, [widgets, amount]);
 
     const handlePayment = async () => {
-        if (!widgets) return;
+        if (!widgets || loading) return;
 
         try {
-            await widgets.requestPayment({
-                orderId: orderId,
-                orderName: orderName,
+            setLoading(true); // 클린한 순간 잠금
 
-                successUrl: `${window.location.origin}/payment/result`,
+            await widgets.requestPayment({
+                orderId,
+                orderName,
+
+                successUrl: `${window.location.origin}/payment/result?status=success&orderId=${orderId}`,
                 failUrl: `${window.location.origin}/payment/result?status=fail&orderId=${orderId}`,
 
                 customerName: "테스트 사용자",
@@ -52,6 +55,7 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
             });
         } catch (error) {
             console.error("결제 요청 실패", error);
+            setLoading(false); // Toss 위젯 뜨기 전에 실패한 경우 대비
         }
     };
 
@@ -62,7 +66,7 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
 
             <button
                 onClick={handlePayment}
-                disabled={!widgets}
+                disabled={!widgets || loading}
                 style={{
                     marginTop: "20px",
                     padding: "14px",
@@ -73,11 +77,11 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
                     borderRadius: "8px",
                     fontWeight: "600",
                     fontSize: "16px",
-                    cursor: widgets ? "pointer" : "not-allowed",
-                    opacity: widgets ? 1 : 0.6,
+                    cursor: !widgets || loading ? "not-allowed" : "pointer",
+                    opacity: !widgets || loading ? 0.6 : 1,
                 }}
             >
-                결제하기
+                {loading ? "결제 진행 중..." : "결제하기"}
             </button>
         </>
     );

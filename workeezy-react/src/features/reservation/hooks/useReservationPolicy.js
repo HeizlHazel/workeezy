@@ -49,7 +49,7 @@ export function useReservationPolicy(reservation) {
        확정서 및 결제
     ===================== */
     showConfirmDoc: isConfirmed,
-    showPaymentWidget: isWaitingPayment,
+    showPaymentWidget: isApproved,
     showPayment: isConfirmed,
   };
 }

@@ -8,13 +8,13 @@ export default function ReservationStatusButton({ status }) {
 
   switch (status) {
     case "waiting_payment":
-      label = "결제대기";
+      label = "예약신청";
       icon = "/reservationStatusIcons/waiting_payment.svg";
       className += " waiting_payment";
       break;
 
     case "approved":
-      label = "승인완료";
+      label = "결제대기";
       icon = "/reservationStatusIcons/approved.svg";
       className += " approved";
       break;
