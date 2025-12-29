@@ -7,20 +7,21 @@ import {useNavigate, useLocation} from "react-router-dom";
 import ReservationFormActions from "../ReservationFormActions.jsx";
 import {toLocalDateTimeString} from "../../../../utils/dateTime";
 import Swal from "sweetalert2";
+import { fetchDraft } from "../../api/draft.api.js";
+import { normalizeDraftToForm } from "../../utils/draftNormalize.js";
 
 export default function ReservationForm({
-                                            initialData, // 프로그램 아이디, 룸id, 체크인-체크아웃
-                                            // rooms = [],
-                                            mode = "create",
-                                        }) {
-    // 초기 데이터 객체 구조 분해 할당
-    const {programId, roomId, checkIn, checkOut} = initialData || {};
-    const isEdit = mode === "edit";
-    const navigate = useNavigate();
-    const location = useLocation();
-    const {draftKey} = location.state || {};
-    // 예약용 프로그램 조회 결과로 얻은 rooms
-    const [rooms, setRooms] = useState([]);
+  initialData, // 프로그램 아이디, 룸id, 체크인-체크아웃
+  mode = "create",
+}) {
+  // 초기 데이터 객체 구조 분해 할당
+  const { programId, roomId, checkIn, checkOut } = initialData || {};
+  const isEdit = mode === "edit";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { draftKey } = location.state || {};
+  // 예약용 프로그램 조회 결과로 얻은 rooms
+  const [rooms, setRooms] = useState([]);
 
     /* =========================
        form 초기 상태
@@ -116,29 +117,48 @@ export default function ReservationForm({
                     officeId: data.officeId,
                     officeName: data.officeName, // 사용자 UX
 
-                    roomId: roomId ? String(roomId) : "",
-                    roomType: selectedRoom?.roomType ?? "", // 사용자 UX
+          roomId: roomId ? String(roomId) : "",
+          roomType: selectedRoom?.roomType || prev.roomType, // 사용자 UX
 
-                    startDate: checkIn ? new Date(checkIn) : prev.startDate,
-                    endDate: checkOut ? new Date(checkOut) : prev.endDate,
-                }));
-            } catch (e) {
-                console.error("예약용 프로그램 조회 실패", e);
-            } finally {
-                Swal.close();
-            }
-        };
+          startDate: checkIn ? new Date(checkIn) : prev.startDate,
+          endDate: checkOut ? new Date(checkOut) : prev.endDate,
+        }));
+        console.log("🧩 rooms:", rooms);
+        console.log("🧩 form.roomId:", form.roomId);
+        console.log("🧩 form.roomType:", form.roomType);
+      } catch (e) {
+        console.error("예약용 프로그램 조회 실패", e);
+      } finally {
+        Swal.close();
+      }
+    };
 
         fetchProgramForReservation();
     }, [programId, roomId, checkIn, checkOut]);
 
-    /* =========================
-       유저 정보 자동 채우기
-    ========================= */
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get("/api/user/me");
+  // 🔥 rooms 로딩 후 roomId 기준으로 roomType 동기화
+  useEffect(() => {
+    if (!rooms.length || !form.roomId) return;
+
+    const selected = rooms.find(
+      (r) => String(r.roomId) === String(form.roomId)
+    );
+
+    if (selected) {
+      setForm((prev) => ({
+        ...prev,
+        roomType: selected.roomType,
+      }));
+    }
+  }, [rooms, form.roomId]);
+
+  /* =========================
+     유저 정보 자동 채우기
+  ========================= */
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("/api/user/me");
 
                 const userData = res.data;
 
@@ -165,11 +185,11 @@ export default function ReservationForm({
         setForm((prev) => ({...prev, [name]: value}));
     };
 
-    /* =========================
-       입력 폼 제출
-    ========================= */
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  /* =========================
+     입력 폼 제출
+  ========================= */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
         try {
             if (initialData?.id) {
@@ -211,20 +231,41 @@ export default function ReservationForm({
         }
     };
 
-    return (
-        <div className="form">
-            <form className="reservation-form" onSubmit={handleSubmit}>
-                <ReservationFields
-                    {...form}
-                    rooms={rooms}
-                    // offices={offices}
-                    onChange={handleChange}
-                />
-                <ReservationFormActions
-                    isEdit={isEdit}
-                    onOpenDraft={() => setIsDraftMenuOpen((p) => !p)}
-                />
-            </form>
+  useEffect(() => {
+    if (!draftKey) return;
+
+    const loadDraft = async () => {
+      try {
+        const res = await fetchDraft(draftKey);
+
+        const normalized = normalizeDraftToForm(res.data);
+
+        setForm((prev) => ({
+          ...prev,
+          ...normalized,
+        }));
+      } catch (e) {
+        console.error("임시저장 불러오기 실패", e);
+      }
+    };
+
+    loadDraft();
+  }, [draftKey]);
+
+  return (
+    <div className="form">
+      <form className="reservation-form" onSubmit={handleSubmit}>
+        <ReservationFields
+          {...form}
+          rooms={rooms}
+          // offices={offices}
+          onChange={handleChange}
+        />
+        <ReservationFormActions
+          isEdit={isEdit}
+          onOpenDraft={() => setIsDraftMenuOpen((p) => !p)}
+        />
+      </form>
 
             {!isEdit && isDraftMenuOpen && (
                 <DraftMenuBar

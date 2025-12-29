@@ -18,7 +18,7 @@ export default function ReservationListView({
       ) : (
         reservations.map((r) => (
           <ReservationCard
-            key={r.reservationNo} // 각 카드 구분
+            key={r.id} // 각 카드 구분
             data={r} // 예약 데이터 한 객체
             isSelected={selectedId === r.reservationNo} // 지금 선택된 id와 카드 id 같으면 isSelected => true
             onSelect={() => handleCardClick(r.reservationNo)} // 클릭했을 때 실행될 함수.

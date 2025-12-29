@@ -2,6 +2,7 @@ import "./ReservationCard.css";
 import ReservationStatusButton from "../ReservationStatusButton.jsx";
 import { formatLocalDateTime } from "../../../../utils/dateTime";
 import ReservationCardActions from "./../ReservationCardActions";
+import useImagePath from "../../../../hooks/useImagePath.js";
 
 export default function ReservationCard({ data, isSelected, onSelect }) {
   const {
@@ -13,10 +14,18 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
     endDate,
     totalPrice,
     peopleCount,
-    images = [],
+    // images = [],
     reservationNo,
     officeName,
+    placePhoto1,
+    placePhoto2,
+    placePhoto3,
   } = data;
+  const { fixPath } = useImagePath();
+  // 🔥 핵심: placePhoto → images 배열로 변환
+  const images = [placePhoto1, placePhoto2, placePhoto3]
+    .filter(Boolean)
+    .map(fixPath);
 
   return (
     <div
@@ -26,10 +35,10 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
         onSelect();
       }}
     >
-      {/* 이미지 섹션 */}
+      {/* 이미지 영역 */}
       {isSelected ? (
         <div className="image-grid">
-          {images.slice(0, 3).map((src, i) => (
+          {images.map((src, i) => (
             <img key={i} src={src} alt="" />
           ))}
         </div>

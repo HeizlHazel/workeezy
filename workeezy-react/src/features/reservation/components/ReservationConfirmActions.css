@@ -1,0 +1,61 @@
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+/* 공통 버튼 */
+.confirm-actions button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* PDF 다운로드 (청록/그린) */
+.confirm-actions button:nth-child(1) {
+  background-color: #10b981; /* emerald-500 */
+  color: white;
+}
+
+.confirm-actions button:nth-child(1):hover {
+  background-color: #059669;
+}
+
+/* 출력 (베이지) */
+.confirm-actions button:nth-child(2) {
+  background-color: #f5e9c9;
+  color: #5a4a2f;
+}
+
+.confirm-actions button:nth-child(2):hover {
+  background-color: #e9dbb5;
+}
+
+/* 이전으로 (그레이) */
+.confirm-actions .secondary {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.confirm-actions .secondary:hover {
+  background-color: #d1d5db;
+}
+@media print {
+  .confirm-actions {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+
+  .confirm-preview {
+    box-shadow: none;
+    padding: 0;
+  }
+}

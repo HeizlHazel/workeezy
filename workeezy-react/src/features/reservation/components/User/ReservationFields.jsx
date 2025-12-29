@@ -215,7 +215,9 @@ export default function ReservationFields({
             onChange={(e) => handleSelectChange("room", e)}
             className="value"
           >
-            <option value="">룸 선택</option>
+            {rooms.length === 0 && roomId && (
+              <option value={roomId}>{roomType}</option>
+            )}
             {rooms.map((r) => (
               <option key={r.roomId} value={String(r.roomId)}>
                 {r.roomType}

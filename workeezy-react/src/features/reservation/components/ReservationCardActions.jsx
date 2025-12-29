@@ -92,7 +92,16 @@ export default function ReservationCardActions({ reservation }) {
 
       {/* 확정서 및 결제 */}
 
-      {policy.showConfirmDoc && <button>예약 확정서</button>}
+      {policy.showConfirmDoc && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/reservation/${reservation.id}/confirmation`);
+          }}
+        >
+          예약 확정서
+        </button>
+      )}
       {policy.showPayment && <button>결제 내역</button>}
       {policy.showPaymentWidget && (
         <button

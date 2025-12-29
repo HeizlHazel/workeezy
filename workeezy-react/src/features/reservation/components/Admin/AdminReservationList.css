@@ -90,3 +90,47 @@
 .clickable-row:hover {
   background-color: #f9fafb;
 }
+
+.status-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  align-content: center;
+  flex-direction: column-reverse;
+}
+
+.status-cell > * {
+  margin: 0 auto;
+}
+/* 예약 번호 */
+.reservation-table th:nth-child(1),
+.reservation-table td:nth-child(1) {
+  width: 20%;
+}
+
+/* 프로그램명 */
+.reservation-table th:nth-child(2),
+.reservation-table td:nth-child(2) {
+  width: 20%;
+}
+
+/* 예약자 (줄이기) */
+.reservation-table th:nth-child(3),
+.reservation-table td:nth-child(3) {
+  width: 8%;
+}
+
+/* 예약 신청일 */
+.reservation-table th:nth-child(4),
+.reservation-table td:nth-child(4) {
+  width: 20%;
+}
+
+/* 상태 */
+.reservation-table th:nth-child(5),
+.reservation-table td:nth-child(5) {
+  width: 12%;
+}
