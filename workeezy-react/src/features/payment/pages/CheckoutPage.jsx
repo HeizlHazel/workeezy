@@ -17,14 +17,13 @@ export default function CheckoutPage() {
                 return res.json();
             })
             .then((data) => {
-                // 이미 결제 완료된 예약이면 여기서 차단
                 if (data.status === "CONFIRMED") {
-                    navigate("/reservation/list", {replace: true});
+                    navigate("/payment/result/success", {replace: true});
                     return;
                 }
-
                 setReservation(data);
             })
+
             .catch((e) => {
                 console.error(e);
                 navigate("/reservation/list", {replace: true});
