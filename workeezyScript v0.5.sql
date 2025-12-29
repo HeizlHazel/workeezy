@@ -6,7 +6,7 @@
 
 # 12/11 업데이트 완
 
- USE workeezy;
+ USE 사용자이름;
 
 -- 1. 외래 키 체크 해제
 SET FOREIGN_KEY_CHECKS = 0;
@@ -15,7 +15,7 @@ SET group_concat_max_len = 100000;
 
 SELECT GROUP_CONCAT(CONCAT('`', table_name, '`')) INTO @tables
 FROM information_schema.tables
- WHERE table_schema = 'workeezy';
+ WHERE table_schema = '테이블이름';
 
 SET @drop_query = IF(@tables IS NOT NULL, CONCAT('DROP TABLE IF EXISTS ', @tables), 'SELECT "No tables to drop"');
 
