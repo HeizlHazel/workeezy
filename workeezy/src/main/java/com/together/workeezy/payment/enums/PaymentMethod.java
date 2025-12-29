@@ -6,11 +6,17 @@ public enum PaymentMethod {
     public static PaymentMethod from(String value) {
         if (value == null || value.isBlank()) return unknown;
 
-        return switch (value.toUpperCase()) {
-            case "CARD" -> card;
-            case "TRANSFER" -> transfer;
-            case "EASY_PAY", "EASYPAY" -> easy_pay;
-            default -> unknown;
-        };
+        try {
+            return PaymentMethod.valueOf(value.toLowerCase());
+        } catch (Exception e) {
+            return unknown;
+        }
+
+//        return switch (value.toUpperCase()) {
+//            case "CARD" -> card;
+//            case "TRANSFER" -> transfer;
+//            case "EASY_PAY", "EASYPAY" -> easy_pay;
+//            default -> unknown;
+//        };
     }
 }

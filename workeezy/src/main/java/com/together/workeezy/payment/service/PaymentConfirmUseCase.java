@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.together.workeezy.common.exception.ErrorCode.*;
-import static com.together.workeezy.common.exception.ErrorCode.PAYMENT_ALREADY_COMPLETED;
 
 @Slf4j
 @Service
@@ -60,7 +59,7 @@ public class PaymentConfirmUseCase {
             log.info("🔥 creating payment");
             payment = Payment.create(reservation, cmd.amount());
             reservation.linkPayment(payment);
-            paymentRepository.save(payment);
+//            paymentRepository.save(payment);
         }
 
         TossConfirmResponse api = paymentProcessor.confirm(
@@ -70,6 +69,8 @@ public class PaymentConfirmUseCase {
         );
 
         PaymentMethod method = api.getMethod();
+
+//        PaymentMethod method = PaymentMethod.from(api.getMethod());
 
         payment.approve(
                 api.getOrderId(),
