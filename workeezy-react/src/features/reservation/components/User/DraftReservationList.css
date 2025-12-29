@@ -113,3 +113,9 @@
 .draft-reservation-table td:nth-child(6) {
   width: 13%; /* 작업 */
 }
+
+.draft-hint {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 12px;
+}
