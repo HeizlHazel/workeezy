@@ -8,6 +8,12 @@ export function Success({orderId, amount, paymentKey}) {
     const calledRef = useRef(false);
 
     useEffect(() => {
+
+        if (!orderId || !paymentKey || !amount) {
+            navigate("/payment/fail?code=INVALID_RESULT_PARAMS");
+            return;
+        }
+
         // StrictMode / 재마운트 방지
         if (calledRef.current) return;
         calledRef.current = true;

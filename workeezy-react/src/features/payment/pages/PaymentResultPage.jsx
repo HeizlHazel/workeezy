@@ -3,6 +3,8 @@ import {Fail} from "../components/Fail.jsx";
 import {Success} from "../components/Success.jsx";
 
 export default function PaymentResultPage() {
+    console.log("🔥 RESULT URL =", window.location.href);
+
     const params = new URLSearchParams(window.location.search);
 
     const status = params.get("status");
@@ -10,17 +12,14 @@ export default function PaymentResultPage() {
     const orderId = params.get("orderId");
     const amount = Number(params.get("amount"));
 
-    let content = <Fail/>;
-
-    if (status === "success") {
-        content = <Success orderId={orderId}
-                           amount={amount}
-                           paymentKey={paymentKey}/>;
-    } else {
-        content = <Fail/>;
-    }
 
     console.log({orderId, paymentKey, amount});
 
-    return <PageLayout>{content}</PageLayout>;
+    return (
+        <PageLayout>
+            {status === "fail" ? <Fail/> : <Success paymentKey={paymentKey}
+                                                    orderId={orderId}
+                                                    amount={amount}/>}
+        </PageLayout>
+    );
 }
