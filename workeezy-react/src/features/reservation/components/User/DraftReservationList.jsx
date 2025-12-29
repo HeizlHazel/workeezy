@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DraftReservationList.css";
-import Pagination from "../../../../shared/common/Pagination";
 import { fetchDraftList, deleteDraft } from "../../api/draft.api.js";
 import {
   normalizeDraft,
@@ -69,6 +68,9 @@ export default function DraftReservationList() {
   return (
     <div className="draft-reservation-list">
       <h2 className="list-title">임시 저장 목록</h2>
+      <p className="draft-hint">
+        ※ 임시 저장은 최대 <strong>5개</strong>까지 가능합니다.
+      </p>
 
       <table className="draft-reservation-table">
         <thead>
@@ -143,12 +145,6 @@ export default function DraftReservationList() {
           })}
         </tbody>
       </table>
-
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
     </div>
   );
 }
