@@ -12,13 +12,12 @@ export default function PaymentResultPage() {
 
     let content = <Fail/>;
 
-    if (status === "fail") {
-        content = <Fail/>;
-    } else if (paymentKey && orderId && amount) {
+    if (status === "success") {
         content = <Success/>;
     } else {
         content = <Fail/>;
     }
+
     console.log({orderId, paymentKey, amount});
 
     return <PageLayout>{content}</PageLayout>;

@@ -1,10 +1,9 @@
 import "./Result.css";
 import {useEffect, useRef} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-export function Success() {
+export function Success({orderId, amount, paymentKey}) {
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
 
     const calledRef = useRef(false);
 
@@ -20,12 +19,10 @@ export function Success() {
         }
 
         const requestData = {
-            orderId: searchParams.get("orderId"),
-            amount: Number(searchParams.get("amount")),
-            paymentKey: searchParams.get("paymentKey"),
+            orderId,
+            amount,
+            paymentKey,
         };
-
-        console.log("🔥 confirm payload", requestData);
 
         async function confirm() {
             try {
@@ -37,8 +34,7 @@ export function Success() {
                 });
 
                 if (!response.ok) {
-                    console.error("confirm 실패");
-                    navigate("/payment/fail?code=CONFIRM_FAIL&message=결제 승인 실패", {replace: true});
+                    navigate("/payment/fail?code=CONFIRM_FAILED");
                     return;
                 }
 
@@ -51,7 +47,7 @@ export function Success() {
         }
 
         confirm();
-    }, [navigate, searchParams]);
+    }, [navigate, orderId, amount, paymentKey]);
 
     return (
         <div className="result-wrapper">
@@ -60,10 +56,10 @@ export function Success() {
 
                 <div className="result-info">
                     <p><strong>주문번호</strong></p>
-                    <p>{searchParams.get("orderId")}</p>
+                    <p>{orderId}</p>
 
                     <p style={{marginTop: 12}}><strong>결제 금액</strong></p>
-                    <p>{Number(searchParams.get("amount")).toLocaleString()}원</p>
+                    <p>{amount.toLocaleString()}원</p>
                 </div>
 
                 <button className="btn primary" onClick={() => navigate("/reservation/list")}>
