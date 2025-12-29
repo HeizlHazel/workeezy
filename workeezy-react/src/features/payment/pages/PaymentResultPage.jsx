@@ -12,7 +12,6 @@ export default function PaymentResultPage() {
     const orderId = params.get("orderId");
     const amount = Number(params.get("amount"));
 
-
     console.log({orderId, paymentKey, amount});
 
     return (
