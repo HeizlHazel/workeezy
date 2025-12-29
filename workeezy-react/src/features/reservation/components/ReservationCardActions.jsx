@@ -113,6 +113,7 @@ export default function ReservationCardActions({ reservation }) {
           결제하기
         </button>
       )}
+      {policy.showReview && <button>리뷰작성</button>}
     </>
   );
 }
