@@ -59,3 +59,6 @@ cloud:
       bucket: workeezy
       auto: false
 
+draft:
+  max-count: 5
+  ttl-days: 14

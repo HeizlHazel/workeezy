@@ -1,5 +1,6 @@
 package com.together.workeezy.draft.repository;
 
+import com.together.workeezy.draft.config.DraftProperties;
 import com.together.workeezy.draft.domain.DraftId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,11 +21,12 @@ public class RedisDraftRepository implements DraftRepository {
 
     private final @Qualifier("draftRedisTemplate")
     RedisTemplate<String, Object> draftRedisTemplate;
+    private final DraftProperties draftProperties;
 
     @Override
     public DraftId save(Long userId, Map<String, Object> dataWithSavedAt) {
         String key = DRAFT_PREFIX + userId + ":" + System.currentTimeMillis();
-        draftRedisTemplate.opsForValue().set(key, dataWithSavedAt, 14, TimeUnit.DAYS);
+        draftRedisTemplate.opsForValue().set(key, dataWithSavedAt, draftProperties.getTtlDays(), TimeUnit.DAYS);
         return DraftId.of(key);
     }
 
@@ -60,6 +62,12 @@ public class RedisDraftRepository implements DraftRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // 최신순 정렬
+        results.sort((a, b) -> {
+            long ta = extractTimestamp((String) a.get("key"));
+            long tb = extractTimestamp((String) b.get("key"));
+            return Long.compare(tb, ta);
+        });
 
         return results;
     }
@@ -76,5 +84,11 @@ public class RedisDraftRepository implements DraftRepository {
     @Override
     public void delete(DraftId key) {
         draftRedisTemplate.delete(key.value());
+    }
+
+    private long extractTimestamp(String key) {
+        // draft:{userId}:{timestamp}
+        String[] parts = key.split(":");
+        return Long.parseLong(parts[2]);
     }
 }
