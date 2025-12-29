@@ -16,8 +16,10 @@ export default function PaymentResultPage() {
         content = <Fail/>;
     } else if (paymentKey && orderId && amount) {
         content = <Success/>;
+    } else {
+        content = <Fail/>;
     }
-    console.log({ orderId, paymentKey, amount });
+    console.log({orderId, paymentKey, amount});
 
     return <PageLayout>{content}</PageLayout>;
 }
