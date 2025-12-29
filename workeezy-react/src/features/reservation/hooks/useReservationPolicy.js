@@ -1,8 +1,10 @@
 export function useReservationPolicy(reservation) {
-  const { status, startDate } = reservation;
+  const { status, startDate, endDate } = reservation;
 
   const today = new Date();
+
   const start = new Date(startDate);
+  const end = new Date(endDate);
 
   const normalize = (d) => {
     const x = new Date(d);
@@ -18,7 +20,8 @@ export function useReservationPolicy(reservation) {
   const isApproved = status === "approved";
   const isConfirmed = status === "confirmed";
   const isRejected = status === "rejected";
-
+  const isAfterCheckout = today >= end;
+  console.log("endDate:", endDate);
   return {
     diffDays,
 
@@ -51,5 +54,6 @@ export function useReservationPolicy(reservation) {
     showConfirmDoc: isConfirmed,
     showPaymentWidget: isApproved,
     showPayment: isConfirmed,
+    showReview: isConfirmed && isAfterCheckout,
   };
 }
