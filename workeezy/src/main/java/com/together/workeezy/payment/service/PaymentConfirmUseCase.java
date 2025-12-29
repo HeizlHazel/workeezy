@@ -58,7 +58,6 @@ public class PaymentConfirmUseCase {
         if (payment == null) {
             log.info("🔥 creating payment");
             payment = Payment.create(reservation, cmd.amount());
-            reservation.linkPayment(payment);
 //            paymentRepository.save(payment);
         }
 

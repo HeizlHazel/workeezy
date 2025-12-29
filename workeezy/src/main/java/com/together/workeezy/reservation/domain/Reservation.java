@@ -98,7 +98,7 @@ public class Reservation {
     @Column(name="confirm_pdf_key")
     private String confirmPdfKey;
 
-    @OneToOne(mappedBy = "reservation",  fetch = LAZY)
+    @OneToOne(mappedBy = "reservation",  fetch = LAZY, cascade = CascadeType.PERSIST)
     private Payment payment;
 
     @OneToMany(mappedBy = "reservation")

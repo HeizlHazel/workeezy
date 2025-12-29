@@ -73,7 +73,9 @@ public class Payment {
 
     // 결제 생성
     public static Payment create(Reservation reservation, Long amount) {
-        return new Payment(reservation, amount);
+        Payment payment = new Payment(reservation, amount);
+        reservation.linkPayment(payment);
+        return payment;
     }
 
     // 결제 승인
