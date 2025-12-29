@@ -14,7 +14,7 @@ export default function ReservationStatusButton({ status }) {
       break;
 
     case "approved":
-      label = "결제대기";
+      label = "승인완료";
       icon = "/reservationStatusIcons/approved.svg";
       className += " approved";
       break;
