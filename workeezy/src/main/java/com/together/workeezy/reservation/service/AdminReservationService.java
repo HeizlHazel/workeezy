@@ -108,7 +108,6 @@ public class AdminReservationService {
 //    }
 
     // 예약 상세 조회
-    @Transactional(readOnly = true)
     public AdminReservationDetailDto getReservationDetail(Long reservationId) {
 
         return reservationRepository
@@ -119,24 +118,28 @@ public class AdminReservationService {
     }
 
     // 예약 승인 (waiting_payment → approved)
+    @Transactional
     public void approveReservation(Long reservationId) {
         Reservation reservation = getReservation(reservationId);
         reservation.approve();
     }
 
     // 예약 반려 (waiting_payment → rejected)
+    @Transactional
     public void rejectReservation(Long reservationId, String reason) {
         Reservation reservation = getReservation(reservationId);
         reservation.reject(reason);
     }
 
     // 취소승인 (cancel_requested → cancelled)
+    @Transactional
     public void approveCancel(Long reservationId) {
         Reservation reservation = getReservation(reservationId);
         reservation.approveCancel();
     }
 
     // 취소 반려 (cancel_requested → confirmed)
+    @Transactional
     public void rejectCancel(Long reservationId, String reason) {
         Reservation reservation = getReservation(reservationId);
         reservation.rejectCancel(reason);
