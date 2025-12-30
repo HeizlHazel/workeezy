@@ -8,6 +8,8 @@ export default function ProgramImages() {
 
     const fixedMain = fixPath(mainImage);
     const fixedSubs = (subImages ?? []).map(fixPath);
+    console.log("detail raw/fixed", mainImage, fixPath(mainImage));
+    console.log("detail mainImage raw:", mainImage);
 
     return (
         <div className="pd-images">
