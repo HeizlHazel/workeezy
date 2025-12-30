@@ -7,6 +7,8 @@ import ReviewModal from "../../../review/components/ReviewModal.jsx";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {toast} from "../../../../shared/alert/workeezyAlert.js";
+import Swal from "sweetalert2";
 
 export default function ReservationCard({ data, isSelected, onSelect }) {
     const navigate = useNavigate();
@@ -34,6 +36,14 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
     const images = [placePhoto1, placePhoto2, placePhoto3]
         .filter(Boolean)
         .map(fixPath);
+
+    const toast = Swal.mixin({
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+    });
 
     return (
         <>
@@ -115,9 +125,18 @@ export default function ReservationCard({ data, isSelected, onSelect }) {
             <ReviewModal
                 open={reviewOpen}
                 onClose={() => setReviewOpen(false)}
-                programId={programId}
+                programId={data.programId}
                 onSubmitted={() => {
+                    // 1) 모달 먼저 닫기
                     setReviewOpen(false);
+
+                    // 2) 토스트 띄우기(확인 버튼 없음)
+                    toast.fire({
+                        icon: "success",
+                        title: "리뷰 등록 완료! 😊",
+                    });
+
+                    // 3) 바로 이동 (토스트는 이동해도 3초 떠있음)
                     navigate("/reviews");
                 }}
             />
