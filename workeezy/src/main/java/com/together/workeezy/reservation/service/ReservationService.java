@@ -1,5 +1,7 @@
 package com.together.workeezy.reservation.service;
 
+import com.together.workeezy.common.exception.CustomException;
+import com.together.workeezy.common.exception.ErrorCode;
 import com.together.workeezy.draft.service.DraftApplicationService;
 import com.together.workeezy.program.program.domain.model.entity.PlaceType;
 import com.together.workeezy.program.program.domain.model.entity.Program;
@@ -10,6 +12,7 @@ import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
+import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.repository.ReservationRepository;
 import com.together.workeezy.search.domain.model.repository.RoomRepository;
 import com.together.workeezy.user.entity.User;
@@ -29,6 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import com.together.workeezy.program.program.domain.model.entity.Place;
+
+import static com.together.workeezy.reservation.enums.ReservationStatus.waiting_payment;
 
 @Service
 @RequiredArgsConstructor
@@ -194,7 +199,9 @@ public class ReservationService {
             String email,
             LocalDateTime cursorDate,
             Long cursorId,
-            int size
+            int size,
+            String keyword,
+            ReservationStatus status
     ) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
@@ -206,6 +213,8 @@ public class ReservationService {
                         user.getId(),
                         cursorDate,
                         cursorId,
+                        keyword,
+                        status,
                         pageable
                 );
 
@@ -241,6 +250,23 @@ public class ReservationService {
 
         // 도메인 행위 호출
         reservation.update(
+                dto.getStartDate(),
+                dto.getEndDate(),
+                dto.getPeopleCount(),
+                room
+        );
+
+    }
+
+    // 예약 재신청
+    @Transactional
+    public void resubmitReservation(Long id, String email, ReservationUpdateDto dto) {
+        Reservation reservation = getMyReservationOrThrow(id, email);
+
+        Room room = getValidRoom(dto.getRoomId(), reservation.getProgram());
+
+        // 도메인 행위 호출
+        reservation.resubmit(
                 dto.getStartDate(),
                 dto.getEndDate(),
                 dto.getPeopleCount(),
@@ -305,4 +331,23 @@ public class ReservationService {
         return room;
     }
 
+    // 최대 예약 개수
+    public void validateReservationCreate(Long userId){
+        int waiting = reservationRepository.countByUserAndStatus(User.reference(userId), waiting_payment);
+        int approved = reservationRepository.countByUserAndStatus(User.reference(userId), ReservationStatus.approved);
+        int confirmed = reservationRepository.countByUserAndStatus(User.reference(userId), ReservationStatus.confirmed);
+
+        if (waiting >= 5)
+            throw new CustomException(ErrorCode.RESERVATION_WAITING_LIMIT_EXCEEDED);
+
+        if (approved >= 3)
+            throw new CustomException(ErrorCode.RESERVATION_APPROVED_LIMIT_EXCEEDED);
+
+        if (confirmed >= 3)
+            throw new CustomException(ErrorCode.RESERVATION_CONFIRMED_LIMIT_EXCEEDED);
+
+        if (waiting + approved + confirmed >= 8)
+            throw new CustomException(ErrorCode.RESERVATION_TOTAL_LIMIT_EXCEEDED);
+
+    }
 }

@@ -3,6 +3,7 @@ package com.together.workeezy.program.review.interfaces;
 import com.together.workeezy.program.review.interfaces.dto.ReviewCreateRequest;
 import com.together.workeezy.program.review.interfaces.dto.ReviewDto;
 import com.together.workeezy.program.review.application.service.ReviewService;
+import com.together.workeezy.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,8 +28,7 @@ public class ReviewController {
             @RequestBody ReviewCreateRequest dto,
             Authentication authentication
     ) {
-        String email = authentication.getName();
-        reviewService.createReview(dto, email);
+
 
         return ResponseEntity.ok("리뷰 등록 완료");
     }

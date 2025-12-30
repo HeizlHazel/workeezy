@@ -47,8 +47,6 @@ toss:
 
 cloud:
   aws:
-    s3:
-      bucket: workeezy
     credentials:
       access-key: ${IAM_ACCESS}
       secret-key: ${IAM_SECRET}
@@ -57,3 +55,10 @@ cloud:
       auto: false
     stack:
       auto: false
+    s3:
+      bucket: workeezy
+      auto: false
+
+draft:
+  max-count: 5
+  ttl-days: 14

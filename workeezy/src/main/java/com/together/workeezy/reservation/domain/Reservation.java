@@ -64,11 +64,11 @@ public class Reservation {
     private String reservationNo;
 
     @NotNull
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME(6)")
     private LocalDateTime startDate;
 
     @NotNull
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date", nullable = false, columnDefinition = "DATETIME(6)")
     private LocalDateTime endDate;
 
     @NotNull
@@ -95,7 +95,10 @@ public class Reservation {
     @Column(name = "people_count", nullable = false)
     private int peopleCount;
 
-    @OneToOne(mappedBy = "reservation",  fetch = LAZY)
+    @Column(name="confirm_pdf_key")
+    private String confirmPdfKey;
+
+    @OneToOne(mappedBy = "reservation",  fetch = LAZY, cascade = CascadeType.PERSIST)
     private Payment payment;
 
     @OneToMany(mappedBy = "reservation")
@@ -120,6 +123,13 @@ public class Reservation {
     public void validateUpdatable() {
         if (!this.status.canUpdate()) {
             throw new IllegalStateException("해당 상태에서는 수정 불가");
+        }
+    }
+
+    // 수정 요청 가능 상태 검증
+    public void validateRequestResubmit(){
+        if(!this.status.canRequestResubmit()){
+            throw new IllegalStateException("반려된 예약만 재신청이 가능합니다.");
         }
     }
 
@@ -211,6 +221,27 @@ public class Reservation {
         recalculateTotalPrice(); // 파생 값 계산
     }
 
+    // 예약 재신청
+     public void resubmit(LocalDateTime startDate,
+                          LocalDateTime endDate,
+                          int peopleCount,
+                          Room room){
+        validateRequestResubmit();
+        validateDate(startDate, endDate);
+
+         this.startDate = startDate;
+         this.endDate = endDate;
+         this.peopleCount = peopleCount;
+         this.room = room;
+         this.stay = room.getPlace();
+
+         recalculateTotalPrice();
+
+         this.status = ReservationStatus.waiting_payment;
+     }
+
+     // todo: 추후 업데이트 공통 메서드로 추출
+
     // ***** 예약 취소 *****
     public void cancel() {
         // 남은 날짜
@@ -234,6 +265,11 @@ public class Reservation {
         if (this.payment == null) {
             this.payment = payment;
         }
+    }
+
+    // 관리자 승인 후에만 결제 가능
+    public boolean isPayable() {
+        return this.status == ReservationStatus.approved;
     }
 
     // ==================================== 관리자 행위 =================================
@@ -272,5 +308,25 @@ public class Reservation {
         this.status = ReservationStatus.confirmed;
         this.rejectReason = reason;
     }
+
+    // 예약 확정서 생성 기준
+    public void ensureConfirmed() {
+        if (this.status != ReservationStatus.confirmed) {
+            throw new IllegalStateException("확정된 예약만 확정서를 생성/조회할 수 있습니다.");
+        }
+    }
+
+    // 예약 확정서 존재 여부
+    public void ensureHasConfirmPdf() {
+        if (this.confirmPdfKey == null || this.confirmPdfKey.isBlank()) {
+            throw new IllegalStateException("확정서 PDF가 아직 생성되지 않았습니다.");
+        }
+    }
+
+    // 예약 확정서 key 업데이트
+    public void updateConfirmPdfKey(String key) {
+        this.confirmPdfKey = key;
+    }
+
 
 }

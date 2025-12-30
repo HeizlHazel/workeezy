@@ -28,10 +28,16 @@ public enum ReservationStatus {
         return false;
     }
 
+    // 취소 가능 날짜
     public void validateCancelable(int diffDays) {
         if (!canDirectCancel(diffDays)) {
             throw new IllegalStateException("취소할 수 없습니다.");
         }
+    }
+
+    // 예약 변경 요청 가능 여부
+    public boolean canRequestResubmit( ){
+        return this == rejected;
     }
 
 }

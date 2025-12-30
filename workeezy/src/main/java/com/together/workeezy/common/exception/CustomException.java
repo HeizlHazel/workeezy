@@ -1,6 +1,8 @@
 package com.together.workeezy.common.exception;
 
-public class CustomException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+
+public class CustomException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
@@ -11,5 +13,9 @@ public class CustomException extends RuntimeException{
 
     public ErrorCode getErrorCode() {
         return errorCode;
+    }
+
+    public HttpStatus getStatus() {
+        return errorCode.getStatus();
     }
 }

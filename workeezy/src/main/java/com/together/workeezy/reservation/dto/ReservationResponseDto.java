@@ -27,7 +27,7 @@ public class ReservationResponseDto {
     private String programTitle;       // 워케이션 프로그램명
     private long programId;
     private String stayName;           // 숙소명
-    private String officeName;         // 오피스명 (null 가능)
+    private String officeName;
     private Long roomId;
     private RoomType roomType;           // 룸타입
 

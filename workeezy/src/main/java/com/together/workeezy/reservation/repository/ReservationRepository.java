@@ -5,6 +5,7 @@ import com.together.workeezy.reservation.enums.ReservationStatus;
 import com.together.workeezy.reservation.dto.AdminReservationDetailDto;
 import com.together.workeezy.reservation.dto.AdminReservationListDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
+import com.together.workeezy.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -59,6 +60,16 @@ join r.stay s
 join r.office o
 join r.room r2
 where r.user.id = :userId
+and (
+    :keyword is null
+    or p.title like concat('%', :keyword, '%')
+)
+
+and (
+    :status is null
+    or r.status = :status
+)
+
   and (
         :cursorDate is null
         or r.createdDate < :cursorDate
@@ -70,6 +81,8 @@ order by r.createdDate desc, r.id desc
             Long userId,
             LocalDateTime cursorDate,
             Long cursorId,
+            String keyword,
+            ReservationStatus status,
             Pageable pageable
     );
 
@@ -173,6 +186,13 @@ where r.id = :reservationId
     Optional<AdminReservationDetailDto> findAdminReservationDetailDto(
             @Param("reservationId") Long reservationId
     );
+
+    // 결제 시 예약 검증
+    Optional<Reservation> findByIdAndUserId(Long reservationId, Long userId);
+
+    Optional<Reservation> findByReservationNo(String s);
+
+    int countByUserAndStatus(User user, ReservationStatus status);
 
     // 관리자 - 예약 상세 조회
 //    @Query("""
