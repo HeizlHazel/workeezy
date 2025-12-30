@@ -17,6 +17,8 @@ export default function ReservationForm({
   // 초기 데이터 객체 구조 분해 할당
   const { programId, roomId, checkIn, checkOut } = initialData || {};
   const isEdit = mode === "edit";
+  const isResubmit = mode === "resubmit";
+  const isCreate = mode === "create";
   const navigate = useNavigate();
   const location = useLocation();
   const { draftKey } = location.state || {};
@@ -192,14 +194,25 @@ export default function ReservationForm({
     e.preventDefault();
 
     try {
-      if (initialData?.id) {
+      if (mode === "edit") {
         await axios.put(`/api/reservations/${initialData.id}`, {
           startDate: toLocalDateTimeString(form.startDate),
           endDate: toLocalDateTimeString(form.endDate),
           roomId: Number(form.roomId),
           peopleCount: form.peopleCount,
         });
-      } else {
+      }
+
+      if (mode === "resubmit") {
+        await axios.post(`/api/reservations/${initialData.id}/resubmit`, {
+          startDate: toLocalDateTimeString(form.startDate),
+          endDate: toLocalDateTimeString(form.endDate),
+          roomId: Number(form.roomId),
+          peopleCount: form.peopleCount,
+        });
+      }
+
+      if (mode === "create") {
         await axios.post("/api/reservations", {
           ...form,
           startDate: toLocalDateTimeString(form.startDate),
@@ -209,16 +222,17 @@ export default function ReservationForm({
           draftKey,
         });
       }
-      const isEdit = Boolean(initialData?.id);
 
       await Swal.fire({
         icon: "success",
-        title: isEdit ? "예약 수정 완료 ✏️" : "예약 신청 완료 🎉",
-        text: isEdit
-          ? "예약 정보가 성공적으로 수정되었습니다."
-          : "예약이 성공적으로 신청되었습니다.",
-        confirmButtonText: "확인",
+        title:
+          mode === "edit"
+            ? "예약 수정 완료"
+            : mode === "resubmit"
+            ? "재신청 완료"
+            : "예약 신청 완료",
       });
+
       navigate("/reservation/list");
     } catch (err) {
       console.error(err);
@@ -267,12 +281,12 @@ export default function ReservationForm({
           onChange={handleChange}
         />
         <ReservationFormActions
-          isEdit={isEdit}
+          mode={mode}
           onOpenDraft={() => setIsDraftMenuOpen((p) => !p)}
         />
       </form>
 
-      {!isEdit && isDraftMenuOpen && (
+      {isCreate && isDraftMenuOpen && (
         <DraftMenuBar
           form={form} // 임시저장 데이터
           isOpen={isDraftMenuOpen} // 열림-닫힘 상태
