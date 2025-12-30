@@ -43,9 +43,6 @@ public class PaymentConfirmUseCase {
         log.info("🔥 reservation found id={}, no={}, status={}",
                 reservation.getId(), reservation.getReservationNo(), reservation.getStatus());
 
-        // 예약 소유자 검증
-        paymentValidator.validateReservationOwner(reservation, cmd.userEmail());
-
         // orderId (= reservation_no) 검증
         paymentValidator.validateOrderId(reservation, cmd.orderId());
 
