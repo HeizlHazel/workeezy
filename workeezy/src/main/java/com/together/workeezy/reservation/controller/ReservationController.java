@@ -2,6 +2,7 @@ package com.together.workeezy.reservation.controller;
 
 import com.together.workeezy.auth.security.user.CustomUserDetails;
 import com.together.workeezy.reservation.dto.ReservationCreateDto;
+import com.together.workeezy.reservation.dto.ReservationRequestDto;
 import com.together.workeezy.reservation.dto.ReservationResponseDto;
 import com.together.workeezy.reservation.dto.ReservationUpdateDto;
 import com.together.workeezy.reservation.enums.ReservationStatus;
@@ -82,6 +83,7 @@ public class ReservationController {
 //        }
 //    }
 
+    // 사용자 예약 조회
     @GetMapping("/me")
     public ResponseEntity<?> getMyReservations(
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime cursorDate,
@@ -138,6 +140,18 @@ public class ReservationController {
 
         reservationService.updateMyReservation(id, dto, email);
         return ResponseEntity.ok("예약 수정 성공");
+    }
+
+    // * 예약 재신청 *
+    @PostMapping("/{id}/resubmit")
+    public ResponseEntity<?> resubmitReservation(
+            @PathVariable Long id,
+            @RequestBody ReservationUpdateDto dto,
+            Authentication authentication
+    ){
+        String email = authentication.getName();
+        reservationService.resubmitReservation(id, email,dto);
+        return ResponseEntity.ok("예약 재신청 완료");
     }
 
     // * 예약 취소 *

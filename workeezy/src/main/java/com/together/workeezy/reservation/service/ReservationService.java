@@ -258,6 +258,23 @@ public class ReservationService {
 
     }
 
+    // 예약 재신청
+    @Transactional
+    public void resubmitReservation(Long id, String email, ReservationUpdateDto dto) {
+        Reservation reservation = getMyReservationOrThrow(id, email);
+
+        Room room = getValidRoom(dto.getRoomId(), reservation.getProgram());
+
+        // 도메인 행위 호출
+        reservation.resubmit(
+                dto.getStartDate(),
+                dto.getEndDate(),
+                dto.getPeopleCount(),
+                room
+        );
+
+    }
+
     // 예약 취소
     @Transactional
     public void cancelMyReservation(Long id, String email) {
@@ -333,5 +350,4 @@ public class ReservationService {
             throw new CustomException(ErrorCode.RESERVATION_TOTAL_LIMIT_EXCEEDED);
 
     }
-
 }

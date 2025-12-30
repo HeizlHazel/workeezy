@@ -126,6 +126,13 @@ public class Reservation {
         }
     }
 
+    // 수정 요청 가능 상태 검증
+    public void validateRequestResubmit(){
+        if(!this.status.canRequestResubmit()){
+            throw new IllegalStateException("반려된 예약만 재신청이 가능합니다.");
+        }
+    }
+
     // 예약 생성 + 수정 시 공통 규칙
     // 시작일 - 종료일
     public static void validateDate(LocalDateTime start, LocalDateTime end) {
@@ -213,6 +220,27 @@ public class Reservation {
 
         recalculateTotalPrice(); // 파생 값 계산
     }
+
+    // 예약 재신청
+     public void resubmit(LocalDateTime startDate,
+                          LocalDateTime endDate,
+                          int peopleCount,
+                          Room room){
+        validateRequestResubmit();
+        validateDate(startDate, endDate);
+
+         this.startDate = startDate;
+         this.endDate = endDate;
+         this.peopleCount = peopleCount;
+         this.room = room;
+         this.stay = room.getPlace();
+
+         recalculateTotalPrice();
+
+         this.status = ReservationStatus.waiting_payment;
+     }
+
+     // todo: 추후 업데이트 공통 메서드로 추출
 
     // ***** 예약 취소 *****
     public void cancel() {
