@@ -6,6 +6,7 @@ import com.together.workeezy.payment.dto.response.PaymentConfirmResponse;
 import com.together.workeezy.payment.dto.response.TossConfirmResponse;
 import com.together.workeezy.payment.entity.Payment;
 import com.together.workeezy.payment.enums.PaymentMethod;
+import com.together.workeezy.payment.enums.PaymentStatus;
 import com.together.workeezy.payment.repository.PaymentRepository;
 import com.together.workeezy.reservation.domain.Reservation;
 import com.together.workeezy.reservation.enums.ReservationStatus;
@@ -55,6 +56,15 @@ public class PaymentConfirmUseCase {
         }
 
         Payment payment = reservation.getPayment();
+
+        // 멱등성 처리 @@버튼 여러 번 눌러도 한 번만 처리@@
+        // 같은 요청을 여러 번 보내도
+        // 결과가 한 번 보낸 것과 완전히 동일해야하는 성질
+        if (payment != null && payment.getStatus() == PaymentStatus.paid) {
+            log.info("🔥 이미 결제 완료된 요청 - orderId={}, paymentId={}",
+                    payment.getOrderId(), payment.getId());
+            return PaymentConfirmResponse.of(payment, reservation);
+        }
 
         if (payment == null) {
             log.info("🔥 creating payment");
