@@ -43,6 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // 결제 confirm은 JWT 필터 완전 스킵
+        if (request.getRequestURI().startsWith("/api/payments/confirm")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             System.out.println("🟢 OPTIONS 요청 통과");
             filterChain.doFilter(request, response);
