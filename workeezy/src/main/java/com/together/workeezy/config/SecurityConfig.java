@@ -77,6 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/me").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/payments/confirm").permitAll()
                         .requestMatchers("/api/payments/**").authenticated()
 
                         // 관리자 전용
