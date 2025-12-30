@@ -51,7 +51,7 @@ cloud:
       bucket: workeezy
     credentials:
       access-key: ${IAM_ACCESS}
-      secret-key: ${IAM_SECRETE}
+      secret-key: ${IAM_SECRET}
     region:
       static: ap-northeast-2
       auto: false
