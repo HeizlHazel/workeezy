@@ -68,8 +68,6 @@ public class SecurityConfig {
 
                         // Programs / Reviews (공개 범위)
                         .requestMatchers("/api/programs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/reviews", "/api/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
 
                         // Search / Recommend
                         .requestMatchers("/api/search/**").authenticated()
