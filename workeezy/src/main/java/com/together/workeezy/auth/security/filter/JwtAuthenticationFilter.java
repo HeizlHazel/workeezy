@@ -43,23 +43,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+        System.out.println("📌 JwtFilter 요청 경로: " + requestURI);
+
         // 결제 confirm은 JWT 필터 완전 스킵
         if (request.getRequestURI().startsWith("/api/payments/confirm")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            System.out.println("🟢 OPTIONS 요청 통과");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String requestURI = request.getRequestURI();
-        System.out.println("📌 JwtFilter 요청 경로: " + requestURI);
-
         // OPTIONS 요청은 항상 허용 (CORS Preflight)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            System.out.println("🟢 OPTIONS 요청 통과");
             filterChain.doFilter(request, response);
             return;
         }
