@@ -12,7 +12,7 @@ import ReviewPage from "./features/review/pages/ReviewPage.jsx";
 import SearchPage from "./features/search/pages/SearchPage.jsx";
 
 import NewReservationPage from "./features/reservation/pages/NewReservationPage.jsx";
-import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
+// import ModifyReservationPage from "./features/reservation/pages/ModifyReservationPage.jsx";
 import LikesPage from "./features/profile/pages/LikesPage.jsx";
 import AdminReservationPage from "./features/reservation/pages/AdminReservationPage.jsx";
 import ReservationListPage from "./features/reservation/pages/ReservationListPage.jsx";
@@ -27,7 +27,7 @@ import PaymentResultPage from "./features/payment/pages/PaymentResultPage.jsx";
 import AdminRoute from "./shared/route/AdminRoute.jsx";
 import DraftReservationPage from "./features/reservation/pages/DraftReservationPage.jsx";
 import ReservationConfirmPage from "./features/reservation/pages/ReservationConfirmPage.jsx";
-
+import ResubmitReservationPage from "./features/reservation/pages/ResubmitReservationPage.jsx";
 export default function App() {
   if (window.Kakao && !window.Kakao.isInitialized()) {
     window.Kakao.init("b915b18542b9776646e5434c83e959c9");
@@ -68,7 +68,11 @@ export default function App() {
       <Route path="/reservation/list" element={<ReservationListPage />} />
       <Route path="/reservation/new" element={<NewReservationPage />} />
       <Route path="/reservation/edit/:id" element={<EditReservationPage />} />
-      <Route path="/modifyreservation" element={<ModifyReservationPage />} />
+      <Route
+        path="/reservation/resubmit/:id"
+        element={<ResubmitReservationPage />}
+      ></Route>
+      {/* <Route path="/modifyreservation" element={<ModifyReservationPage />} /> */}
 
       <Route
         path="/admin/reservations"

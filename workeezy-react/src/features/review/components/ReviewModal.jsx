@@ -1,5 +1,5 @@
 import "./ReviewModal.css";
-import ReviewInput from "../../program/components/ReviewInput.jsx"; // 경로 맞춰!
+import ReviewInput from "./ReviewInput.jsx";
 
 export default function ReviewModal({ open, onClose, programId, onSubmitted }) {
     if (!open) return null;

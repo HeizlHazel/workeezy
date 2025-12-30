@@ -14,10 +14,10 @@ export function Success() {
         calledRef.current = true;
 
         // 개발 환경에서는 confirm 생략
-        if (import.meta.env.DEV) {
-            console.log("DEV MODE - confirm 생략");
-            return;
-        }
+        // if (import.meta.env.DEV) {
+        //     console.log("DEV MODE - confirm 생략");
+        //     return;
+        // }
 
         const requestData = {
             orderId: searchParams.get("orderId"),
@@ -44,7 +44,6 @@ export function Success() {
 
                 await response.json();
 
-                navigate("/reservation/list", {replace: true});
             } catch {
                 navigate("/payment/fail?code=NETWORK_ERROR&message=네트워크 오류");
             }
@@ -56,7 +55,8 @@ export function Success() {
     return (
         <div className="result-wrapper">
             <div className="result-box success">
-                <h2 className="result-title">결제가 완료되었어요</h2>
+                <div className="success-icon">✓</div>
+                <h2 className="result-title"> 결제가 완료되었어요</h2>
 
                 <div className="result-info">
                     <p><strong>주문번호</strong></p>
@@ -68,10 +68,6 @@ export function Success() {
 
                 <button className="btn primary" onClick={() => navigate("/reservation/list")}>
                     예약 현황 조회
-                </button>
-
-                <button className="btn secondary" onClick={() => navigate("/")}>
-                    홈으로 이동
                 </button>
             </div>
         </div>

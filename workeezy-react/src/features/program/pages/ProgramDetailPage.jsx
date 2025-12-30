@@ -1,5 +1,4 @@
 import PageLayout from "../../../layout/PageLayout.jsx";
-import FloatingButtons from "../../../shared/common/FloatingButtons.jsx";
 
 import { ProgramDetailProvider, useProgramDetail } from "../context/ProgramDetailContext.jsx";
 
@@ -13,7 +12,6 @@ import HotelInfo from "../components/details/HotelInfo.jsx";
 import RoomList from "../components/details/RoomList.jsx";
 import OfficeList from "../components/details/OfficeList.jsx";
 import ActivityInfo from "../components/details/ActivityInfo.jsx";
-import ReviewInput from "../components/ReviewInput.jsx";
 
 function ProgramDetailBody() {
     const { loading, error } = useProgramDetail();

@@ -1,25 +1,17 @@
-import PageLayout from "../../../layout/PageLayout.jsx";
-import ReservationForm from "../components/User/ReservationForm.jsx";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "../../../api/axios.js";
+import axios from "axios";
+import PageLayout from "../../../layout/PageLayout";
+import ReservationForm from "../components/User/ReservationForm.jsx";
 
-export default function EditReservationPage() {
+export default function ResubmitReservationPage() {
   const { id } = useParams();
   const [data, setData] = useState(null);
-
   useEffect(() => {
     const fetch = async () => {
-      // 예약 시점에 저장된 데이터
       const res = await axios.get(`/api/reservations/${id}`);
       const reservation = res.data;
-      // console.log("===== reservation raw =====");
-      // console.log(reservation);
-      // console.log("reservation.roomId =", reservation.roomId);
-      // console.log("reservation.room =", reservation.room);
-      // console.log("===========================");
 
-      // 현재 시점의 프로그램 상태
       const programRes = await axios.get(
         `/api/programs/${reservation.programId}`
       );
@@ -37,10 +29,9 @@ export default function EditReservationPage() {
   }, [id]);
 
   if (!data) return <div>로딩중...</div>;
-
   return (
     <PageLayout>
-      <ReservationForm mode="edit" initialData={data} rooms={data.rooms} />
+      <ReservationForm mode="resubmit" initialData={data} rooms={data.rooms} />
     </PageLayout>
   );
 }

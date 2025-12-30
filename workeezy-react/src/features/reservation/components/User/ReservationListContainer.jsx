@@ -7,6 +7,9 @@ export default function ReservationListContainer({
   selectedId,
   setSelectedId,
 }) {
+  const [keyword, setKeyword] = useState("");
+  const [status, setStatus] = useState("");
+
   const [reservations, setReservations] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasNext, setHasNext] = useState(true);
@@ -26,12 +29,15 @@ export default function ReservationListContainer({
           cursorDate: cursor?.createdDate,
           cursorId: cursor?.id,
           size: 10,
+          keyword: keyword || null,
+          status: status || null,
         },
       });
 
       const { content, last } = res.data;
 
       setReservations((prev) => {
+        if (!cursor) return content; // 검색 시 초기화
         const existing = new Set(prev.map((v) => v.id));
         return [...prev, ...content.filter((v) => !existing.has(v.id))];
       });
@@ -57,6 +63,14 @@ export default function ReservationListContainer({
   useEffect(() => {
     fetchMyReservations();
   }, []);
+
+  // 검색 조건 바뀌면 목록 초기화
+  useEffect(() => {
+    setReservations([]);
+    setCursor(null);
+    setHasNext(true);
+    fetchMyReservations();
+  }, [keyword, status]);
 
   // IntersectionObserver
   useEffect(() => {
@@ -88,6 +102,10 @@ export default function ReservationListContainer({
         reservations={reservations}
         selectedId={selectedId}
         setSelectedId={setSelectedId}
+        keyword={keyword}
+        setKeyword={setKeyword}
+        status={status}
+        setStatus={setStatus}
       />
 
       {/* 로딩 트리거 */}

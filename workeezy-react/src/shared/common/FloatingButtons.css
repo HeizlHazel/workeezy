@@ -14,12 +14,12 @@
     height: 48px;
     border-radius: 50%;
     border: none;
-    background: #6a8250;
+    background: rgb(8, 73, 0);
     color: #fff;
 }
 
 .floating-btns button:hover {
-    background: #6a8250;
+    background: rgba(8, 73, 0, 0.74);
     color: #fff;
     cursor: pointer;
 }

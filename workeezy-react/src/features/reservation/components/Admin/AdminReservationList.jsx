@@ -50,9 +50,9 @@ export default function AdminReservationList() {
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
           <option value="">예약 상태</option>
-          <option value="waiting_payment">결제 대기</option>
-          <option value="rejected">승인 거절</option>
+          <option value="waiting_payment">예약 신청</option>
           <option value="approved">승인 완료</option>
+          <option value="rejected">승인 거절</option>
           <option value="confirmed">예약 확정</option>
           <option value="cancel_requested">취소 요청</option>
           <option value="cancelled">취소 완료</option>

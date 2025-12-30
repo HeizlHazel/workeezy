@@ -6,12 +6,12 @@ export default function AuthProvider({children}) {
     const auth = useAuth(); // 여기서 단 1번만 실행
 
     useEffect(() => {
-        console.log("🟣 AuthProvider MOUNT");
-        return () => console.log("⚫ AuthProvider UNMOUNT");
+        console.log("AuthProvider MOUNT");
+        return () => console.log("AuthProvider UNMOUNT");
     }, []);
 
     useEffect(() => {
-        console.log("🟣 AuthProvider user:", auth.user);
+        console.log("AuthProvider user:", auth.user);
     }, [auth.user]);
 
     return (
