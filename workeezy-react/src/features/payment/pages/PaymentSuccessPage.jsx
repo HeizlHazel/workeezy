@@ -1,31 +1,27 @@
-import "./Result.css";
+import "../components/Result.css";
 import {useEffect, useRef} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
-export function Success() {
+export default function PaymentSuccessPage() {
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const [params] = useSearchParams();
+
+    const orderId = params.get("orderId");
+    const paymentKey = params.get("paymentKey");
+    const amount = Number(params.get("amount"));
 
     const calledRef = useRef(false);
 
     useEffect(() => {
+
+        if (!orderId || !paymentKey || !amount) {
+            navigate("/payment/fail?code=INVALID_RESULT_PARAMS", {replace: true});
+            return;
+        }
+
         // StrictMode / 재마운트 방지
         if (calledRef.current) return;
         calledRef.current = true;
-
-        // 개발 환경에서는 confirm 생략
-        // if (import.meta.env.DEV) {
-        //     console.log("DEV MODE - confirm 생략");
-        //     return;
-        // }
-
-        const requestData = {
-            orderId: searchParams.get("orderId"),
-            amount: Number(searchParams.get("amount")),
-            paymentKey: searchParams.get("paymentKey"),
-        };
-
-        console.log("🔥 confirm payload", requestData);
 
         async function confirm() {
             try {
@@ -33,24 +29,23 @@ export function Success() {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     credentials: "include",
-                    body: JSON.stringify(requestData),
+                    body: JSON.stringify({orderId, amount, paymentKey}),
                 });
 
                 if (!response.ok) {
-                    console.error("confirm 실패");
-                    navigate("/payment/fail?code=CONFIRM_FAIL&message=결제 승인 실패", {replace: true});
+                    navigate("/payment/result/fail?code=CONFIRM_FAILED", {replace: true});
                     return;
                 }
 
                 await response.json();
 
             } catch {
-                navigate("/payment/fail?code=NETWORK_ERROR&message=네트워크 오류");
+                navigate("/payment/result/fail?code=NETWORK_ERROR", {replace: true});
             }
         }
 
         confirm();
-    }, [navigate, searchParams]);
+    }, [orderId, paymentKey, amount, navigate]);
 
     return (
         <div className="result-wrapper">
@@ -60,10 +55,10 @@ export function Success() {
 
                 <div className="result-info">
                     <p><strong>주문번호</strong></p>
-                    <p>{searchParams.get("orderId")}</p>
+                    <p>{orderId}</p>
 
                     <p style={{marginTop: 12}}><strong>결제 금액</strong></p>
-                    <p>{Number(searchParams.get("amount")).toLocaleString()}원</p>
+                    <p>{amount.toLocaleString()}원</p>
                 </div>
 
                 <button className="btn primary" onClick={() => navigate("/reservation/list")}>
