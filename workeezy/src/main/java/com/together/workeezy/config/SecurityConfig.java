@@ -85,6 +85,10 @@ public class SecurityConfig {
                         // 관리자 전용
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                        // 챗봇
+                        .requestMatchers("/api/chat/**").permitAll()
+                        .anyRequest().authenticated()
+
                         // error
                         .requestMatchers("/error").permitAll()
 
