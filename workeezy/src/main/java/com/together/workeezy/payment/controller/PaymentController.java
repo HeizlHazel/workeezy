@@ -40,15 +40,11 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public ResponseEntity<PaymentConfirmResponse> confirmPayment(
-            @RequestBody PaymentConfirmRequest request,
-            @AuthenticationPrincipal CustomUserDetails user) {
+            @RequestBody PaymentConfirmRequest request) {
         log.info("🔥 confirm API called");
 
-        // user.getEmail() 가져오기
-        String email = user.getUsername();
-
         return ResponseEntity.ok(
-                paymentFacade.confirm(request, email));
+                paymentFacade.confirm(request, null));
     }
 
 //    @GetMapping("/receipt/{reservationId}")
