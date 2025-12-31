@@ -68,6 +68,8 @@ public class SecurityConfig {
 
                         // Programs / Reviews (공개 범위)
                         .requestMatchers("/api/programs/**").permitAll()
+                        .requestMatchers("/api/reviews").permitAll()
+                        .requestMatchers("/api/reviews/**").permitAll()
 
                         // Search / Recommend
                         .requestMatchers("/api/search/**").authenticated()
@@ -77,7 +79,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/me").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/payments/confirm").authenticated()
+                        .requestMatchers("/api/payments/confirm").permitAll()
                         .requestMatchers("/api/payments/**").authenticated()
 
                         // 관리자 전용

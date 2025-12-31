@@ -8,34 +8,34 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRedisService tokenRedisService;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    // 토큰 검증 제외할 URL (화이트리스트)
-    private static final List<String> WHITELIST = List.of(
-            "/api/auth/login",
-            "/api/auth/refresh",
-            "/api/programs/**",
-            "/api/reviews",
-            "/api/reviews/**",
-//            "/api/payments/**",
-            "/ping",              // debug
-            "/error"
-    );
+//    // 토큰 검증 제외할 URL (화이트리스트)
+//    private static final List<String> WHITELIST = List.of(
+//            "/api/auth/login",
+//            "/api/auth/refresh",
+//            "/api/programs/**",
+//            "/api/reviews",
+//            "/api/reviews/**",
+//            "/api/payments/confirm",
+//            "/ping",              // debug
+//            "/error"
+//    );
 
     @Override
     protected void doFilterInternal(
@@ -44,65 +44,85 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
-        System.out.println("📌 JwtFilter 요청 경로: " + requestURI);
+        log.info("""
+                        🔎 [JwtFilter ENTER]
+                        - method        = {}
+                        - requestURI    = {}
+                        - servletPath   = {}
+                        - contextPath   = {}
+                        - queryString   = {}
+                        """,
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getServletPath(),
+                request.getContextPath(),
+                request.getQueryString()
+        );
 
         // OPTIONS 요청은 항상 허용 (CORS Preflight)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            System.out.println("🟢 OPTIONS 요청 통과");
+            log.info("🟢 OPTIONS 요청 통과");
             filterChain.doFilter(request, response);
             return;
         }
-        System.out.println("🧪 WHITELIST = " + WHITELIST);
 
-        // 화이트리스트 URL은 JWT 인증 스킵
-        for (String pattern : WHITELIST) {
-            if (pathMatcher.match(pattern, requestURI)) {
-                System.out.println("➡️ 인증 스킵 (화이트리스트): " + pattern);
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
-        System.out.println("========== JWT FILTER START ==========");
-        System.out.println("📌 URI = " + request.getRequestURI());
+//        String requestURI = request.getRequestURI();
+//        log.info("📌 JwtFilter 요청 경로: " + requestURI);
+
+//        // 화이트리스트 URL은 JWT 인증 스킵
+//        for (String pattern : WHITELIST) {
+//            if (pathMatcher.match(pattern, requestURI)) {
+//                log.info("➡️ [JwtFilter SKIP] whitelist match: {}" + pattern);
+//                filterChain.doFilter(request, response);
+//                return;
+//            }
+//            log.info("➡️ [JwtFilter PASS] not whitelisted: {}" + pattern);
+//        }
+        log.info("========== JWT FILTER START ==========");
+        log.info("📌 URI = " + request.getRequestURI());
+
+        // 토큰 추출
         String token = resolveToken(request);
+        log.info("🔐 [JwtFilter TOKEN] token = {}", token == null ? "NULL" : "EXISTS");
 
-        System.out.println("🧩 token 존재 = " + (token != null));
-
-        if (token != null) {
-            System.out.println("🧩 token 앞 10글자 = " + token.substring(0, Math.min(10, token.length())));
-            // 블랙리스트 체크
-            if (tokenRedisService.isBlacklisted(token)) {
-                System.out.println("🚫 블랙리스트 토큰 → 인증 차단");
-                // 바로 인증 세팅하지 않고 통과만(익명 사용자로 처리)
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            // 유효하면 정상 인증
-            if (jwtTokenProvider.validateToken(token)) {
-
-                // Authentication 생성
-                Authentication auth = jwtTokenProvider.getAuthentication(token);
-
-                if (auth != null) {
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    System.out.println("🔥 JWT 인증 성공: " + auth.getName());
-                    System.out.println("🔥 auth authorities = " + auth.getAuthorities());
-
-                    System.out.println("✅ SecurityContext 인증 세팅 완료");
-                } else {
-                    SecurityContextHolder.clearContext();
-                    System.out.println("❌ JWT 토큰 없음");
-                    System.out.println("========== JWT FILTER END ==========");
-                }
-            }
+        // 토큰 없으면 -> 익명 요청으로 통과
+        if (token == null) {
             filterChain.doFilter(request, response);
-
-            Authentication ctxAuth = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("🧠 FILTER END Context auth = " + ctxAuth);
+            return;
         }
 
+        // 블랙리스트 토큰이면 인증 세팅 안 함
+        if (tokenRedisService.isBlacklisted(token)) {
+            log.warn("🚫 [JwtFilter] blacklisted token");
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 토큰 검증 + 인증 객체 세팅
+        if (jwtTokenProvider.validateToken(token)) {
+
+            // Authentication 생성
+            Authentication auth = jwtTokenProvider.getAuthentication(token);
+
+            if (auth != null) {
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(auth);
+
+                log.info("✅ [JwtFilter AUTH] authenticated user = {}", auth.getName());
+            }
+        } else {
+            SecurityContextHolder.clearContext();
+            log.warn("❌ [JwtFilter] invalid token");
+            log.info("========== JWT FILTER END ==========");
+        }
+
+        // 다음 필터로 이동
+        filterChain.doFilter(request, response);
+
+        log.info("🧠 [JwtFilter END] context auth = {}",
+                SecurityContextHolder.getContext().getAuthentication());
     }
 
     // Authorization 헤더 + HttpOnly 쿠키
@@ -110,7 +130,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Authorization 헤더에서 bearer 토큰
         String header = request.getHeader("Authorization");
-        System.out.println("🪶 Authorization 헤더 내용: " + header);
 
         if (header != null && header.startsWith("Bearer ")) {
             String bearerToken = header.substring(7);
@@ -123,7 +142,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
-                    System.out.println("🍪 accessToken 쿠키 발견");
                     return cookie.getValue();
                 }
             }
