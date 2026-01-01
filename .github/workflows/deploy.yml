@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REGISTRY: 002177417362.dkr.ecr.ap-northeast-2.amazonaws.com
+  ECR_REGISTRY: 020513637952.dkr.ecr.ap-northeast-2.amazonaws.com
   ECR_REPOSITORY: workeezy-server
 
 permissions:
