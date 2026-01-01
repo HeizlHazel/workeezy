@@ -1,16 +1,16 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://workeezy.iptime.org:3306/workeezy
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   security:
     debug: true
   data:
     redis:
-      host: ${SPRING_REDIS_HOST}
-      port: ${SPRING_REDIS_PORT}
+      host: redis
+      port: 6379
   elasticsearch:
     uris: http://localhost:9200
 
@@ -29,21 +29,32 @@ spring:
 
 logging:
   level:
-    root: DEBUG
-    org.hibernate.SQL: debug  # SQL 로깅
+#    root: DEBUG
+#    org.hibernate.SQL: debug  # SQL 로깅
     org.hibernate.type.descriptor.sql.BasicBinder: trace  # 파라미터 값 로깅
-    org.springframework.security: DEBUG
+#    org.springframework.security: DEBUG
 
 jwt:
-  secret: ${JWT_SECRET}
-  access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS}   # 30분
-  refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS} # 7일
+  secret: VEhJU19JU19BX1NVUEVSX0xPTkdfU0VDUkVUX0tFWV9GT1JfSldUX1RPS0VOXzEyMzQ1Njc4
+  access-expiration-ms: 1800000     # 30분
+  refresh-expiration-ms: 604800000  # 7일
 
 toss:
   payments:
-    secret-key: ${TOSS_SECRET_KEY}
-    client-key: ${TOSS_CLIENT_KEY} # 프론트에서 사용
+    secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+    client-key: test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm # 프론트에서 사용
     base-url: https://api.tosspayments.com
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    s3:
+      bucket: workeezy
+      auto: false
 
 draft:
   max-count: 5
