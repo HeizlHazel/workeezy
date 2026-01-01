@@ -1,7 +1,7 @@
-import "./Result.css";
+import "../components/Result.css";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
-export function Fail() {
+export default function PaymentFailPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 

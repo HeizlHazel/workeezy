@@ -10,10 +10,15 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
 
     useEffect(() => {
         async function init() {
+            console.log("🔥 TOSS CLIENT KEY =", import.meta.env.VITE_TOSS_CLIENT_KEY);
             const toss = await loadTossPayments(
                 import.meta.env.VITE_TOSS_CLIENT_KEY
             );
+            console.log("🔥 toss instance =", toss);
+
             const w = toss.widgets({customerKey});
+            console.log("🔥 widgets =", w);
+
             setWidgets(w);
         }
 
@@ -38,17 +43,21 @@ export default function TossPaymentWidget({orderId, orderName, amount}) {
     }, [widgets, amount]);
 
     const handlePayment = async () => {
-        if (!widgets || loading) return;
+        console.log("🔥 결제 버튼 클릭", {widgets, loading});
+        if (!widgets || loading) {
+            console.log("❌ widgets 준비 안 됨");
+            return;
+        }
 
         try {
-            setLoading(true); // 클린한 순간 잠금
+            setLoading(true); // 클릭한 순간 잠금
 
             await widgets.requestPayment({
                 orderId,
                 orderName,
 
-                successUrl: `${window.location.origin}/payment/result?status=success&orderId=${orderId}`,
-                failUrl: `${window.location.origin}/payment/result?status=fail&orderId=${orderId}`,
+                successUrl: `${window.location.origin}/payment/result/success`,
+                failUrl: `${window.location.origin}/payment/result/fail`,
 
                 customerName: "테스트 사용자",
                 customerEmail: "test@workeezy.com",
