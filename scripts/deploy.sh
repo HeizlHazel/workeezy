@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-ECR_URI=002177417362.dkr.ecr.ap-northeast-2.amazonaws.com/workeezy-server
+ECR_URI=020513637952.dkr.ecr.ap-northeast-2.amazonaws.com/workeezy-server
 CONTAINER_NAME=workeezy-server
 
 echo "Pull latest image"
