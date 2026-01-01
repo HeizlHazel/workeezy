@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -209,4 +210,53 @@ where r.id = :reservationId
 //            @Param("reservationId") Long reservationId
 //    );
 
+    // 예약 중복 확인
+    @Query("""
+    SELECT COUNT(r)
+    FROM Reservation r
+    WHERE r.room.id = :roomId
+      AND r.status IN ('waiting_payment', 'approved', 'confirmed')
+      AND r.startDate < :endDate
+      AND r.endDate > :startDate
+""")
+    long countOverlappingReservations(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("""
+SELECT COUNT(r) > 0 FROM Reservation r
+WHERE r.room.id = :roomId
+            AND r.status IN (
+          com.together.workeezy.reservation.enums.ReservationStatus.waiting_payment,\s
+          com.together.workeezy.reservation.enums.ReservationStatus.approved,\s
+          com.together.workeezy.reservation.enums.ReservationStatus.confirmed
+      )
+AND r.startDate < :endDate
+AND r.endDate > :startDate
+""")
+    boolean existsOverlap(Long roomId, LocalDateTime start, LocalDateTime end);
+
+
+    @Query("""
+SELECT COUNT(r) > 0 FROM Reservation r
+WHERE r.room.id = :roomId
+            AND r.status IN (
+          com.together.workeezy.reservation.enums.ReservationStatus.waiting_payment,\s
+          com.together.workeezy.reservation.enums.ReservationStatus.approved,\s
+          com.together.workeezy.reservation.enums.ReservationStatus.confirmed
+      )
+AND r.startDate < :endDate
+AND r.endDate > :startDate
+AND r.id <> :excludeId
+""")
+    boolean existsOverlapExcept(
+            Long roomId,
+            LocalDateTime start,
+            LocalDateTime end,
+            Long excludeId
+    );
+
 }
+

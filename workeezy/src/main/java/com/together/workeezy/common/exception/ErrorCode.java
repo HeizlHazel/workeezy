@@ -38,6 +38,11 @@ public enum ErrorCode {
             "예약 가능 개수를 초과했습니다.",
             "예약 가능 건수를 초과했습니다."
     ),
+
+    ROOM_ALREADY_RESERVED(HttpStatus.BAD_REQUEST,
+            "이미 예약이 된 날짜입니다.","다른 날짜를 선택하세요."),
+
+    RESERVATION_NOT_AVAILABLE(HttpStatus.BAD_REQUEST,"예약이 불가합니다.","이미 예약이 된 날짜입니다."),
     // 사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 
@@ -56,9 +61,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_LOWER(HttpStatus.BAD_REQUEST, "소문자가 포함되어야 합니다."),
     INVALID_PASSWORD_SPECIAL(HttpStatus.BAD_REQUEST, "특수문자가 포함되어야 합니다."),
 
-    PAYMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "승인 후 결제 가능합니다."),
-    PAYMENT_LOG_SERIALIZE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 로그 직렬화에 실패했습니다.");
-
+    PAYMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "승인 후 결제 가능합니다."),;
     private final HttpStatus status;
     private final String message;
     private final String detail;

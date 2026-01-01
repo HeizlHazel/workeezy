@@ -82,23 +82,37 @@ public class ReservationService {
         Room room = roomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 룸이 존재하지 않습니다. roomId=" + dto.getRoomId()));
 
+        // 예약 중복 방지
+        boolean available = isRoomAvailable(room.getId(), dto.getStartDate(), dto.getEndDate());
+
+        if (!available) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_AVAILABLE);
+        }
+
         Place office = null;
         if (dto.getOfficeId() != null) {
             office = placeRepository.findById(dto.getOfficeId())
                     .orElseThrow(() -> new IllegalArgumentException("오피스 없음"));
         }
 
+        LocalDateTime startDate = dto.getStartDate();
+        LocalDateTime endDate = startDate.plusDays(2);
         // *** 도메인 생성 메서드 ***
         Reservation reservation = Reservation.create(
                 user,
                 program,
                 room,
                 office,
-                dto.getStartDate(),
-                dto.getEndDate(),
+//                dto.getStartDate(),
+//                dto.getEndDate(),
+                startDate,
+                endDate,
                 dto.getPeopleCount(),
                 newReservationNo
         );
+
+
+
 
 //        // 총 금액 계산 (프로그램 가격 * 인원수)
 //        Integer basePrice = program.getProgramPrice();
@@ -133,6 +147,47 @@ public class ReservationService {
         }
         return saved;
     }
+
+
+    // 신규 예약용 (excludeId 없음)
+    public boolean isRoomAvailable(
+            Long roomId,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
+
+        return isRoomAvailable(roomId, startDate, endDate, null);
+    }
+
+    // 예약 중복 방지
+    public boolean isRoomAvailable(
+            Long roomId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Long excludeId
+    ) {
+
+        boolean exists;
+
+        if (excludeId != null) {
+            // 수정 시 → 자기 자신 제외
+            exists = reservationRepository.existsOverlapExcept(
+                    roomId, startDate, endDate, excludeId
+            );
+        } else {
+            // 신규 예약
+            exists = reservationRepository.existsOverlap(
+                    roomId, startDate, endDate
+            );
+        }
+
+        log.info("중복 체크 시작 - roomId: {}, start: {}, end: {}", roomId, startDate, endDate);
+        // ... 중복 체크 로직
+        log.info("중복 체크 결과 - exists: {}", exists);
+
+        return !exists;
+    }
+
 
 //    /*  내 예약 목록 조회 (컨트롤러에서 /me로 호출) */
 //    @Transactional(readOnly = true) // 쓰기 감지 안해서 속도 향상
@@ -225,7 +280,7 @@ public class ReservationService {
     }
 
 
-    
+
     // 예약 단건 조회
     @Transactional(readOnly = true)
     public ReservationResponseDto getMyReservation(Long id, String email) {
@@ -350,4 +405,5 @@ public class ReservationService {
             throw new CustomException(ErrorCode.RESERVATION_TOTAL_LIMIT_EXCEEDED);
 
     }
+
 }
