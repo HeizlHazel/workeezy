@@ -1,21 +1,22 @@
 #!/bin/bash
 set -e
 
-APP_DIR=/home/ubuntu/workeezy-backend
-REGION=ap-northeast-2
-ECR_REGISTRY=020513637952.dkr.ecr.ap-northeast-2.amazonaws.com
+ECR_URI=002177417362.dkr.ecr.ap-northeast-2.amazonaws.com/workeezy-server
+CONTAINER_NAME=workeezy-server
 
-echo "Move to app directory"
-cd $APP_DIR
+echo "Pull latest image"
+docker pull $ECR_URI:latest
 
-echo "ECR login"
-aws ecr get-login-password --region $REGION \
-| docker login --username AWS --password-stdin $ECR_REGISTRY
+echo "Stop & remove old container"
+docker stop $CONTAINER_NAME || true
+docker rm $CONTAINER_NAME || true
 
-echo "Pull latest images"
-docker compose pull
-
-echo "Apply containers"
-docker compose up -d
+echo "Run new container"
+docker run -d \
+  --name $CONTAINER_NAME \
+  -p 8080:8080 \
+  --env-file /home/ubuntu/workeezy.env \
+  --restart always \
+  $ECR_URI:latest
 
 echo "Deploy finished"
