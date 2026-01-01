@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-@Profile("default")
 @Component
+@Profile("local")
 public class LocalPdfStorage implements PdfStorage {
 
     @Override
