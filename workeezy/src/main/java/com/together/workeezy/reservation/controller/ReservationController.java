@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 @RestController
@@ -43,16 +44,18 @@ public class ReservationController {
     @GetMapping("/availability")
     public ResponseEntity<?> checkAvailability(
             @RequestParam Long roomId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime startDate,
+            @RequestParam OffsetDateTime startDate,
             @RequestParam(required = false) Long excludeId
     ) {
-        boolean available = reservationService.isRoomAvailable(roomId, startDate,excludeId);
-
-        return ResponseEntity.ok(
-                Map.of("available", available)
+        boolean available = reservationService.isRoomAvailable(
+                roomId,
+                startDate.toLocalDateTime(),
+                excludeId
         );
+
+        return ResponseEntity.ok(Map.of("available", available));
     }
+
 
     // 내 예약 목록 조회
 //    @GetMapping("/me")

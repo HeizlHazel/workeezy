@@ -75,10 +75,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/recommendations/**").permitAll()
 
                         // Reservations / Payments
+                        .requestMatchers("/api/reservations/availability/**").permitAll()
                         .requestMatchers("/api/reservations/draft/**").authenticated()
                         .requestMatchers("/api/reservations/me").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
-                        .requestMatchers("/api/reservations/availability/**").permitAll()
 
                         .requestMatchers("/api/payments/confirm").permitAll()
                         .requestMatchers("/api/payments/**").authenticated()
