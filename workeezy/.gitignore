@@ -36,7 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-.env
+.env.local
 
 # Node
 workeezy-chatbot/node_modules/
