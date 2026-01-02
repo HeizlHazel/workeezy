@@ -15,9 +15,9 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     @Query("""
                 SELECT DISTINCT p.id
                 FROM Program p
-                JOIN p.places pl
+                LEFT JOIN p.places pl
                 WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                   OR LOWER(pl.placeRegion) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(COALESCE(pl.placeRegion, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))
             """)
     List<Long> searchProgramIdsByKeyword(@Param("keyword") String keyword);
 

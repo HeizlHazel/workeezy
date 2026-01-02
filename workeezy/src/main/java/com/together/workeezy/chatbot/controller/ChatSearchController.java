@@ -24,3 +24,5 @@ public class ChatSearchController {
         return searchService.search(keyword, null, null);
     }
 }
+
+
