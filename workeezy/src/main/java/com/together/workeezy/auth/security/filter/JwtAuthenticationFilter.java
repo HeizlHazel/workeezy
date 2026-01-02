@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,18 +25,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRedisService tokenRedisService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-//    // 토큰 검증 제외할 URL (화이트리스트)
-//    private static final List<String> WHITELIST = List.of(
-//            "/api/auth/login",
-//            "/api/auth/refresh",
-//            "/api/programs/**",
-//            "/api/reviews",
-//            "/api/reviews/**",
-//            "/api/payments/confirm",
-//            "/ping",              // debug
-//            "/error"
-//    );
+    // 토큰 검증 제외할 URL (화이트리스트)
+    private static final List<String> WHITELIST = List.of(
+            "/api/auth/login",
+            "/api/auth/refresh",
+            "/api/programs/**",
+            "/api/recommendations/**",
+            "/actuator/**",
+            "/api/reviews",
+            "/api/reviews/**",
+            "/api/payments/confirm",
+            "/ping",              // debug
+            "/error"
+    );
 
     @Override
     protected void doFilterInternal(
@@ -62,6 +66,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // OPTIONS 요청은 항상 허용 (CORS Preflight)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             log.info("🟢 OPTIONS 요청 통과");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (isWhitelisted(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -148,4 +157,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    private boolean isWhitelisted(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return WHITELIST.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
+    }
+
+
 }

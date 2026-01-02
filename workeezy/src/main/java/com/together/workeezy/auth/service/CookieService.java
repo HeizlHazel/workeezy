@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,21 @@ public class CookieService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Value("${app.cookie.secure}")
+    private boolean secure;
+
+    @Value("${app.cookie.same-site}")
+    private String sameSite;
+
     // accessToken 쿠키 생성 (인증용)
     public void addAccessCookie(
             HttpServletResponse response,
-            String accessToken,
-            boolean isProd
+            String accessToken
     ) {
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(isProd)                         // 로컬=false / 운영=true
-                .sameSite(isProd ? "None" : "Lax")      // 로컬=Lax / 운영=None
+                .secure(secure)
+                .sameSite(sameSite)
                 .path("/")                              // 모든 API에 전송
                 .maxAge(jwtTokenProvider.getAccessExpiration() / 1000)
                 .build();
@@ -32,11 +38,11 @@ public class CookieService {
     }
 
     // accessToken 쿠키 삭제
-    public void deleteAccessCookie(HttpServletResponse response, boolean isProd) {
+    public void deleteAccessCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(isProd)
-                .sameSite(isProd ? "None" : "Lax")
+                .secure(secure)
+                .sameSite(sameSite)
                 .path("/")
                 .maxAge(0)
                 .build();
@@ -48,14 +54,13 @@ public class CookieService {
     public void addRefreshCookie(
             HttpServletResponse response,
             String refreshToken,
-            boolean autoLogin,
-            boolean isProd
+            boolean autoLogin
     ) {
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(isProd)
-                .sameSite(isProd ? "None" : "Lax")
+                .secure(secure)
+                .sameSite(sameSite)
                 .path("/")
                 .maxAge(autoLogin
                         ? jwtTokenProvider.getRefreshExpiration() / 1000
@@ -66,12 +71,12 @@ public class CookieService {
     }
 
     // logout 시 쿠키 삭제
-    public void deleteRefreshCookie(HttpServletResponse response, boolean isProd) {
+    public void deleteRefreshCookie(HttpServletResponse response) {
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(isProd)
-                .sameSite(isProd ? "None" : "Lax")
+                .secure(secure)
+                .sameSite(sameSite)
                 .path("/")
                 .maxAge(0)
                 .build();

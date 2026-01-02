@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-@Profile("default")
+@Profile("local")
 @Component
 public class LocalPdfStorage implements PdfStorage {
 

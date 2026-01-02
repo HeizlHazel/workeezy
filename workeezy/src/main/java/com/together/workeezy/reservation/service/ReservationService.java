@@ -356,7 +356,6 @@ public class ReservationService {
                 dto.getPeopleCount(),
                 room
         );
-
     }
 
     // 예약 취소
@@ -365,21 +364,8 @@ public class ReservationService {
 
         Reservation reservation = getMyReservationOrThrow(id, email);
 
-        reservation.cancel();
-
-        // 이전
-//        int diffDays =  reservation.daysUntilStart();
-//
-//        if (!reservation.getStatus().canDirectCancel(diffDays)) {
-//            throw new IllegalStateException("이 상태에서는 취소 불가");
-//        }
-//        if (diffDays < 0) {
-//            throw new IllegalStateException("이미 시작된 예약은 취소 불가");
-//        }
-//
-//        reservation.setStatus(ReservationStatus.cancelled);
+        reservation.cancelByUser();
     }
-
 
     // ============================================================================
 

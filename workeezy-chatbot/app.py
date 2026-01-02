@@ -1,85 +1,125 @@
-from flask import Flask, request, jsonify
 import os
 import requests
+from flask import Flask, request, jsonify
+print("### LOADED app.py (build=CHATBOT-20260102-1) ###", flush=True)
 
 app = Flask(__name__)
 
-SPRING_BASE = os.getenv("SPRING_BASE", "http://127.0.0.1:8080")
+SPRING_BASE = os.getenv("SPRING_BASE_URL", "http://workeezy-backend:8080")
+BUILD_TAG = os.getenv("BUILD_TAG", "chatbot-v3")  # ✅ 응답에 찍어서 코드 반영 확인용
 
-@app.route("/", methods=["GET"])
-def index():
-    return "OK"
+def kakao_text(text: str):
+    return {
+        "version": "2.0",
+        "template": {"outputs": [{"simpleText": {"text": text}}]},
+    }
 
-@app.route("/health", methods=["GET"])
+def kakao_list(title: str, items: list[dict], buttons: list[dict] | None = None):
+    card = {
+        "header": {"title": title},
+        "items": items[:5],
+    }
+    if buttons:
+        card["buttons"] = buttons
+
+    return {
+        "version": "2.0",
+        "template": {"outputs": [{"listCard": card}]},
+    }
+
+
+def extract_keyword(req: dict) -> str:
+    # ✅ 카카오가 보내는 위치가 케이스마다 달라서 전부 커버
+    action = req.get("action") or {}
+    params = action.get("params") or {}
+    detail = action.get("detailParams") or {}
+
+    # 1) action.params.keyword
+    kw = params.get("keyword")
+    if isinstance(kw, str) and kw.strip():
+        return kw.strip()
+
+    # 2) action.detailParams.keyword.value
+    kw_obj = detail.get("keyword") or {}
+    if isinstance(kw_obj, dict):
+        v = kw_obj.get("value")
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+
+    # 3) userRequest.utterance fallback
+    utter = ((req.get("userRequest") or {}).get("utterance") or "")
+    if isinstance(utter, str) and utter.strip():
+        return utter.strip()
+
+    return ""
+
+@app.get("/")
 def health():
     return "OK"
 
-@app.route("/skill", methods=["POST"])
-def skill():
-    body = request.get_json(force=True)
-    utterance = body.get("userRequest", {}).get("utterance", "").strip()
+@app.post("/skill/search_program")
+def search_program():
+    req = request.get_json(silent=True) or {}
+    keyword = extract_keyword(req)
 
-    # 아주 단순하게: "검색 <키워드>"면 검색 호출
-    keyword = utterance
-    if utterance.startswith("검색 "):
-        keyword = utterance.replace("검색 ", "", 1).strip()
+    if not keyword:
+        return jsonify(kakao_text("검색어를 입력해주세요. 예: 제주, 부산, 오피스"))
 
-    # Spring 챗봇 검색 호출
     try:
         r = requests.get(
             f"{SPRING_BASE}/api/chat/search",
             params={"keyword": keyword},
-            timeout=3
+            timeout=5,
         )
         r.raise_for_status()
         data = r.json()
     except Exception as e:
-        return jsonify({
-            "version": "2.0",
-            "template": {
-                "outputs": [{
-                    "simpleText": {
-                        "text": f"서버 검색 중 오류가 났어 😢\n({type(e).__name__})"
-                    }
-                }]
-            }
-        })
+        return jsonify(kakao_text(f"검색 중 오류가 발생했어요 😢\n{e}"))
 
-    # ✅ 여기부터는 SearchResultDto 구조에 맞춰 꺼내야 함
-    # 일단 흔한 형태를 가정해서 안전하게 처리 (키 이름이 다르면 아래 매핑만 바꾸면 됨)
-    programs = (
-            data.get("programs")
-            or data.get("results")
-            or data.get("items")
-            or []
+    cards = data.get("cards") or []
+    if not cards:
+        return jsonify(kakao_text(f"'{keyword}' 검색 결과가 없어요 😢"))
+
+    items = []
+    for c in cards[:5]:
+        pid = c.get("id")
+        title = c.get("title", "")
+        region = c.get("region", "")
+        price = c.get("price", 0)
+        photo = c.get("photo")
+
+        desc = f"{region} · {price:,}원" if price else region
+
+        item = {
+            "title": title,
+            "description": desc,
+        }
+
+        # 이미지 (절대 URL이면 그대로 사용)
+        if photo:
+            item["imageUrl"] = photo
+
+        # 👉 프론트 상세페이지 연결
+        if pid:
+            item["link"] = {
+                "web": f"https://workeezy.cloud/programs/{pid}",
+                "mobileWeb": f"https://workeezy.cloud/programs/{pid}",
+            }
+
+        items.append(item)
+
+    buttons = [
+        {
+            "label": "전체 결과 보기",
+            "action": "webLink",
+            "webLinkUrl": f"https://workeezy.cloud/search?keyword={keyword}",
+        }
+    ]
+
+    return jsonify(
+        kakao_list(f"'{keyword}' 검색 결과", items, buttons)
     )
 
-    if not programs:
-        text = f"'{keyword}' 검색 결과가 없어."
-    else:
-        # 상위 3개만 텍스트로
-        lines = []
-        for p in programs[:3]:
-            title = p.get("programTitle") or p.get("title") or "제목없음"
-            price = p.get("programPrice") or p.get("price")
-            region = p.get("region")
-            one = f"- {title}"
-            if region:
-                one += f" ({region})"
-            if price is not None:
-                one += f" / {price}원"
-            lines.append(one)
-
-        text = "검색 결과야 👇\n" + "\n".join(lines)
-
-    return jsonify({
-        "version": "2.0",
-        "template": {
-            "outputs": [{
-                "simpleText": {"text": text}
-            }]
-        }
-    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
