@@ -1,6 +1,7 @@
 import os
 import requests
 from flask import Flask, request, jsonify
+print("### LOADED app.py (build=CHATBOT-20260102-1) ###", flush=True)
 
 app = Flask(__name__)
 
