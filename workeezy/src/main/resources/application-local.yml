@@ -1,9 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://workeezy.iptime.org:3306/workeezy
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:mysql://workeezy.iptime.org:3306/workeezy
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
 
   security:
     debug: true
@@ -26,6 +29,11 @@ spring:
         format_sql: true  # SQL 포맷팅
         dialect: org.hibernate.dialect.MySQLDialect
     open-in-view: false  # OSIV 비활성화 (선택)
+
+app:
+  cookie:
+    secure: false
+    same-site: Lax
 
 logging:
   level:

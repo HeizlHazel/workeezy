@@ -15,6 +15,11 @@ spring:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     show-sql: ${SPRING_JPA_SHOW_SQL}
 
+app:
+  cookie:
+    secure: true
+    same-site: None
+
 logging:
   level:
     root: INFO
