@@ -172,21 +172,23 @@ public class ReservationService {
             LocalDateTime startDate,
             Long excludeId
     ) {
-        LocalDateTime endDate = startDate.plusDays(2);
+
+        LocalDateTime normalizedStart = normalizeCheckIn(startDate);
+        LocalDateTime endDate = normalizeCheckOut(startDate);
 
         boolean exists;
         if (excludeId == null) {
             exists = reservationRepository.existsOverlap(
-                    roomId, startDate, endDate
+                    roomId, normalizedStart, endDate
             );
         } else {
             exists = reservationRepository.existsOverlapExcept(
-                    roomId, startDate, endDate, excludeId
+                    roomId, normalizedStart, endDate, excludeId
             );
         }
 
         log.info("🧩 [예약 체크] roomId={}, start={}, end={}, exists={}",
-                roomId, startDate, endDate, exists);
+                roomId, normalizedStart, endDate, exists);
 
         return !exists;
     }
