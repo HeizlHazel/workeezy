@@ -168,6 +168,19 @@ public class Reservation {
         this.totalPrice = (long) this.program.getProgramPrice() * this.peopleCount;
     }
 
+    // 예약 인원 수 검증
+    public static void validatePeopleCount(int peopleCount, Program program) {
+        if (peopleCount <= 0) {
+            throw new CustomException(ErrorCode.INVALID_PEOPLE_COUNT);
+        }
+
+        if (peopleCount > program.getProgramPeople()) {
+            throw new CustomException(ErrorCode.EXCEED_MAX_PEOPLE_COUNT);
+        }
+    }
+
+
+
     // ================================ 예약 CRUD ========================= //
 
 
@@ -183,6 +196,7 @@ public class Reservation {
             String reservationNo
     ) {
         validateDate(startDate, endDate);
+        validatePeopleCount(peopleCount, program);
 
         Reservation r = new Reservation();
         r.user = user;
@@ -211,6 +225,7 @@ public class Reservation {
     ) {
         validateUpdatable(); // 수정 가능한지
         validateDate(startDate, endDate); // 날짜 규칙
+        validatePeopleCount(peopleCount, program);
 
         this.startDate = startDate;
         this.endDate = endDate;
@@ -228,6 +243,7 @@ public class Reservation {
                          Room room) {
         validateRequestResubmit();
         validateDate(startDate, endDate);
+        validatePeopleCount(peopleCount, program);
 
         this.startDate = startDate;
         this.endDate = endDate;

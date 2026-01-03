@@ -21,7 +21,7 @@ import static com.together.workeezy.common.exception.ErrorCode.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentConfirmUseCase {
+public class PaymentConfirmService {
 
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
