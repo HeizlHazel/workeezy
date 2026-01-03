@@ -22,6 +22,7 @@ export default function ReservationFields({
   stayId,
   isAvailable,
   checking,
+  programPeople,
 }) {
   console.log("🔥 rooms =", rooms);
 
@@ -64,6 +65,9 @@ export default function ReservationFields({
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
+
+  const isOverCapacity =
+    programPeople && peopleCount !== "" && Number(peopleCount) > programPeople;
 
   return (
     <>
@@ -275,11 +279,26 @@ export default function ReservationFields({
             type="number"
             name="peopleCount"
             value={peopleCount}
-            onChange={onChange}
-            min="1"
+            onChange={(e) => {
+              const v = e.target.value;
+              onChange({
+                target: {
+                  name: "peopleCount",
+                  value: v === "" ? "" : Number(v),
+                },
+              });
+            }}
+            min={1}
             placeholder="1"
             className="value"
           />
+        </div>
+        <div className="availability-wrapper">
+          {isOverCapacity && programPeople && (
+            <span className="availability-hint">
+              최대 {programPeople}명까지 예약 가능합니다
+            </span>
+          )}
         </div>
       </div>
     </>

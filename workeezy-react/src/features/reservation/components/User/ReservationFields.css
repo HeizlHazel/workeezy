@@ -113,7 +113,7 @@
 .date {
   display: flex;
   flex-direction: row;
-  gap: 24px;
+  gap: 50px;
   flex: 1;
 }
 
@@ -232,14 +232,15 @@ input[type="date"] {
 .availability-checking,
 .availability-success {
   position: absolute;
-  right: -130px; /* 👉 오른쪽으로 빼기 */
+  right: -140px; /* 👉 오른쪽으로 빼기 */
   top: 50%;
   transform: translateY(-50%);
   font-size: 12px;
   white-space: nowrap;
 }
 
-.availability-error {
+.availability-error,
+.availability-hint {
   color: #e74c3c;
 }
 
@@ -249,4 +250,16 @@ input[type="date"] {
 
 .availability-success {
   color: #2ecc71;
+}
+
+.people-count {
+  position: relative;
+}
+
+.people-count .availability-wrapper {
+  position: absolute;
+  right: -170px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
 }

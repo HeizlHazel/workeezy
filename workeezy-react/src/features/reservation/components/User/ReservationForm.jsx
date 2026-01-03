@@ -25,6 +25,9 @@ export default function ReservationForm({
   // 예약용 프로그램 조회 결과로 얻은 rooms
   const [rooms, setRooms] = useState([]);
 
+  // 인원수
+  const [programPeople, setProgramPeople] = useState(null);
+
   /* =========================
        form 초기 상태
     ========================= */
@@ -45,7 +48,7 @@ export default function ReservationForm({
     startDate: checkIn ? new Date(checkIn) : null,
     endDate: checkOut ? new Date(checkOut) : null,
 
-    peopleCount: 1,
+    peopleCount: "",
 
     userName: "",
     company: "",
@@ -105,6 +108,10 @@ export default function ReservationForm({
 
         // 해당 프로그램의 rooms
         setRooms(data.rooms);
+        // 해당 프로그램의 최대 수용인원
+        setProgramPeople(data.programPeople);
+
+        console.log("programPeople =", data.programPeople);
 
         // 사용자에게 보여줄 초기 폼 세팅
         setForm((prev) => ({
@@ -246,6 +253,15 @@ export default function ReservationForm({
     ========================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "peopleCount") {
+      setForm((prev) => ({
+        ...prev,
+        peopleCount: value,
+      }));
+      return;
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -348,6 +364,7 @@ export default function ReservationForm({
           onChange={handleChange}
           isAvailable={isAvailable}
           checking={checking}
+          programPeople={programPeople}
         />
         <ReservationFormActions
           mode={mode}
