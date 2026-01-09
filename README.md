@@ -216,8 +216,41 @@ ERD: [ERD Cloud]
 
 
 ### 🙊 조원 백가영
+- 예약 신청
+- ![예약신청](https://github.com/user-attachments/assets/08a1ec49-5bf9-49ae-900f-faa24663d3b1)
 
+- 예약 수정
+![예약수정](https://github.com/user-attachments/assets/32d90996-243d-4955-a169-84ea49e1ca48)
 
+- 예약 취소
+![예약취소](https://github.com/user-attachments/assets/5a128aac-b04c-460a-88d0-4123dffc6a1c)
+
+- 예약 중복 체크
+![예약시룸중복예약체크](https://github.com/user-attachments/assets/cca11a48-8713-4627-92ea-2161e47711a6)
+
+- 사용자 예약 조회 시 필터링 및 키워드 검색
+![사용자예약조회상태필터및키워드](https://github.com/user-attachments/assets/381c3546-b3d2-4b01-b66d-39e6459d2517)
+
+- 확정된 예약 pdf 생성 및 s3 버킷 url 다운로드
+![예약확정서pdf](https://github.com/user-attachments/assets/de2fedc9-2228-48f0-aa81-e1b375bdbc49)
+
+- 예약폼 임시 저장
+![임시저장](https://github.com/user-attachments/assets/9e297713-4f27-4953-a170-7adc59bdc49e)
+
+- 임시저장 불러오기 후 신청
+![임시저장불러오기및신청](https://github.com/user-attachments/assets/2dc73a9a-c6e9-4afd-ae4f-e65ceb10957a)
+
+- 임시저장 데이터 중복 체크
+![예약폼_임시저장중복체크](https://github.com/user-attachments/assets/97deafd1-3872-48e9-aa35-898f5322836e)
+
+- 계정별 임시저장 데이터 관리
+![유저별임시저장데이터관리](https://github.com/user-attachments/assets/e597b23f-c036-4eb5-9423-305351d775bb)
+
+- 커서 기반 관리자 페이지 탐색 및 동작
+![Uploading 관리자페이지탐색및동작.gif…]()
+
+- 관리자 페이지 날짜별 및 키워드 및 필터링 조회
+![관리자페이지키워드및필터링](https://github.com/user-attachments/assets/82e0701e-51a4-4666-90c2-1f27e9af888c)
 
 
 ### 🙉 조원 조민준
@@ -226,7 +259,6 @@ ERD: [ERD Cloud]
 
 - 최근 검색어 기반 추천
 ![최근검색어추천](https://github.com/user-attachments/assets/5783c6e7-1af1-4366-acc4-cf11a2b9261b)
-
 
 - 리뷰 등록
 ![리뷰등록](https://github.com/user-attachments/assets/4232ba75-2a7f-45ea-9503-75d97e1771a1)
