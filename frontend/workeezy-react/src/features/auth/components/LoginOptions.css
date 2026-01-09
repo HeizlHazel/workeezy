@@ -1,0 +1,55 @@
+.login-options {
+    width: 100%;
+    margin: 10px auto 20px;
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.check-input {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #bfbfbf;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+}
+
+.check-input:checked {
+    background-color: #b3b3b3;
+    border-color: #b3b3b3;
+}
+
+.check-input:checked::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.option span {
+    font-size: 15px;
+    color: #333;
+}
+
+@media (max-width: 600px) {
+    .login-options {
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 4px;
+    }
+}
+

@@ -1,0 +1,55 @@
+/* ===== Cursor Pagination ===== */
+.cursor-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* 공통 버튼 */
+.cursor-btn {
+  appearance: none;
+  border: 1px solid #cfd8c3;
+  background: #ffffff;
+  color: #2f3b24;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 120ms ease, box-shadow 120ms ease,
+    transform 120ms ease, border-color 120ms ease, opacity 120ms ease;
+}
+
+/* hover */
+.cursor-btn:hover:not(:disabled) {
+  background: #f4f6f2; /* 베이지 */
+  border-color: #b8c4aa;
+  box-shadow: 0 6px 16px rgba(106, 130, 80, 0.18);
+}
+/* active */
+.cursor-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* disabled */
+.cursor-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* 다음 버튼 강조 */
+.cursor-btn.next {
+  background: #35593d;
+  border-color: #35593d;
+  color: #ffffff;
+}
+
+.cursor-btn.next:hover:not(:disabled) {
+  background: #2c4a33;
+  border-color: #2c4a33;
+  box-shadow: 0 8px 20px rgba(106, 130, 80, 0.28);
+}

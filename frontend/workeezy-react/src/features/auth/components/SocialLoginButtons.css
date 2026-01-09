@@ -1,0 +1,27 @@
+.social-login-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    padding-bottom: clamp(80px, 12vh, 140px);
+}
+
+.social-btn {
+    all: unset;
+    cursor: pointer;
+}
+
+.social-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    margin-bottom: 140px;
+}
+
+@media (max-width: 600px) {
+    .social-icon {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 80px;
+    }
+}

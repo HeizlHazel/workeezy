@@ -1,0 +1,240 @@
+.admin-detail-card {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* 상단 */
+.detail-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.status-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reservation-no {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* 본문 */
+.detail-body {
+    display: flex;
+    gap: 28px;
+}
+
+/* 이미지 */
+.image-box {
+    width: 260px;
+    height: 260px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 정보 */
+.info-box {
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.info-box p {
+    margin: 0;
+    color: #555;
+}
+
+.info-box strong {
+    color: #222;
+}
+
+/* 버튼 영역 */
+.detail-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn-approve {
+    border: 1px solid #4caf50;
+    color: #4caf50;
+    background: #fff;
+    padding: 10px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-reject {
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    background: #fff;
+    padding: 10px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-approve:disabled:hover {
+    background-color: #ccc;
+}
+
+.detail-actions button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    opacity: 0.6;
+    border: none;
+}
+
+.reservation-detail {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px 24px;
+}
+
+.reservation-detail dt {
+    font-weight: 600;
+    color: #666;
+}
+
+.reservation-detail dd {
+    margin: 0;
+    color: #222;
+}
+
+/* ===== 섹션 ===== */
+.detail-section {
+    margin-bottom: 28px;
+}
+
+.admin-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #222;
+    border-left: 4px solid #4caf50;
+    padding-left: 10px;
+}
+
+/* ===== 정보 그리드 ===== */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    row-gap: 14px;
+    column-gap: 20px;
+    align-items: center;
+}
+
+.detail-grid dt {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+}
+
+.detail-grid dd {
+    margin: 0;
+    font-size: 15px;
+    color: #222;
+    word-break: break-word;
+}
+
+/* ===== 버튼 영역 ===== */
+.detail-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn-approve {
+    border: 1px solid #4caf50;
+    color: #4caf50;
+    background: #fff;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-approve:hover {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-reject {
+    border: 1px solid #ff4d4f;
+    color: #ff4d4f;
+    background: #fff;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-reject:hover {
+    background: #ff4d4f;
+    color: white;
+}
+
+.detail-actions button:disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+    border: none;
+}
+
+.btn-back {
+    border: 1px solid #999;
+    color: #555;
+    background: #fff;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-back:hover {
+    background: #f2f2f2;
+}
+.admin-detail-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.detail-footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+}
+
+.btn-back {
+    border: 1px solid #999;
+    background: #fff;
+    color: #555;
+    padding: 10px 32px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-back:hover {
+    background: #f2f2f2;
+}

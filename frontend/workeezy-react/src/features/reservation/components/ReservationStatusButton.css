@@ -1,0 +1,86 @@
+.reservation-status-btn,
+.reservation-status-btn * {
+  box-sizing: border-box;
+}
+
+/* 공통 */
+.reservation-status-btn {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 30px;
+  margin: 0 auto;
+  padding-left: 10px;
+  gap: 4px;
+  cursor: default;
+  transition: all 0.2s ease-in-out;
+}
+
+.reservation-status-btn .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.reservation-status-btn .label {
+  font-size: 13px;
+  font-weight: 500;
+  padding-top: 3px;
+  padding-right: 5px;
+}
+
+/* 🟠 결제 대기 */
+.reservation-status-btn.waiting_payment {
+  border-color: #ff8d28;
+}
+.reservation-status-btn.waiting_payment .label {
+  color: #ff8d28;
+}
+
+/* 🔵 승인 완료 */
+.reservation-status-btn.approved {
+  border-color: #3b82f6;
+}
+.reservation-status-btn.approved .label {
+  color: #3b82f6;
+}
+
+/* 🟢 예약 확정 */
+.reservation-status-btn.confirmed {
+  border-color: #689e75;
+}
+.reservation-status-btn.confirmed .label {
+  color: #689e75;
+}
+
+/* 🟣 취소 요청 */
+.reservation-status-btn.cancel_requested {
+  border-color: #8b5cf6;
+}
+.reservation-status-btn.cancel_requested .label {
+  color: #8b5cf6;
+}
+
+/* 🔴 취소 완료 */
+.reservation-status-btn.cancelled {
+  border-color: #f14924;
+}
+.reservation-status-btn.cancelled .label {
+  color: #f14924;
+}
+
+/* ⚫ 승인 거절 */
+.reservation-status-btn.rejected {
+  border-color: #6b7280; /* gray-500 */
+}
+.reservation-status-btn.rejected .label {
+  color: #6b7280;
+}
+
+/* 만료 예약 */
+.reservation-status-btn.expired {
+  color: #888;
+}

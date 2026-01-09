@@ -1,0 +1,137 @@
+.profile-page {
+    width: 65%;
+    margin: 0 auto;
+}
+
+.profile-section {
+    margin-bottom: 80px;
+}
+
+.profile-section-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+.profile-form-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 28px;
+    width: 100%;
+}
+
+.profile-form-row label {
+    width: 150px;
+    font-size: 15px;
+    color: #333;
+}
+
+.profile-form-row input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    padding: 8px 4px;
+    font-size: 15px;
+    outline: none;
+}
+
+.profile-form-row input:focus {
+    border-bottom-color: #35593d;
+}
+
+.social-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 350px;
+}
+
+.social-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 550px;
+}
+
+.social-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.social-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.social-btn {
+    padding: 4px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.hint {
+    margin: 20px 150px;
+    font-size: 13px;
+    color: #35593d;
+}
+
+.hint.success {
+    color: #2f8f2f;
+}
+
+.hint.error {
+    color: #d9534f;
+}
+
+.primary-btn {
+    display: block;
+    margin: auto;
+    margin-top: 40px;
+    background: #35593d;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.primary-btn:hover {
+    background: #2c4a33;
+}
+
+.readonly-profile {
+    color: #aaaaaa;
+}
+
+@media (max-width: 768px) {
+
+    .profile-form-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .profile-form-row label {
+        width: 100%;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .profile-form-row input {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .hint {
+        margin: 12px 0 20px;
+        font-size: 12px;
+    }
+
+    .primary-btn {
+        width: 100%;
+        max-width: 320px;
+    }
+}

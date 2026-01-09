@@ -1,0 +1,27 @@
+.form,
+.form * {
+  box-sizing: border-box;
+}
+
+.form {
+  height: 853px;
+  position: relative;
+}
+
+/* reservation-form 레이아웃 */
+.reservation-form {
+  background: var(--var-sds-color-background-default-default, #ffffff);
+  border-radius: var(--var-sds-size-radius-200, 8px);
+  padding: var(--var-sds-size-space-600, 25px 50px 24px 50px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--var-sds-size-space-600, 24px);
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 550px;
+  height: 850px;
+  min-width: 320px;
+  position: absolute;
+  left: calc(50% - 325px);
+  bottom: 0px;
+}
