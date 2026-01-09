@@ -106,7 +106,18 @@ ERD: [ERD Cloud]
 
 
 ### 🙉 조원 조민준
+- 검색과 카테고리
+![검색과카테고리](https://github.com/user-attachments/assets/8dcf0b3a-5fb3-43da-b099-0226c0991c21)
 
+- 최근 검색어 추천
+![최근검색어추천](https://github.com/user-attachments/assets/5783c6e7-1af1-4366-acc4-cf11a2b9261b)
+
+
+- 리뷰 등록
+![리뷰등록](https://github.com/user-attachments/assets/4232ba75-2a7f-45ea-9503-75d97e1771a1)
+
+- 카카오톡 챗봇
+![챗봇](https://github.com/user-attachments/assets/cf61f38b-3de4-4d28-9053-497e789028b4)
 
 <br>
 
