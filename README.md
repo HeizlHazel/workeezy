@@ -197,22 +197,44 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 
 ## 도메인 설계
 
+
 <br>
 
 ## 엔티티 설계
 
+
 <br>
 
 ## 🧩 데이터 설계
-ERD: [ERD Cloud]
+<img width="2653" height="1452" alt="Workeezy ERD" src="https://github.com/user-attachments/assets/4d26bf9a-f8ad-477d-8e45-af77b4d6acd1" />
 
 <br>
 
 ## 💻 프로젝트 구현
 ### 🙈 조장 김혜지
+- 비회원 접근 제어
+![route](https://github.com/user-attachments/assets/8b8e0494-d531-4bec-99fd-83e184b3ba41)
 
-![기능명](이미지url)
+- 로그인
+![login](https://github.com/user-attachments/assets/0b633894-c7a1-4541-9d56-7517b416da98)
 
+- 로그아웃
+![logout](https://github.com/user-attachments/assets/0fb5ccb7-5237-4692-8c2b-69991a41f528)
+
+- 마이페이지 비밀번호 재검증
+![mypage](https://github.com/user-attachments/assets/282a05d1-40f3-4e18-b172-0395645c65b6)
+
+- 연락처 수정
+![modifyPhone](https://github.com/user-attachments/assets/1096f9dc-d632-47fc-b4fd-29d0b7bfd0e9)
+
+- 비밀번호 변경
+![passwordCheck](https://github.com/user-attachments/assets/e39bb0fa-7783-4a10-9c8f-3f1a0c2aca34)
+
+- 결제 진입
+![pay1](https://github.com/user-attachments/assets/655b3b40-b8b6-4182-96c1-f32da32ff865)
+
+- 결제 진행 및 상태 변경
+![pay2](https://github.com/user-attachments/assets/2278908c-7851-4e08-b272-92001cbdba33)
 
 
 ### 🙊 조원 백가영
