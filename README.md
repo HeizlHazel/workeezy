@@ -38,8 +38,8 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 
 ## 🐵 구성원 및 역할
 
-### 🙈 조장 김혜지
-
+### 🙈 조장 김혜지   
+   
 🔐 인증 · 사용자 관리
 
 - Spring Security 기반 인증/인가 구조 설계
@@ -67,7 +67,7 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 <br>
 
 ### 🙊 조원 백가영
-
+   
 🔁 예약 흐름 관리
 
 - 예약 변경, 취소 기능 구현
@@ -105,7 +105,7 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 <br>
 
 ### 🙉 조원 조민준
-
+   
 🔍 프로그램 조회 · 검색
 
 - 프로그램 상세 페이지 및 검색 결과 페이지 구현
@@ -195,13 +195,13 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 
 <br>
 
-## 도메인 설계
-
+## 🏗️ 도메인 설계
+<img width="1361" height="778" alt="도메인 다이어그램" src="https://github.com/user-attachments/assets/499bb1af-dc4c-421c-a5a2-52b6d157b999" />
 
 <br>
 
-## 엔티티 설계
-
+## 🧭 엔티티 설계
+<img width="1320" height="897" alt="엔티티 다이어그램" src="https://github.com/user-attachments/assets/38bb8bbf-2103-45de-a2df-3b888eb860b0" />
 
 <br>
 
