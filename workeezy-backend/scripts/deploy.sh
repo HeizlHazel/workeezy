@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-APP_DIR=/home/ubuntu/workeezy-backend
+APP_DIR=/home/ubuntu/workeezy/workeezy-backend
 REGION=ap-northeast-2
 ECR_REGISTRY=020513637952.dkr.ecr.ap-northeast-2.amazonaws.com/workeezy-server
 
