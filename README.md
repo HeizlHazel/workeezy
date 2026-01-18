@@ -228,7 +228,7 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 ![modifyPhone](https://github.com/user-attachments/assets/1096f9dc-d632-47fc-b4fd-29d0b7bfd0e9)
 
 - 비밀번호 변경
-![passwordCheck](https://github.com/user-attachments/assets/e39bb0fa-7783-4a10-9c8f-3f1a0c2aca34)
+![modifyPassword](https://github.com/user-attachments/assets/35296bf8-d0ce-4f02-bd7d-0d9ff70fb301)
 
 - 결제 진입
 ![pay1](https://github.com/user-attachments/assets/655b3b40-b8b6-4182-96c1-f32da32ff865)
