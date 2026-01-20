@@ -167,31 +167,23 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 
 - DBMS : MySQL
 - Concurrency Control : Pessimistic Lock (JPA)
-- Pagination : Cursor-based Pagination
 
 <br>
 
 ## 🚀 Server / Deployment
 - Server : Apache Tomcat 9.0, Spring Boot Embedded Server
 - Deployment / Environment :
-   - AWS EC2, S3, RDS
+   - AWS EC2, RDS
    - Docker
    - GitHub Actions (CI/CD)
-   - Environment Separation (local / prod)
-
-<br>
-
-## 📄 Document / File Handling
-
-- PDF Generation : OpenPDF
-- File Storage : AWS S3
 
 <br>
 
 ## 💡 API 연동 & 라이브러리
-- Toss payments
-- kakao chatbot
-- SweetAlert2
+- Payment API : Toss payments
+- Chatbot API : kakao chatbot
+- PDF Generation : OpenPDF
+- UI Alert Library : SweetAlert2
 
 <br>
 
