@@ -173,7 +173,7 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 ## 🚀 Server / Deployment
 - Server : Apache Tomcat 9.0, Spring Boot Embedded Server
 - Deployment / Environment :
-   - AWS EC2, RDS
+   - AWS EC2, RDS, S3
    - Docker
    - GitHub Actions (CI/CD)
 
