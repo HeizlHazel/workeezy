@@ -2,7 +2,7 @@
 
 ## ✨ 프로젝트 소개
 ### 워케이션 서포트 시스템 - Workeezy
-_클라우드 연동 워케이션 서포트 시스템 만들기_   
+_클라우드 기반 워케이션 서포트 시스템_   
    
    
 
@@ -133,7 +133,8 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 ## ⚙ 개발 환경 (Environment / Tools)
 
 - OS : Windows 10
-- Developer Tools : IntelliJ IDEA, WebStorm, VS Code, DBeaver
+- IDE / Editor : IntelliJ IDEA, WebStorm, VS Code
+- Database Tool : DBeaver
 - Test Tools : Postman, Apache JMeter
 - VCS : Git, GitHub, SourceTree
 
@@ -143,8 +144,8 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 
 ### Backend
 
-- Framework : Spring Boot, Flask
 - Language : Java, Python
+- Framework : Spring Boot, Flask
 - Security : Spring Security, JWT (Access / Refresh Token)
 - Data Access : JPA (Hibernate)
 - Cache / Session Store : Redis
@@ -156,9 +157,9 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 ### Frontend
 
 - Framework : React
+- Language : JavaScript (ES6+)
 - Markup & Styling : HTML5, CSS3
 - Runtime / Package Manager : Node.js
-- Scripting : JavaScript (ES6+)
 - HTTP Client : Axios
 
 <br>
@@ -171,9 +172,9 @@ Workeezy는 Work + Easy의 합성어로, ‘일은 더 쉽게, 성장은 함께(
 <br>
 
 ## 🚀 Server / Deployment
-- Server : Apache Tomcat 9.0, Spring Boot Embedded Server
+- Server : Spring Boot Embedded Tomcat
 - Deployment / Environment :
-   - AWS EC2, RDS
+   - AWS EC2, RDS, S3
    - Docker
    - GitHub Actions (CI/CD)
 
